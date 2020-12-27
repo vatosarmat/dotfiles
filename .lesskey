@@ -1,0 +1,4 @@
+#command
+C        filter \^[A-Z][A-Z\/ ]*$
+c        forw-search \^[A-Z][A-Z\/ ]*$
+o        forw-search \^\\s*-

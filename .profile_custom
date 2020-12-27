@@ -1,0 +1,26 @@
+
+#if [ -z "$XMODMAP_DONE" ]; then
+#  export XMODMAP_DONE="yes" 
+#  xmodmap ~/.xmodmaprc
+#fi
+
+PATH="$HOME/.nvm/current/bin:$PATH"
+
+YARN_PATH=$(yarn global bin 2>/dev/null || true)
+[ -n "${YARN_PATH}" ] && PATH="${YARN_PATH}:$PATH"
+
+export TRANSMISSION_HOME="$HOME/.config/transmission"
+
+source "$HOME/.cargo/env"
+
+export GOPATH="$HOME/.go"
+
+export PERL5LIB="/home/igor/perl5/lib/perl5"
+export PERL_LOCAL_LIB_ROOT="/home/igor/perl5"
+export PERL_MB_OPT="--install_base \"/home/igor/perl5\""
+export PERL_MM_OPT="INSTALL_BASE=/home/igor/perl5"
+
+PATH="$GOPATH/bin:$PATH:/usr/local/go/bin"
+PATH="$HOME/.gem/ruby/2.5.0/bin:$PATH"
+PATH="$HOME/perl5/bin:$PATH"
+PATH="$(echo $PATH | awk -v RS=':' '!a[$1]++ { if (NR > 1) printf RS; printf $1 }')"

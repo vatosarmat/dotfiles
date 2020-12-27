@@ -1,0 +1,116 @@
+#Console/terminal/shell config
+stty -ixon
+set -o ignoreeof
+
+shopt -s histverify
+HISTSIZE=
+HISTFILESIZE=
+HISTCONTROL=ignoreboth:erasedups
+HISTIGNORE="ls *":"cd *":"man *":"help *"
+HISTTIMEFORMAT="%F %T:%Z - "
+export EDITOR=nvim
+export PAGER=less
+export LESS='-s -M -R -I -j10 +Gg'
+export MANPAGER="$PAGER"
+export SYSTEMD_LESS="-M -R"
+
+#export LESS_TERMCAP_mb=$'\E[1;31m'     # begin bold
+#export LESS_TERMCAP_md=$'\E[1;36m'     # begin blink
+#export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+#export LESS_TERMCAP_so=$'\E[01;44;33m' # begin reverse video
+#export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+export LESS_TERMCAP_us=$'\E[1;36m'     # begin underline
+export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+#Aliases
+#Sys-admin things first, application least
+alias netdevs='inxi -Nxxx'
+alias islogin='shopt -q login_shell && echo "yes" || echo "no"'
+alias ppath='echo -e "${PATH//:/\\n}"'
+alias upa='update-alternatives'
+alias supa='sudo update-alternatives'
+alias sc="systemctl"
+alias scn="systemctl --no-pager"
+alias scu="systemctl --user"
+alias scun="systemctl --user --no-pager"
+
+alias perl_info='perl -V'
+alias perl_cpan='perl -MCPAN -Mlocal::lib -e shell'
+
+alias ebrc='$EDITOR "$HOME/.bashrc_custom"'
+alias sbrc='source "$HOME/.bashrc_custom"'
+alias ebrchs='$EDITOR "$HOME/.bashrc_host-specific"'
+alias sbrchs='source "$HOME/.bashrc_host-specific"'
+alias ebp='$EDITOR "$HOME/.profile_custom"'
+alias sbp='source "$HOME/.profile_custom"'
+alias etmc='$EDITOR "$HOME/.tmux.conf"'
+alias ealc='$EDITOR "$HOME/.config/alacritty/alacritty.yml"'
+
+alias info='info --vi-keys'
+alias hcurl='curl -s -o /dev/null -D -'
+alias hgrep='history | grep'
+alias r=". ranger"
+alias l="lf"
+alias tcls="rm .tmux/resurrect/*"
+alias torh="transmission-remote"
+alias torls="transmission-remote -l"
+alias torad="transmission-remote --add"
+alias vpnup="nmcli con up vpn99"
+alias vpndown="nmcli con down vpn99"
+
+#Functions
+
+function dotfiles__mv {
+  test -n "$1" || { echo "No file or directory name" >&2; return 1; }
+  expandedArg="${1/#\~/"$HOME"}"
+  if ! { [ -f "$expandedArg" ] || [ -d "$expandedArg" ]; }; then
+    echo "No such file or directory" >&2;
+    return 1;
+  fi
+  test -h "$1" && { echo "Symlink already created" >&2; return 1; }
+
+  pushd "$HOME" >/dev/null
+  src=$(realpath --relative-to="$HOME" "$expandedArg")
+  dirName=$(dirname "$src")
+  baseName=$(basename "$src")
+
+  if [ "$dirName" = "." ]; then
+    dstDirName="$HOME/dotfiles"
+  else
+    dstDirName="$HOME/dotfiles/$dirName"
+  fi
+
+  mkdir -p "$dstDirName"
+  mv "$src" "$dstDirName" && ln -s -T "$dstDirName/$baseName" "$src"
+  popd >/dev/null
+}
+complete -fd dotfiles__mv
+
+#List package executables
+function dpkg__lsexe {
+  test -n "$1" || { echo "No package name" >&2; return 1; }
+  dpkg -L $1 | while read filePath; do test -x "$filePath" -a -f "$filePath" && echo "$filePath"; done
+}
+
+#Sort dependencies in package.json
+function yarn__sortdeps {
+  jq '.dependencies=(.dependencies | to_entries | sort | from_entries)' package.json | sponge package.json
+}
+
+#Check if string may be used as alias
+function apt__search {
+  test -n "$1" || { echo "No name to search" >&2; return 1; }
+  apt search -n "\b$1\b"
+}
+
+#List available font names
+function font__ls {
+  listCmd='fc-list'
+  if [ -n "$1" ]; then
+    listCmd="$listCmd | grep -i $1"
+  fi
+  eval "$listCmd" | sed -E 's/[^:]+://' | sort
+}
+
+#Host specific stuff
+[ -f ~/.bashrc_host-specific ] && source ~/.bashrc_host-specific
