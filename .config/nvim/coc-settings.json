@@ -1,5 +1,6 @@
 {
   "suggest.autoTrigger": "none",
   "explorer.icon.enableNerdfont": true,
-  "explorer.position": "left"
+  "explorer.position": "left",
+  "explorer.buffer.tabOnly": true
 }
