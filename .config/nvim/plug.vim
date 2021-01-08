@@ -11,8 +11,11 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
 
 call plug#begin(stdpath("data").'/site/plugged')
 
-  """"""COC
+  """"""IDE
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'tpope/vim-fugitive'
+  Plug 'airblade/vim-gitgutter'
+  Plug '~/.fzf'
 
   """"""UI
   "Plug 'preservim/nerdtree'
@@ -22,7 +25,6 @@ call plug#begin(stdpath("data").'/site/plugged')
 
   "Plug 'ryanoasis/vim-devicons'
   Plug 'google/vim-searchindex'
-  Plug 'junegunn/fzf'
 
   "Plug 'vim-airline/vim-airline'
   "Plug 'vim-airline/vim-airline-themes'
@@ -34,6 +36,7 @@ call plug#begin(stdpath("data").'/site/plugged')
   """"""Editing
   "Plug 'chaoren/vim-wordmotion'
   Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-endwise'
 
   """"""Langs
   "Plug 'pangloss/vim-javascript'

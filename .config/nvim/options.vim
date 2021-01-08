@@ -7,7 +7,7 @@ set mouse=a
 
 set virtualedit=block
 
-set clipboard+=unnamedplus
+"set clipboard+=unnamedplus
 
 set expandtab tabstop=2 softtabstop=2 shiftwidth=2 nosmarttab
 
@@ -25,6 +25,7 @@ set tgc
 
 set foldmethod=indent
 "set foldnestmax=10
+set foldminlines=10
 set nofoldenable
 
 "set wildmode=longest,list,full

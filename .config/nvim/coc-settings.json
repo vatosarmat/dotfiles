@@ -2,5 +2,8 @@
   "suggest.autoTrigger": "none",
   "explorer.icon.enableNerdfont": true,
   "explorer.position": "left",
-  "explorer.buffer.tabOnly": true
+  "explorer.file.showHiddenFiles": true,
+  "signature.enable": false,
+  "coc.preferences.formatOnType": true,
+  "coc.preferences.formatOnSaveFiletypes": ["js", "json"]
 }

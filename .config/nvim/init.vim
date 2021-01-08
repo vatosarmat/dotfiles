@@ -4,10 +4,9 @@ call setenv("STD_PATH_CONFIG", stdpath('config'))
 
 source $STD_PATH_CONFIG/options.vim
 source $STD_PATH_CONFIG/plug.vim
-source $STD_PATH_CONFIG/func_cmd.vim
+source $STD_PATH_CONFIG/commands.vim
 source $STD_PATH_CONFIG/mappings.vim
-source $STD_PATH_CONFIG/abbrevs.vim
-source $STD_PATH_CONFIG/coc.vim
+source $STD_PATH_CONFIG/tab-line.vim
 
 """""""""""Highlight""""""""""""""""""""""""""""""""""""""""
 
@@ -39,5 +38,5 @@ set cursorline cursorcolumn
 
 autocmd BufWritePre * %s/\s\+$//e
 
-source $STD_PATH_CONFIG/playground.vim
+"source $STD_PATH_CONFIG/playground.vim
 
