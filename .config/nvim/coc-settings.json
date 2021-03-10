@@ -2,8 +2,38 @@
   "suggest.autoTrigger": "none",
   "explorer.icon.enableNerdfont": true,
   "explorer.position": "left",
-  "explorer.file.showHiddenFiles": true,
+  "explorer.file.hiddenRules": {
+    "extensions": ["o", "a", "obj", "pyc"],
+    "filenames": [".git"],
+    "patternMatches": []
+  },
+  "explorer.file.autoReveal": true,
   "signature.enable": false,
   "coc.preferences.formatOnType": true,
-  "coc.preferences.formatOnSaveFiletypes": ["js", "json"]
+  "coc.preferences.formatOnSaveFiletypes": ["*"],
+  "list.previewSplitRight": true,
+  "clangd.semanticHighlighting": true,
+  "languageserver": {
+    "haskell": {
+      "enable": true,
+      "command": "haskell-language-server-wrapper",
+      "args": ["--lsp"],
+      "rootPatterns": [
+        "*.cabal",
+        "stack.yaml",
+        "cabal.project",
+        "package.yaml",
+        "hie.yaml"
+      ],
+      "filetypes": ["haskell", "lhaskell"],
+      "initializationOptions": {
+        "languageServerHaskell": {
+          "hlintOn": true,
+          "maxNumberOfProblems": 10,
+          "completionSnippetsOn": true,
+          "formattingProvider": "ormolu"
+        }
+      }
+    }
+  }
 }

@@ -7,12 +7,17 @@ HISTFILESIZE=
 HISTCONTROL=ignoreboth:erasedups
 HISTIGNORE="ls *":"cd *":"man *":"help *"
 HISTTIMEFORMAT="%F %T:%Z - "
+#PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+PS1='\[\033[01;34m\]\w\[\033[00m\]\$ '
 export EDITOR=nvim
 export PAGER=less
 export LESS='-s -M -R -I -j10 +Gg'
 export MANPAGER="$PAGER"
 export SYSTEMD_LESS="-M -R"
+export BAT_PAGER=""
 export FZF_DEFAULT_COMMAND="command find -L . -mindepth 1 \( -path '*/\.git' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \) -prune -o -type f -print -o -type l -print 2> /dev/null | cut -b3-"
+export FZF_DEFAULT_OPTS="--reverse --height 55% --extended --bind alt-f:half-page-down,alt-b:half-page-up"
+export RIPGREP_CONFIG_PATH="$HOME/dotfiles/.ripgreprc"
 
 #export LESS_TERMCAP_mb=$'\E[1;31m'     # begin bold
 #export LESS_TERMCAP_md=$'\E[1;36m'     # begin blink
@@ -58,8 +63,35 @@ alias torad="transmission-remote --add"
 alias vpnup="nmcli con up vpn99"
 alias vpndown="nmcli con down vpn99"
 
+alias gisi="git status --ignored"
+alias lbat='BAT_PAGER="less ${LESS}" bat'
+alias makel='make PREFIX="$HOME/.local"'
+alias ghw="gh repo view --web"
+alias fodiff="vim -d  <(fc-match JetBrainsMono --format '%{charset}' | tr ' ' '\n') <(fc-match 'JetBrainsMono NerdFont' --format '%{charset}' | tr ' ' '\n')"
+
+alias ghus="gh__search"
+alias ghuc="gh__cache"
+
+
+#escapes
+
+t_bold=$(tput bold)
+t_norm=$(tput sgr0)
+
 #Functions
 
+function __faketty {
+    script -qfc "$(printf "%q " "$@")" /dev/null
+}
+
+#compare binary files
+function bindiff {
+  test -n "$1" || { echo "No input files" >&2; return 1; }
+  test -n "$2" || { echo "No second input file" >&2; return 1; }
+  diff -u --color=always <(xxd "$1") <(xxd "$2")
+}
+
+#add filed or directory to dotfiles
 function dotfiles__mv {
   test -n "$1" || { echo "No file or directory name" >&2; return 1; }
   expandedArg="$(realpath "${1}")"
@@ -103,14 +135,59 @@ function apt__search {
   apt search -n "\b$1\b"
 }
 
-#List available font names
-function font__ls {
-  listCmd='fc-list'
-  if [ -n "$1" ]; then
-    listCmd="$listCmd | grep -i $1"
+#rg
+function __rg__pick_preview {
+  #$1 is FILE:LINE  CONTENT
+  #$FZF_PREVIEW_LINES
+  IFS=: read -r file line rest <<< "$1"
+  let start=$line-$FZF_PREVIEW_LINES/4
+  test $start -ge 1 || start="1"
+  #let end=$line+10
+  bat "$file" -f -H $line -r $start: --terminal-width $FZF_PREVIEW_COLUMNS
+}
+export -f __rg__pick_preview
+
+function rg__pick {
+  test -n "$1" || { echo "No input string" >&2; return 1; }
+
+  fzfSelected=$(rg --color always -in --no-heading "$1" | fzf --ansi --preview "__rg__pick_preview {}")
+  fzfResult="$?"
+
+  if [ "$fzfResult" = "0" -a -n "$fzfSelected" ]; then
+    subl "${fzfSelected%:*}"
   fi
-  eval "$listCmd" | sed -E 's/[^:]+://' | sort
 }
 
-#Host specific stuff
-[ -f ~/.bashrc_host-specific ] && source ~/.bashrc_host-specific
+#font
+function font__ls_chars {
+  font_pattern=${1}
+  test -n "$font_pattern" || { echo "font_pattern must be first argument" >&2; return 1; }
+
+  rows_count=${2:-1}
+  (( rows_count >= 1 && rows_count <= 10 )) || { echo "rows_count must be [1;10]" >&2; return 1; }
+
+  fc-match --format='%{family}\n' "$font_pattern"
+  for range in $(fc-match --format='%{charset}\n' "$font_pattern"); do
+    for n in $(seq "0x${range%-*}" "0x${range#*-}"); do
+      printf "%x\n" "$n"
+    done
+  done | while read -r n_hex; do
+    count=$((count + 1))
+    char="\U$n_hex"
+    printf "%5s %b" "$n_hex" "$char"
+    if [ $((count % rows_count)) = 0 ]; then
+      printf "\n"
+    else
+      printf "%4s" " "
+    fi
+  done
+  printf "\n"
+}
+
+BASH_LIBS="gh/lib.bash tpa/lib.bash"
+
+for f in $BASH_LIBS; do
+  source "$HOME/dotfiles/bash/$f"
+done
+
+[ -f ~/dotfiles_priv/bashrc.bash ] && source ~/dotfiles_priv/bashrc.bash

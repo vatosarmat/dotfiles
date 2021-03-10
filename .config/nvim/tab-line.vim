@@ -1,19 +1,43 @@
-function! MyTabLabel(n) abort
-  let buflist = tabpagebuflist(a:n)
+function! s:InferTabCurrentDir() abort
+  let buflist = tabpagebuflist()
+  let readableFiles = []
+
+  "Collect files opened in the tab
   for bid in buflist
     let btp = getbufvar(bid,'&buftype')
     if btp == ""
       let bname = bufname(bid)
       if filereadable(bname)
-        let gitDir = FugitiveExtractGitDir(bname)
-        if gitDir != ""
-          return fnamemodify(gitDir, ':h:t')
-        endif
+        call add(readableFiles , bname)
       endif
     endif
   endfor
-  let winnr = tabpagewinnr(a:n)
-  return bufname(buflist[winnr - 1])
+
+  "If no files opened, use present cwd
+  if len(readableFiles) == 0
+    return getcwd()
+  endif
+
+  "If any file is git-controlled, use its git root dir
+  for f in readableFiles
+    let gitDir = FugitiveExtractGitDir(bname)
+    if gitDir != ""
+      return fnamemodify(gitDir, ':h')
+    endif
+  endfor
+
+  "Otherwise, if any buffer is a file, use its parent dir
+  return fnamemodify(readableFiles[0], ':h')
+endfunction
+
+function! s:OnTabNewEntered() abort
+  execute "tcd" s:InferTabCurrentDir()
+endfunction
+
+autocmd TabNewEntered * call s:OnTabNewEntered()
+
+function! MyTabLabel(n) abort
+  return fnamemodify(getcwd(-1, a:n), ':t')
 endfunction
 
 function! MyTabLine() abort

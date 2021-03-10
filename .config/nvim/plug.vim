@@ -6,8 +6,8 @@ if empty(glob(plugPath))
 endif
 
 autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-  \| PlugInstall --sync | source $MYVIMRC
-\| endif
+ \| PlugInstall --sync | source $MYVIMRC
+ \| endif
 
 call plug#begin(stdpath("data").'/site/plugged')
 
@@ -16,6 +16,7 @@ call plug#begin(stdpath("data").'/site/plugged')
   Plug 'tpope/vim-fugitive'
   Plug 'airblade/vim-gitgutter'
   Plug '~/.fzf'
+  Plug 'junegunn/fzf.vim'
 
   """"""UI
   "Plug 'preservim/nerdtree'
@@ -37,11 +38,18 @@ call plug#begin(stdpath("data").'/site/plugged')
   "Plug 'chaoren/vim-wordmotion'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-endwise'
+  Plug 'tpope/vim-abolish'
+  Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-repeat'
+  Plug 'lambdalisue/suda.vim'
+  Plug 'dhruvasagar/vim-table-mode'
 
   """"""Langs
   "Plug 'pangloss/vim-javascript'
   Plug 'yuezk/vim-js'
   Plug 'maxmellon/vim-jsx-pretty'
+  Plug 'jackguo380/vim-lsp-cxx-highlight'
+  Plug 'neovimhaskell/haskell-vim'
 
   """"""Color themes
   Plug 'tomasiser/vim-code-dark'
@@ -54,3 +62,16 @@ call plug#begin(stdpath("data").'/site/plugged')
   Plug 'srcery-colors/srcery-vim'
 
 call plug#end()
+
+let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
+  \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd']
+
+" let g:haskell_indent_disable = 1
+
+let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
+let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
+let g:haskell_enable_arrowsyntax = 1      " to enable highlighting of `proc`
+let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
+let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
+let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
+let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
