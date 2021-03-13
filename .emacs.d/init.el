@@ -15,7 +15,7 @@
 (setq use-package-always-ensure t)
 
 ;;Modules
-(dolist (file '("options" "packages" "mappings"))
+(dolist (file '("utils" "options" "packages" "mappings"))
   (load (expand-file-name (concat "modules/" file ".el") user-emacs-directory)))
 
 ;;Below is stuff not suitable for separate file

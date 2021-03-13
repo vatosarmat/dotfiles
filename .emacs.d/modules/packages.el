@@ -119,7 +119,7 @@
 (global-set-key (kbd "C-c C-d") #'helpful-at-point)
 
 
-;for user own prefixes out of the normal C-c C-x
+;for user own prefixes out of the normal C-c and C-x
 (use-package general
   :config
   (general-create-definer dotfiles/leader-keys
@@ -131,8 +131,10 @@
     "t"  '(:ignore t :which-key "toggles")
     "tt" '(counsel-load-theme :which-key "choose theme")
     ;;TODO: Maybe should be better way to do this, maybe without 2 different lambda-commands
-    "te" '((lambda () (interactive) (setq org-hide-emphasis-markers t)(org-mode)) :which-key "enable")
-    "td" '((lambda () (interactive) (setq org-hide-emphasis-markers nil)(org-mode)) :which-key "disable")
+    "tm" '((lambda () (interactive)
+             (dotfiles/toggle-var 'org-hide-emphasis-markers)
+             (org-mode)
+           ) :which-key "enable")
   )
 )
 
