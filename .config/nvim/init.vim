@@ -8,6 +8,7 @@ source $STD_PATH_CONFIG/options.vim
 source $STD_PATH_CONFIG/plug.vim
 source $STD_PATH_CONFIG/commands.vim
 source $STD_PATH_CONFIG/mappings.vim
+source $STD_PATH_CONFIG/lang-specific.vim
 source $STD_PATH_CONFIG/tab-line.vim
 
 "Settings that should probably be set at the end

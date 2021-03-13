@@ -78,24 +78,6 @@ inoremap <C-y> <C-o>d$
 "Undo
 inoremap <C-_> <C-o>u
 
- "vim-surround
-" xmap s <Plug>VSurround
-augroup CustomSurround
-  autocmd!
-  autocmd FileType sh call s:SurroundSh()
-  autocmd FileType haskell call s:SurroundHaskellLisp()
-  autocmd FileType lisp call s:SurroundHaskellLisp()
-augroup END
-
-function! s:SurroundSh() abort
-  let b:surround_{char2nr("p")} = "$(\r)"
-  let b:surround_{char2nr("s")} = "${\r}"
-endfunction
-
-function! s:SurroundHaskellLisp() abort
-  xmap <buffer> sf s<C-f>
-endfunction
-
 "COC
 function! s:MyCocOutline()
   CocList --normal outline
@@ -140,7 +122,7 @@ endfunction
 
 "COC actions
 "nnoremap doesn't work with <Plug>!
-nmap <silent> <leader>cd <Plug>(coc-definition)
+nnoremap <silent> gd <Plug>(coc-definition)
 nmap <silent> <leader>ct <Plug>(coc-type-definition)
 nmap <silent> <leader>ci <Plug>(coc-implementation)
 nmap <silent> <leader>cr <Plug>(coc-references)

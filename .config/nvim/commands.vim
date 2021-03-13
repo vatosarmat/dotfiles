@@ -1,10 +1,12 @@
+"abbrevs
 cnoreabbrev hq h quickref
 cnoreabbrev hg h fugitive
+cnoreabbrev hf h fzf-vim
 cnoreabbrev hc h coc-nvim.txt
+cnoreabbrev he h eval.txt
 cnoreabbrev ht h \| Helptags
 noreabbrev hit tabe \| so $VIMRUNTIME/syntax/hitest.vim
 
-cnoreabbrev reh !hlint --refactor --refactor-options="--inplace" '%:p'
 cnoreabbrev cr CocRestart
 
 
