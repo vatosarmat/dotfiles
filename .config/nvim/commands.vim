@@ -5,16 +5,9 @@ cnoreabbrev hf h fzf-vim
 cnoreabbrev hc h coc-nvim.txt
 cnoreabbrev he h eval.txt
 cnoreabbrev ht h \| Helptags
-noreabbrev hit tabe \| so $VIMRUNTIME/syntax/hitest.vim
 
+" noreabbrev hit tabe \| so $VIMRUNTIME/syntax/hitest.vim
 cnoreabbrev cr CocRestart
-
-
-augroup vimrc_help
-  autocmd!
-  autocmd BufEnter *.txt if &buftype == 'help' | wincmd L | endif
-augroup END
-
 cnoreabbrev svrc source $MYVIMRC
 cnoreabbrev mm messages
 

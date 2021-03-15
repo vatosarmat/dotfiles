@@ -5,9 +5,12 @@ if empty(glob(plugPath))
   exec '!curl -fLo '.plugPath.' --create-dirs '.plugUrl
 endif
 
-autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
- \| PlugInstall --sync | source $MYVIMRC
- \| endif
+augroup Plug
+  autocmd!
+  autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+   \| PlugInstall --sync | source $MYVIMRC
+   \| endif
+augroup END
 
 call plug#begin(stdpath("data").'/site/plugged')
 

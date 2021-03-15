@@ -34,7 +34,10 @@ function! s:OnTabNewEntered() abort
   execute "tcd" s:InferTabCurrentDir()
 endfunction
 
-autocmd TabNewEntered * call s:OnTabNewEntered()
+augroup TabLine
+  autocmd!
+  autocmd TabNewEntered * call s:OnTabNewEntered()
+augroup END
 
 function! MyTabLabel(n) abort
   return fnamemodify(getcwd(-1, a:n), ':t')
