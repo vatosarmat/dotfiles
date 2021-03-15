@@ -23,11 +23,31 @@ xmap <C-_> <Plug>Commentary
 " nnoremap <M-?> ?\C
 
 "Buffer
+nnoremap <silent><M-q> :bw<cr>
+nnoremap <silent><M-s> :call <sid>DotfilesShowUnsavedBuffers()<cr>
 " nnoremap <silent><f1> :ls<CR>:b<Space>
 " nnoremap <silent><f2> :ls!<CR>:b<Space>
 " nnoremap <silent><f3> :ls!<CR>:bw<Space>
 " nnoremap <silent><M-p> :bp<cr>
 " nnoremap <silent><M-n> :bn<cr>
+
+function! s:DotfilesShowUnsavedBuffers() abort
+  let unsavedBuffers = []
+  for buf in getbufinfo({'bufmodified':1})
+    if !empty(buf['name']) && empty(getbufvar(buf['bufnr'], '&buftype'))
+      call add(unsavedBuffers, [buf['bufnr'], buf['name']])
+    endif
+  endfor
+  if len(unsavedBuffers) > 0
+    let leftPad = '    '
+    echom 'Unsaved buffers:'
+    for [nr,name] in unsavedBuffers
+      echom leftPad.nr.' '.name
+    endfor
+  else
+    echom 'All buffers saved'
+  endif
+endfunction
 
 "Window
 nnoremap <Left> <C-w>h
@@ -159,22 +179,12 @@ inoremap <silent> <TAB> <C-r>=<SID>OnTab()<CR>
 "COC explorer
 nnoremap <silent> <C-n> :execute "CocCommand explorer" expand("%:p:h")<CR>
 
-
 "FZF
 nnoremap <silent><C-p> :Files<cr>
 let g:fzf_action = { 'ctrl-l': 'vsplit', 'ctrl-t': 'tab split', 'ctrl-x': 'split' }
-
 
 "Diffs
 nnoremap <silent><M-f> :DiffOrig<cr>
 nnoremap <silent><M-d> :Gvdiffsplit! HEAD<cr>
 nnoremap [v [c
 nnoremap ]v ]c
-" augroup CustomFugitive
-"   autocmd BufWinEnter */.git/index let @n="j\<cr>\<M-d>gg\<down>"
-"   autocmd BufWinEnter */.git/index let @p="k\<cr>\<M-d>gg\<down>"
-"   autocmd BufWinEnter */.git/index let @s="s\<cr>\<M-d>gg\<down>"
-"   autocmd BufWinEnter */.git/index nnoremap <buffer><M-n> @n
-"   autocmd BufWinEnter */.git/index nnoremap <buffer><M-p> @p
-"   autocmd BufWinEnter */.git/index nnoremap <buffer><M-s> @s
-" augroup END

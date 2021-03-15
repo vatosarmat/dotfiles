@@ -40,3 +40,5 @@ let mapleader = " "
 nnoremap <Space> <Nop>
 
 let g:is_bash = 1
+
+set diffopt+=vertical
