@@ -23,6 +23,12 @@ xnoremap U :s///gc<left><left><left>
 " nnoremap <silent>` :<C-u>marks<CR>:normal! '
 " nnoremap <M-/> /\C
 " nnoremap <M-?> ?\C
+let g:wordmotion_nomap = 1
+nmap <M-w>          <Plug>WordMotion_w
+nmap <M-b>          <Plug>WordMotion_b
+nmap <M-e>          <Plug>WordMotion_e
+omap a<M-w>         <Plug>WordMotion_aw
+omap i<M-w>         <Plug>WordMotion_iw
 
 map *  <Plug>(asterisk-z*)
 map #  <Plug>(asterisk-z#)

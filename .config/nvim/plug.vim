@@ -48,6 +48,7 @@ call plug#begin(stdpath("data").'/site/plugged')
   Plug 'lambdalisue/suda.vim'
   Plug 'dhruvasagar/vim-table-mode'
   Plug 'haya14busa/vim-asterisk'
+  Plug 'chaoren/vim-wordmotion'
 
   """"""Langs
   "Plug 'pangloss/vim-javascript'
