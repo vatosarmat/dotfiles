@@ -14,6 +14,7 @@ cnoreabbrev mm messages
 "commands
 command! -nargs=1 -complete=command Redir silent call <sid>Redir(<f-args>)
 command! DiffOrig silent call<sid>DiffOrig()
+command! -bang -nargs=* Rga call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".<q-args>, 1, <bang>0)
 
 "functions
 function! s:Redir(cmd) abort

@@ -28,7 +28,8 @@ call plug#begin(stdpath("data").'/site/plugged')
   "noremap <C-n> :NERDTreeToggle<CR>
 
   "Plug 'ryanoasis/vim-devicons'
-  Plug 'google/vim-searchindex'
+  " Plug 'google/vim-searchindex'
+  " Plug 'osyo-manga/vim-anzu'
 
   "Plug 'vim-airline/vim-airline'
   "Plug 'vim-airline/vim-airline-themes'
@@ -41,11 +42,12 @@ call plug#begin(stdpath("data").'/site/plugged')
   "Plug 'chaoren/vim-wordmotion'
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-endwise'
-  Plug 'tpope/vim-abolish'
+  " Plug 'tpope/vim-abolish'
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-repeat'
   Plug 'lambdalisue/suda.vim'
   Plug 'dhruvasagar/vim-table-mode'
+  Plug 'haya14busa/vim-asterisk'
 
   """"""Langs
   "Plug 'pangloss/vim-javascript'

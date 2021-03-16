@@ -18,9 +18,16 @@ nmap <C-_> <Plug>CommentaryLine
 xmap <C-_> <Plug>Commentary
 
 "Navigation
+nnoremap U :%s///gc<left><left><left>
+xnoremap U :s///gc<left><left><left>
 " nnoremap <silent>` :<C-u>marks<CR>:normal! '
 " nnoremap <M-/> /\C
 " nnoremap <M-?> ?\C
+
+map *  <Plug>(asterisk-z*)
+map #  <Plug>(asterisk-z#)
+map g* <Plug>(asterisk-gz*)
+map g# <Plug>(asterisk-gz#)
 
 "Buffer
 nnoremap <silent><M-q> :bw<cr>
