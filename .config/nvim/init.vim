@@ -4,6 +4,7 @@ call setenv("STD_PATH_CONFIG", stdpath('config'))
 
 source $STD_PATH_CONFIG/options.vim
 source $STD_PATH_CONFIG/plug.vim
+source $STD_PATH_CONFIG/utils.vim
 source $STD_PATH_CONFIG/commands.vim
 source $STD_PATH_CONFIG/mappings.vim
 source $STD_PATH_CONFIG/ft-specific.vim

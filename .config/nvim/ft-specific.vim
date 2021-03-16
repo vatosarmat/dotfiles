@@ -31,7 +31,7 @@ endfunction
 
 function! s:TypeFugitive() abort
   nnoremap <silent><buffer><M-d> :call <sid>ToggleWinSize()<cr>
-  nnoremap <silent><buffer>cc :vert Git commit<cr>
+  nnoremap <silent><buffer>cc  :vert Git commit \| call DotfilesShowUnsavedBuffers()<cr>
 endfunction
 
 function! s:TypeSh() abort
