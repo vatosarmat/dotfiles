@@ -15,7 +15,7 @@ export LESS='-s -M -R -I -j10 +Gg'
 export MANPAGER="$PAGER"
 export SYSTEMD_LESS="-M -R"
 export BAT_PAGER=""
-export FZF_DEFAULT_COMMAND="command find -L . -mindepth 1 \( -path '*/\.git' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \) -prune -o -type f -print -o -type l -print 2> /dev/null | cut -b3-"
+export FZF_DEFAULT_COMMAND="fd --type file --follow --hidden --exclude .git"
 export FZF_DEFAULT_OPTS="--reverse --height 55% --extended --bind alt-f:half-page-down,alt-b:half-page-up"
 export RIPGREP_CONFIG_PATH="$HOME/dotfiles/.ripgreprc"
 
