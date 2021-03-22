@@ -67,7 +67,11 @@ alias gisi="git status --ignored"
 alias lbat='BAT_PAGER="less ${LESS}" bat'
 alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
+
+#Not actually aliasses but usefull commands to remember
 alias fodiff="vim -d  <(fc-match JetBrainsMono --format '%{charset}' | tr ' ' '\n') <(fc-match 'JetBrainsMono NerdFont' --format '%{charset}' | tr ' ' '\n')"
+alias notif="while inotifywait -q -q -e modify pg.lua ; do lua pg.lua; done
+"
 
 alias ghus="gh__search"
 alias ghuc="gh__cache"
