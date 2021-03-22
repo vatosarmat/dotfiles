@@ -1,0 +1,5 @@
+[
+ "return"
+ "await"
+ "export"
+] @include
