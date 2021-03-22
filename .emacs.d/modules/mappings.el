@@ -16,6 +16,7 @@
 ; (global-set-key (kbd "C-y") 'kill-line)
 (global-unset-key (kbd "C-x C-c"))
 (global-set-key (kbd "C-v") 'yank)
+(global-set-key (kbd "C-s") 'save-buffer)
 ; (global-set-key (kbd "C-u") '(lambda () (interactive) (kill-line 0)) )
 (if window-system (global-set-key [escape] 'keyboard-escape-quit))
 ;Replacehg
