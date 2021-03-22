@@ -29,9 +29,9 @@ set noincsearch
 set tgc
 "set noshowmode
 
-set foldmethod=indent
-"set foldnestmax=10
-set foldminlines=10
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+set foldtext=FoldText()
 set nofoldenable
 
 "set wildmode=longest,list,full
@@ -41,4 +41,52 @@ nnoremap <Space> <Nop>
 
 let g:is_bash = 1
 
-set diffopt+=vertical
+set diffopt+=vertical,context:10000
+
+function! FoldText() abort
+  let firstLine = getline(v:foldstart)
+  let spaces = firstLine[0:match(firstLine, '\S')-1]
+  let text = spaces.'...'.string(v:foldend-v:foldstart+1).' '.trim(getline(v:foldend))
+  let postSpaces = repeat(' ',&columns - len(text))
+  return text.postSpaces
+endfunction
+
+" function! FoldJoin() abort
+"   let
+"   let text = string(v:foldend - v:foldstart).' LINES:'
+"   for i in range(v:foldstart, v:foldend)
+"     let text .= ' '.trim(getline(i))
+
+"     if len(text) > &columns
+"       break
+"     endif
+"   endfor
+"   return text
+" endfunction
+
+" function! s:GetSpaces(foldLevel)
+"   if &expandtab == 1
+"     " Indenting with spaces
+"     let str = repeat(" ", a:foldLevel / (&shiftwidth + 1) - 1)
+"     return str
+"   elseif &expandtab == 0
+"     " Indenting with tabs
+"     return repeat(" ", indent(v:foldstart) - (indent(v:foldstart) / &shiftwidth))
+"   endif
+" endfunction
+
+" function! MyFoldText()
+"   let startLineText = getline(v:foldstart)
+"   let endLineText = trim(getline(v:foldend))
+"   let indentation = s:GetSpaces(foldlevel("."))
+"   let spaces = repeat(" ", 200)
+
+"   let str = indentation . startLineText . "..." . endLineText . spaces
+
+"   return str
+" endfunction
+
+" function! MyFoldTextSimple()
+"   return getline(v:foldstart)
+" endfunction
+
