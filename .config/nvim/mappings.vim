@@ -27,6 +27,9 @@ let g:wordmotion_nomap = 1
 nmap <M-w>          <Plug>WordMotion_w
 nmap <M-b>          <Plug>WordMotion_b
 nmap <M-e>          <Plug>WordMotion_e
+omap <M-w>          <Plug>WordMotion_w
+omap <M-b>          <Plug>WordMotion_b
+omap <M-e>          <Plug>WordMotion_e
 omap a<M-w>         <Plug>WordMotion_aw
 omap i<M-w>         <Plug>WordMotion_iw
 
@@ -137,7 +140,7 @@ endfunction
 
 "COC actions
 "nnoremap doesn't work with <Plug>!
-nnoremap <silent> gd <Plug>(coc-definition)
+nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> <leader>ct <Plug>(coc-type-definition)
 nmap <silent> <leader>ci <Plug>(coc-implementation)
 nmap <silent> <leader>cr <Plug>(coc-references)
