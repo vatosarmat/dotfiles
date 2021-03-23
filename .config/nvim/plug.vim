@@ -80,7 +80,7 @@ call plug#end()
 
 let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
   \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
-  \'coc-tsserver']
+  \'coc-tsserver', 'coc-lua']
 
 " let g:haskell_indent_disable = 1
 

@@ -34,6 +34,7 @@ set foldexpr=nvim_treesitter#foldexpr()
 set foldtext=FoldText()
 set nofoldenable
 
+set statusline=%<%f\ %y\ [%L\ lines]%=%m%r\ %-14.(%l,%c%V%)\ %P
 "set wildmode=longest,list,full
 
 let mapleader = " "

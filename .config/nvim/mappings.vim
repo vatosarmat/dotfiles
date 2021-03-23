@@ -1,5 +1,4 @@
 "Editing
-nnoremap <silent> <M-u> :noh<CR>
 nnoremap <silent> <M-y> :let @+=@"<cr>
 " cnoremap <M-p> <C-r>"
 " inoremap <M-p> <C-r>"
@@ -18,6 +17,8 @@ nmap <C-_> <Plug>CommentaryLine
 xmap <C-_> <Plug>Commentary
 
 "Navigation
+nnoremap <silent> <M-u> :noh<CR>
+nnoremap <silent> <M-/> :set cul! cuc!<CR>
 nnoremap U :%s///gc<left><left><left>
 xnoremap U :s///gc<left><left><left>
 " nnoremap <silent>` :<C-u>marks<CR>:normal! '
