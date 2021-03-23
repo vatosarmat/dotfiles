@@ -97,12 +97,6 @@ inoremap <C-y> <C-o>d$
 inoremap <C-_> <C-o>u
 
 "COC
-function! s:MyCocOutline()
-  CocList --normal outline
-  "sleep 1m
-  "wincmd L
-endfunction
-
 function! s:IsSpaceBefore() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
@@ -152,7 +146,7 @@ xmap ic <Plug>(coc-classobj-i)
 omap ic <Plug>(coc-classobj-i)
 xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
-nnoremap <silent><leader>co :call <sid>MyCocOutline()<cr>
+nnoremap <silent><leader>co :CocList --normal --no-quit outline<cr>
 nnoremap <silent><leader>cld :CocList diagnostics<cr>
 nnoremap <silent> K :call <sid>HoverOrMan()<CR>
 nnoremap <silent><leader> K :normal! K <CR>

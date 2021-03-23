@@ -7,6 +7,7 @@ augroup FtSpecific
   autocmd FileType haskell call s:TypeHaskell()
   autocmd FileType lisp call s:TypeLisp()
   autocmd FileType fugitive call s:TypeFugitive()
+  " autocmd FileType list call s:TypeList()
 
   autocmd BufEnter *.txt call s:EnterTxt()
   autocmd BufEnter fugitive:///* call s:EnterFugitive()
@@ -27,6 +28,11 @@ endfunction
 
 function! s:EnterFugitive() abort
   set bufhidden=wipe
+endfunction
+
+"ft
+function! s:TypeList() abort
+  call timer_start(100, funcref("<sid>ListOutline"))
 endfunction
 
 function! s:TypeFugitive() abort
@@ -58,4 +64,9 @@ function! s:ToggleWinSize() abort
     execute "resize" string(&lines * 0.5)
     let b:dotfiles_win_small = 0
   endif
+endfunction
+
+function! s:ListOutline(timer) abort
+  execute bufwinnr("list:///outline") "wincmd L"
+  mod
 endfunction
