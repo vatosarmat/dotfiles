@@ -179,5 +179,5 @@ let g:fzf_action = { 'ctrl-l': 'vsplit', 'ctrl-t': 'tab split', 'ctrl-x': 'split
 "Diffs
 nnoremap <silent><M-f> :DiffOrig<cr>
 nnoremap <silent><M-d> :Gvdiffsplit! HEAD<cr>
-nnoremap [v [c
-nnoremap ]v ]c
+nnoremap [v [czz
+nnoremap ]v ]czz

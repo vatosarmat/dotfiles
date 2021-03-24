@@ -21,9 +21,25 @@ local colors = {
 }
 local condition = require('galaxyline.condition')
 local gls = gl.section
-gl.short_line_list = {'NvimTree', 'vista', 'dbui', 'packer'}
+gl.short_line_list = {'coc-explorer', 'NvimTree', 'vista', 'dbui', 'packer'}
 
-gls.left[1] = {
+function addLeft(item)
+  table.insert(gls.left, item)
+end
+
+function addRight(item)
+  table.insert(gls.right, item)
+end
+
+function addShortLeft(item)
+  table.insert(gls.short_line_left, item)
+end
+
+function addShortRight(item)
+  table.insert(gls.short_line_right, item)
+end
+
+addLeft({
     ViMode = {
         provider = function()
             -- auto change color according the vim mode
@@ -31,13 +47,13 @@ gls.left[1] = {
                 n = colors.blue,
                 i = colors.green,
                 v = colors.purple,
-                [''] = colors.purple,
+                ['\22'] = colors.purple,
                 V = colors.purple,
                 c = colors.magenta,
                 no = colors.blue,
                 s = colors.orange,
                 S = colors.orange,
-                [''] = colors.orange,
+                ['\19'] = colors.orange,
                 ic = colors.yellow,
                 R = colors.red,
                 Rv = colors.red,
@@ -54,11 +70,11 @@ gls.left[1] = {
         end,
         highlight = {colors.red, colors.bg}
     }
-}
+})
 print(vim.fn.getbufvar(0, 'ts'))
 vim.fn.getbufvar(0, 'ts')
 
-gls.left[2] = {
+addLeft({
     GitIcon = {
         provider = function()
             return ' '
@@ -68,9 +84,9 @@ gls.left[2] = {
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.orange, colors.bg}
     }
-}
+})
 
-gls.left[3] = {
+addLeft({
     GitBranch = {
         provider = 'GitBranch',
         condition = condition.check_git_workspace,
@@ -78,43 +94,43 @@ gls.left[3] = {
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.grey, colors.bg}
     }
-}
+})
 
-gls.left[4] = {
+addLeft({
     DiffAdd = {
         provider = 'DiffAdd',
         condition = condition.hide_in_width,
         icon = '  ',
         highlight = {colors.green, colors.bg}
     }
-}
-gls.left[5] = {
+})
+addLeft({
     DiffModified = {
         provider = 'DiffModified',
         condition = condition.hide_in_width,
         icon = ' 柳',
         highlight = {colors.blue, colors.bg}
     }
-}
-gls.left[6] = {
+})
+addLeft({
     DiffRemove = {
         provider = 'DiffRemove',
         condition = condition.hide_in_width,
         icon = '  ',
         highlight = {colors.red, colors.bg}
     }
-}
+})
 
-gls.right[1] = {
+addRight({
     DiagnosticError = {provider = 'DiagnosticError', icon = '  ', highlight = {colors.error_red, colors.bg}}
-}
-gls.right[2] = {DiagnosticWarn = {provider = 'DiagnosticWarn', icon = '  ', highlight = {colors.orange, colors.bg}}}
+})
+addRight({DiagnosticWarn = {provider = 'DiagnosticWarn', icon = '  ', highlight = {colors.orange, colors.bg}}})
 
-gls.right[3] = {DiagnosticHint = {provider = 'DiagnosticHint', icon = '  ', highlight = {colors.blue, colors.bg}}}
+addRight({DiagnosticHint = {provider = 'DiagnosticHint', icon = '  ', highlight = {colors.blue, colors.bg}}})
 
-gls.right[4] = {DiagnosticInfo = {provider = 'DiagnosticInfo', icon = '  ', highlight = {colors.blue, colors.bg}}}
+addRight({DiagnosticInfo = {provider = 'DiagnosticInfo', icon = '  ', highlight = {colors.blue, colors.bg}}})
 
-gls.right[5] = {
+addRight({
     ShowLspClient = {
         provider = 'GetLspClient',
         condition = function()
@@ -125,27 +141,27 @@ gls.right[5] = {
         icon = ' ',
         highlight = {colors.grey, colors.bg}
     }
-}
+})
 
-gls.right[6] = {
+addRight({
     LineInfo = {
         provider = 'LineColumn',
         separator = '  ',
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.grey, colors.bg}
     }
-}
+})
 
-gls.right[7] = {
+addRight({
     PerCent = {
         provider = 'LinePercent',
         separator = ' ',
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.grey, colors.bg}
     }
-}
+})
 
-gls.right[8] = {
+addRight({
     Tabstop = {
         provider = function()
             return "Spaces: " .. vim.api.nvim_buf_get_option(0, "shiftwidth") .. " "
@@ -155,9 +171,9 @@ gls.right[8] = {
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.grey, colors.bg}
     }
-}
+})
 
-gls.right[9] = {
+addRight({
     BufferType = {
         provider = 'FileTypeName',
         condition = condition.hide_in_width,
@@ -165,9 +181,9 @@ gls.right[9] = {
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.grey, colors.bg}
     }
-}
+})
 
-gls.right[10] = {
+addRight( {
     FileEncode = {
         provider = 'FileEncode',
         condition = condition.hide_in_width,
@@ -175,9 +191,9 @@ gls.right[10] = {
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.grey, colors.bg}
     }
-}
+})
 
-gls.right[11] = {
+addRight( {
     Space = {
         provider = function()
             return ' '
@@ -186,19 +202,19 @@ gls.right[11] = {
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.orange, colors.bg}
     }
-}
+})
 
-gls.short_line_left[1] = {
+addShortLeft({
     BufferType = {
         provider = 'FileTypeName',
         separator = ' ',
         separator_highlight = {'NONE', colors.bg},
         highlight = {colors.grey, colors.bg}
     }
-}
+})
 
-gls.short_line_left[2] = {
+addShortLeft({
     SFileName = {provider = 'SFileName', condition = condition.buffer_not_empty, highlight = {colors.grey, colors.bg}}
-}
+})
 
-gls.short_line_right[1] = {BufferIcon = {provider = 'BufferIcon', highlight = {colors.grey, colors.bg}}}
+addShortRight({BufferIcon = {provider = 'BufferIcon', highlight = {colors.grey, colors.bg}}})
