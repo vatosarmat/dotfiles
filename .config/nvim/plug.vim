@@ -20,6 +20,7 @@ call plug#begin(stdpath("data").'/site/plugged')
   Plug 'airblade/vim-gitgutter'
   Plug '~/.fzf'
   Plug 'junegunn/fzf.vim'
+  Plug 'airblade/vim-rooter'
 
   " Plug 'glepnir/galaxyline.nvim'
   " Plug 'kyazdani42/nvim-web-devicons' " for file icons

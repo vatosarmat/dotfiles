@@ -8,6 +8,7 @@ cnoreabbrev ht h \| Helptags
 
 " noreabbrev hit tabe \| so $VIMRUNTIME/syntax/hitest.vim
 cnoreabbrev cr CocRestart
+cnoreabbrev G G \| execute "resize" string(&lines * 0.27)
 cnoreabbrev svrc source $MYVIMRC
 cnoreabbrev mm messages
 

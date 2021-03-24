@@ -61,7 +61,7 @@ function! StatusLine() abort
         let gitDir = fnamemodify(FugitiveGitDir(), ':h:t')
         let statusLine .= ' [ '.gitDir.'/'.gitHead.']'
       else
-        let statusLine .= '\ Not\ git'
+        let statusLine .= ' Not git'
       endif
       let statusLine .= ' '.coc#status()
     endif
