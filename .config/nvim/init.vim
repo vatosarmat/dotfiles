@@ -13,7 +13,7 @@ source $STD_PATH_CONFIG/tab-line.vim
 source $STD_PATH_CONFIG/playground.vim
 
 luafile $STD_PATH_CONFIG/df-treesitter.lua
-luafile $STD_PATH_CONFIG/df-galaxyline.lua
+" luafile $STD_PATH_CONFIG/df-galaxyline.lua
 
 "Settings that should probably be set at the end
 let g:is_bash = 1
@@ -24,8 +24,8 @@ hi! link CocErrorSign LspDiagnosticsSignError
 hi Pmenu guifg=#e6eeff
 hi Comment gui=NONE cterm=NONE
 hi Special gui=NONE cterm=NONE
-hi CursorColumn guibg=#232323
-hi CursorLine guibg=#232323
+hi CursorColumn guibg=#303030
+hi CursorLine guibg=#303030
 " hi Folded guifg=#555fd6
 
 " set cursorline cursorcolumn

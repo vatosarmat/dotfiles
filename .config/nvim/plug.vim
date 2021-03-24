@@ -21,7 +21,7 @@ call plug#begin(stdpath("data").'/site/plugged')
   Plug '~/.fzf'
   Plug 'junegunn/fzf.vim'
 
-  Plug 'glepnir/galaxyline.nvim'
+  " Plug 'glepnir/galaxyline.nvim'
   " Plug 'kyazdani42/nvim-web-devicons' " for file icons
   " Plug 'kyazdani42/nvim-tree.lua'
 
