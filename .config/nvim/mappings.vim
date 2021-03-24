@@ -56,7 +56,6 @@ nnoremap <Right> <C-w>l
 nnoremap <silent>Q :q<cr>
 nnoremap <silent><C-left> :wincmd h \| q<cr>
 nnoremap <silent><C-right> :wincmd l \| q<cr>
-nnoremap <silent><C-w>gl :wincmd L \| execute "vertical resize" string(&columns * 0.27)<cr>
 "easy resize non-file windows
 nnoremap <expr>< &buftype == "" ? "<" : "\<C-w><"
 nnoremap <expr>> &buftype == "" ? ">" : "\<C-w>>"
@@ -170,7 +169,8 @@ inoremap <silent> <CR> <C-r>=<SID>OnEnter()<CR>
 inoremap <silent> <TAB> <C-r>=<SID>OnTab()<CR>
 
 "COC explorer
-nnoremap <silent> <C-n> :execute "CocCommand explorer" expand("%:p:h")<CR>
+" nnoremap <silent> <C-n> :execute "CocCommand explorer" expand("%:p:h")<CR>
+nnoremap <silent> <C-n> :CocCommand explorer<CR>
 
 "FZF
 nnoremap <silent><C-p> :Files<cr>

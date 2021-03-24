@@ -8,7 +8,7 @@ source $STD_PATH_CONFIG/utils.vim
 source $STD_PATH_CONFIG/commands.vim
 source $STD_PATH_CONFIG/mappings.vim
 source $STD_PATH_CONFIG/ft-specific.vim
-source $STD_PATH_CONFIG/tab-line.vim
+" source $STD_PATH_CONFIG/tab-line.vim
 
 source $STD_PATH_CONFIG/playground.vim
 

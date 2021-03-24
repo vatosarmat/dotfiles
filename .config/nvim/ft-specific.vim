@@ -57,12 +57,12 @@ endfunction
 
 " Impl
 function! s:ToggleWinSize() abort
-  if !exists("b:dotfiles_win_small") || !b:dotfiles_win_small
+  if !exists("b:dfWinSmall") || !b:dfWinSmall
     execute "resize" string(&lines * 0.27)
-    let b:dotfiles_win_small = 1
+    let b:dfWinSmall = 1
   else
     execute "resize" string(&lines * 0.5)
-    let b:dotfiles_win_small = 0
+    let b:dfWinSmall = 0
   endif
 endfunction
 
