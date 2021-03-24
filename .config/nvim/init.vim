@@ -13,6 +13,7 @@ source $STD_PATH_CONFIG/tab-line.vim
 source $STD_PATH_CONFIG/playground.vim
 
 luafile $STD_PATH_CONFIG/df-treesitter.lua
+luafile $STD_PATH_CONFIG/df-galaxyline.lua
 
 "Settings that should probably be set at the end
 let g:is_bash = 1
