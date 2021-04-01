@@ -63,9 +63,10 @@ function! s:Vista() abort
   let g:vista_sidebar_width = 60
   let g:vista_cursor_delay = 0
   let g:vista_echo_cursor_strategy = 'scroll'
-  let g:vista_executive_for = ListToDictKeys(['vim', 'ts', 'lua', 'js','json', 'c', 'cpp'], {_ -> 'coc'}, {})
+  let g:vista_executive_for = ListToDictKeys(['vim', 'typescript', 'lua', 'javascript','json', 'c', 'cpp'], {_ -> 'coc'}, {})
 
-  nnoremap <silent> <C-j> :Vista!!<cr>
+  nnoremap <silent> \vf :Vista finder<cr>
+  nnoremap <silent> \vo :Vista!!<cr>
 endfunction
 
 function s:Fzf() abort

@@ -45,6 +45,9 @@ nnoremap <expr>> &buftype == "" ? ">" : "\<C-w>>"
 "new lines appering in the middle of the screen
 nnoremap G Gzz
 
+"Same with searching things, but sometimes
+nnoremap <silent>\tnz :call <sid>ToggleNzz()<cr>
+
 "Pair braces and quotes in command line
 cnoremap <M-9> ()<left>
 cnoremap <M-'> ""<left>
@@ -91,4 +94,16 @@ xnoremap U :s///gc<left><left><left>
 "Implementations
 function! s:GetSearchPatternWithoutFlags() abort
   return matchlist(@/, '\v^%(\\V|\\v|\\\<){,2}(.{-})%(\\\>)?$')[1]
+endfunction
+
+function s:ToggleNzz() abort
+  if !exists("b:dotfiles_nzz") || !b:dotfiles_nzz
+    nnoremap n nzz
+    nnoremap N Nzz
+    let b:dotfiles_nzz = 1
+  else
+    nunmap n
+    nunmap N
+    let b:dotfiles_nzz = 0
+  endif
 endfunction

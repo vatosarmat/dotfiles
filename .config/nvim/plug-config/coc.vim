@@ -5,9 +5,9 @@ let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-market
 
 "Various 'go to' actions
 nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> <leader>ct <Plug>(coc-type-definition)
+nmap <silent> gt <Plug>(coc-type-definition)
 nmap <silent> <leader>ci <Plug>(coc-implementation)
-nmap <silent> <leader>cr <Plug>(coc-references)
+nmap <silent> gr <Plug>(coc-references)
 
 "Function and clss text objects for operator and visual modes
 xmap if <Plug>(coc-funcobj-i)
