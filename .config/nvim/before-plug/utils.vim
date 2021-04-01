@@ -15,3 +15,22 @@ function! DotfilesShowUnsavedBuffers() abort
     echom 'All buffers saved'
   endif
 endfunction
+
+function! Reduce(array, oper, accumInit) abort
+  let accum = a:accumInit
+  for item in a:array
+    let accum = a:oper(accum, item)
+  endfor
+
+  return accum
+endfunction
+
+function! ListToDictKeys(list, oper, dictInit) abort
+  let dictResult = deepcopy(a:dictInit)
+
+  for item in a:list
+    let dictResult[item] = a:oper(dictResult , item)
+  endfor
+
+  return dictResult
+endfunction

@@ -12,85 +12,112 @@ augroup Plug
    \| endif
 augroup END
 
-call plug#begin(stdpath("data").'/site/plugged')
+function s:InitPlugins() abort
+  call plug#begin(stdpath("data").'/site/plugged')
+    "Major
+    Plug 'tpope/vim-fugitive'
+    Plug 'neoclide/coc.nvim'
+    Plug '~/.fzf'
+    Plug 'junegunn/fzf.vim'
+    Plug 'liuchengxu/vista.vim'
+    Plug 'dhruvasagar/vim-table-mode'
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    Plug 'nvim-treesitter/playground'
 
-  """"""IDE
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  Plug 'tpope/vim-fugitive'
-  Plug 'airblade/vim-gitgutter'
-  Plug '~/.fzf'
-  Plug 'junegunn/fzf.vim'
-  Plug 'airblade/vim-rooter'
+    "Minor
+    Plug 'airblade/vim-gitgutter'
+    Plug 'airblade/vim-rooter'
+    Plug 'tpope/vim-surround' | let g:surround_indent = 1
+    Plug 'tpope/vim-endwise'
+    Plug 'tpope/vim-commentary'
+    Plug 'tpope/vim-repeat'
+    Plug 'lambdalisue/suda.vim'
+    Plug 'chaoren/vim-wordmotion'
+    Plug 'haya14busa/vim-asterisk'
+    Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
-  " Plug 'glepnir/galaxyline.nvim'
-  " Plug 'kyazdani42/nvim-web-devicons' " for file icons
-  " Plug 'kyazdani42/nvim-tree.lua'
+    Plug 'christianchiarulli/nvcode-color-schemes.vim'
+  call plug#end()
 
-  """"""UI
-  "Plug 'preservim/nerdtree'
-  "let g:NERDTreeChDirMode=3
-  "let NERDTreeMinimalUI=1
-  "noremap <C-n> :NERDTreeToggle<CR>
+  "Config
+  call s:Fugitive()
+  call s:Commentary()
+  call s:Fzf()
+  call s:Vista()
+  call s:Wordmotion()
+  call s:Asterisk()
+  call s:Colorscheme()
+  source $STD_PATH_CONFIG/plug-config/coc.vim
+  luafile $STD_PATH_CONFIG/plug-config/treesitter.lua
+endfunction
 
-  "Plug 'ryanoasis/vim-devicons'
-  " Plug 'google/vim-searchindex'
-  " Plug 'osyo-manga/vim-anzu'
+"Config functions
+function! s:Fugitive() abort
+  nnoremap <silent><M-d> :Gvdiffsplit! HEAD<cr>
+  cnoreabbrev G G \| execute "resize" string(&lines * 0.3)
+  cnoreabbrev hg h fugitive
+endfunction
 
-  "Plug 'vim-airline/vim-airline'
-  "Plug 'vim-airline/vim-airline-themes'
-  "let g:airline_powerline_fonts = 1
-  "let g:airline_theme='deus'
+function! s:Vista() abort
+  let g:vista_sidebar_position = 'vertical topleft'
+  let g:vista_sidebar_width = 60
+  let g:vista_cursor_delay = 0
+  let g:vista_echo_cursor_strategy = 'scroll'
+  let g:vista_executive_for = ListToDictKeys(['vim', 'ts', 'lua', 'js','json', 'c', 'cpp'], {_ -> 'coc'}, {})
 
-  "Plug 'kshenoy/vim-signature'
+  nnoremap <silent> <C-j> :Vista!!<cr>
+endfunction
 
-  """"""Editing
-  "Plug 'chaoren/vim-wordmotion'
-  Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-endwise'
-  " Plug 'tpope/vim-abolish'
-  Plug 'tpope/vim-commentary'
-  Plug 'tpope/vim-repeat'
-  Plug 'lambdalisue/suda.vim'
-  Plug 'dhruvasagar/vim-table-mode'
-  Plug 'haya14busa/vim-asterisk'
-  Plug 'chaoren/vim-wordmotion'
+function s:Fzf() abort
+  nnoremap <silent><C-p> :Files<cr>
+  let g:fzf_action = { 'ctrl-l': 'vsplit', 'ctrl-t': 'tab split', 'ctrl-x': 'split' }
 
-  """"""Langs
-  Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
-  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-  Plug 'nvim-treesitter/playground'
-  " Plug 'sheerun/vim-polyglot'
-  " Plug 'pangloss/vim-javascript'
-  " Plug 'yuezk/vim-js'
-  " Plug 'maxmellon/vim-jsx-pretty'
-  " Plug 'jackguo380/vim-lsp-cxx-highlight'
-  " Plug 'neovimhaskell/haskell-vim'
+  cnoreabbrev ht h \| Helptags
+  cnoreabbrev hf h fzf-vim
 
-  """"""Color themes
-  Plug 'christianchiarulli/nvcode-color-schemes.vim'
-  Plug 'sainnhe/gruvbox-material'
-  Plug 'habamax/vim-gruvbit'
-  Plug 'tomasiser/vim-code-dark'
-  Plug 'joshdick/onedark.vim'
-  Plug 'morhetz/gruvbox'
-  Plug 'doums/darcula'
-  Plug 'ghifarit53/tokyonight-vim'
-  Plug 'romainl/Apprentice'
-  Plug 'ayu-theme/ayu-vim'
-  Plug 'srcery-colors/srcery-vim'
+  let s:rga_shell_command = "rg --column --line-number --no-heading --color=always --smart-case"
+  command! -bang -nargs=* Rga
+    \ call fzf#vim#grep(s:rga_shell_command." ".<q-args>, 1, fzf#vim#with_preview(), <bang>0)
+endfunction
 
-call plug#end()
+function s:Wordmotion() abort
+  let g:wordmotion_nomap = 1
 
-let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
-  \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
-  \'coc-tsserver', 'coc-lua']
+  nmap <M-w>          <Plug>WordMotion_w
+  nmap <M-b>          <Plug>WordMotion_b
+  nmap <M-e>          <Plug>WordMotion_e
+  omap <M-w>          <Plug>WordMotion_w
+  omap <M-b>          <Plug>WordMotion_b
+  omap <M-e>          <Plug>WordMotion_e
+  omap a<M-w>         <Plug>WordMotion_aw
+  omap i<M-w>         <Plug>WordMotion_iw
+endfunction
 
-" let g:haskell_indent_disable = 1
+function s:Asterisk() abort
+  map *  <Plug>(asterisk-z*)
+  map #  <Plug>(asterisk-z#)
+  map g* <Plug>(asterisk-gz*)
+  map g# <Plug>(asterisk-gz#)
+endfunction
 
-let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
-let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
-let g:haskell_enable_arrowsyntax = 1      " to enable highlighting of `proc`
-let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
-let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
-let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
-let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
+function s:Commentary() abort
+  "Comment out line or selection
+  nmap <C-_> <Plug>CommentaryLine
+  xmap <C-_> <Plug>Commentary
+endfunction
+
+function s:Colorscheme() abort
+  colorscheme nvcode
+  hi! link TSTypeBuiltin TSType
+  hi! link CocErrorSign LspDiagnosticsSignError
+  hi Pmenu guifg=#e6eeff
+  hi Comment gui=NONE cterm=NONE
+  hi Special gui=NONE cterm=NONE
+  hi CursorColumn guibg=#2b2b2b
+  hi CursorLine guibg=#2b2b2b
+  hi Visual guibg=#264f78
+  hi Search guibg=#613214
+  " hi Folded guifg=#555fd6
+endfunction
+
+call s:InitPlugins()

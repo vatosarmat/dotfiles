@@ -7,7 +7,6 @@ augroup FtSpecific
   autocmd FileType haskell call s:TypeHaskell()
   autocmd FileType lisp call s:TypeLisp()
   autocmd FileType fugitive call s:TypeFugitive()
-  " autocmd FileType list call s:TypeList()
 
   autocmd BufEnter *.txt call s:EnterTxt()
   autocmd BufEnter fugitive:///* call s:EnterFugitive()
@@ -30,11 +29,7 @@ function! s:EnterFugitive() abort
   set bufhidden=wipe
 endfunction
 
-"ft
-function! s:TypeList() abort
-  call timer_start(100, funcref("<sid>ListOutline"))
-endfunction
-
+"FileType
 function! s:TypeFugitive() abort
   nnoremap <silent><buffer><M-d> :call <sid>ToggleWinSize()<cr>
   nnoremap <silent><buffer>cc  :vert Git commit \| call DotfilesShowUnsavedBuffers()<cr>
@@ -55,18 +50,13 @@ function! s:TypeLisp() abort
   let b:coc_pairs_disabled = ["'"]
 endfunction
 
-" Impl
+"Implementations
 function! s:ToggleWinSize() abort
   if !exists("b:dfWinSmall") || !b:dfWinSmall
-    execute "resize" string(&lines * 0.27)
+    execute "resize" string(&lines * 0.3)
     let b:dfWinSmall = 1
   else
     execute "resize" string(&lines * 0.5)
     let b:dfWinSmall = 0
   endif
-endfunction
-
-function! s:ListOutline(timer) abort
-  execute bufwinnr("list:///outline") "wincmd L"
-  mod
 endfunction
