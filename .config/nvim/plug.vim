@@ -42,11 +42,11 @@ function s:InitPlugins() abort
   "Config
   call s:Fugitive()
   call s:Commentary()
-  call s:Fzf()
   call s:Vista()
   call s:Wordmotion()
   call s:Asterisk()
   call s:Colorscheme()
+  source $STD_PATH_CONFIG/plug-config/fzf.vim
   source $STD_PATH_CONFIG/plug-config/coc.vim
   luafile $STD_PATH_CONFIG/plug-config/treesitter.lua
 endfunction
@@ -65,20 +65,8 @@ function! s:Vista() abort
   let g:vista_echo_cursor_strategy = 'scroll'
   let g:vista_executive_for = ListToDictKeys(['vim', 'typescript', 'lua', 'javascript','json', 'c', 'cpp'], {_ -> 'coc'}, {})
 
-  nnoremap <silent> \vf :Vista finder<cr>
-  nnoremap <silent> \vo :Vista!!<cr>
-endfunction
-
-function s:Fzf() abort
-  nnoremap <silent><C-p> :Files<cr>
-  let g:fzf_action = { 'ctrl-l': 'vsplit', 'ctrl-t': 'tab split', 'ctrl-x': 'split' }
-
-  cnoreabbrev ht h \| Helptags
-  cnoreabbrev hf h fzf-vim
-
-  let s:rga_shell_command = "rg --column --line-number --no-heading --color=always --smart-case"
-  command! -bang -nargs=* Rga
-    \ call fzf#vim#grep(s:rga_shell_command." ".<q-args>, 1, fzf#vim#with_preview(), <bang>0)
+  nnoremap <silent><leader>vf :Vista finder<cr>
+  nnoremap <silent><leader>vo :Vista!!<cr>
 endfunction
 
 function s:Wordmotion() abort
