@@ -69,9 +69,10 @@ alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
 
 #Not actually aliasses but usefull commands to remember
+alias binecho="dd of=/dev/stdout count=1 status=none"
 alias fodiff="vim -d  <(fc-match JetBrainsMono --format '%{charset}' | tr ' ' '\n') <(fc-match 'JetBrainsMono NerdFont' --format '%{charset}' | tr ' ' '\n')"
-alias notif="while inotifywait -q -q -e modify pg.lua ; do lua pg.lua; done
-"
+alias notif="while inotifywait -q -q -e modify pg.lua ; do lua pg.lua; done"
+alias color8='printf "\e[40m  \e[41m  \e[42m  \e[43m  \e[44m  \e[45m  \e[46m  \e[47m  \e[m\n"'
 
 alias ghus="gh__search"
 alias ghuc="gh__cache"
