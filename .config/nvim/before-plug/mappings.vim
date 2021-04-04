@@ -5,9 +5,6 @@ nnoremap <silent> <M-y> :let @+=@"<cr>
 nnoremap <silent> <C-s> :w<cr>
 inoremap <silent> <C-s> <Esc>:w<cr>
 
-"Paste 'last yanked' text, not 'last cut or yanked'
-noremap gp "0p
-
 "yy - for string, Y - for rest of string, same with 'c' and 'd'
 nnoremap Y y$
 
@@ -18,14 +15,20 @@ nnoremap <silent> <M-u> :noh<CR>
 "results - Vim unfortunately highlights 'current' result and all the others in
 "the same way
 "In routine workflow it distracts
-nnoremap <silent> \ocl :set cul! cuc!<CR>
+nnoremap <silent> <leader>ocl :set cul! cuc!<CR>
 
 "Wipe buffer or close its window - all via 'q'
 nnoremap <silent><M-q> :bw<cr>
 nnoremap <silent>Q :q<cr>
 
 "Useful before reviewing delta and commit
-nnoremap <silent><M-s> :call DotfilesShowUnsavedBuffers()<cr>
+nnoremap <silent><leader>iub :call DotfilesShowUnsavedBuffers()<cr>
+
+"Syntax element under cursor
+nnoremap <silent><leader>isn :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
+
+"Terminal normal mode
+tnoremap <c-o> <C-\><C-n>
 
 "Easier windows navigation with arrows remapped to 'hjkl' in terminal emulator
 nnoremap <Left> <C-w>h
@@ -46,7 +49,7 @@ nnoremap <expr>> &buftype == "" ? ">" : "\<C-w>>"
 nnoremap G Gzz
 
 "Same with searching things, but sometimes
-nnoremap <silent>\tnz :call <sid>ToggleNzz()<cr>
+nnoremap <silent><leader>tnz :call <sid>ToggleNzz()<cr>
 
 "Pair braces and quotes in command line
 cnoremap <M-9> ()<left>

@@ -5,7 +5,7 @@ let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-market
 
 "Various 'go to' actions
 nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gt <Plug>(coc-type-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> <leader>ci <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
@@ -23,7 +23,7 @@ omap ac <Plug>(coc-classobj-a)
 nnoremap <silent> K :call <sid>HoverOrMan()<CR>
 
 "Move default 'K' 'man' under the \
-nnoremap <silent>\K :normal! K <CR>
+nnoremap <silent><leader>K :normal! K <CR>
 
 "CoC outline is not much useful, better use something like Vista.vim
 nnoremap <silent><leader>co :CocList --normal --no-quit outline<cr>
