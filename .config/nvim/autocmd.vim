@@ -8,9 +8,15 @@ augroup FtSpecific
   autocmd FileType lisp call s:TypeLisp()
   autocmd FileType fugitive call s:TypeFugitive()
 
-  autocmd BufEnter *.txt call s:EnterTxt()
+  autocmd WinNew * call s:OnWinNew()
+
+  autocmd BufWinEnter *.txt call s:OnBufWinEnterTxt()
   autocmd BufEnter fugitive:///* call s:EnterFugitive()
 augroup END
+
+function! s:OnWinNew() abort
+  let g:help_to_left  = win_getid()
+endfunction
 
 function! s:AddAny() abort
   if &buftype != ''
@@ -19,8 +25,8 @@ function! s:AddAny() abort
   endif
 endfunction
 
-function! s:EnterTxt() abort
-  if &buftype == 'help'
+function! s:OnBufWinEnterTxt() abort
+  if &buftype == 'help' && g:help_to_left == win_getid()
     wincmd L
   endif
 endfunction
