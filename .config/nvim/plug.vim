@@ -29,6 +29,7 @@ function s:InitPlugins() abort
     Plug 'airblade/vim-rooter'
     Plug 'tpope/vim-surround' | let g:surround_indent = 1
     Plug 'tpope/vim-endwise'
+    Plug 'JoosepAlviste/nvim-ts-context-commentstring'
     Plug 'tpope/vim-commentary'
     Plug 'tpope/vim-repeat'
     Plug 'lambdalisue/suda.vim'
@@ -90,9 +91,17 @@ function s:Asterisk() abort
 endfunction
 
 function s:Commentary() abort
-  "Comment out line or selection
-  nmap <C-_> <Plug>CommentaryLine
-  xmap <C-_> <Plug>Commentary
+  function s:CommentaryImplExpr(a)
+    lua require('ts_context_commentstring.internal').update_commentstring()
+    if a:a == 1
+      return "\<Plug>Commentary"
+    else
+      return "\<Plug>CommentaryLine"
+    endif
+  endfunction
+
+  xmap <expr><C-_> <sid>CommentaryImplExpr(1)
+  nmap <expr><C-_> <sid>CommentaryImplExpr(0)
 endfunction
 
 function s:Colorscheme() abort
