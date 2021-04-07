@@ -115,6 +115,8 @@ function s:Colorscheme() abort
   hi CursorLine guibg=#2b2b2b
   hi Visual guibg=#264f78
   hi Search guibg=#613214
+  hi LspDiagnosticsSignError guifg=#c87a7a
+
   " hi Folded guifg=#555fd6
 endfunction
 
