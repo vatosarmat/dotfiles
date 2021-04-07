@@ -141,25 +141,37 @@ function apt__search {
 }
 
 #rg
-function __rg__pick_preview {
-  #$1 is FILE:LINE  CONTENT
+function __rg__pick_open {
+  #$1 bat|vim
+  #$2 is FILE:LINE  CONTENT
   #$FZF_PREVIEW_LINES
-  IFS=: read -r file line rest <<< "$1"
+  IFS=: read -r file line rest <<< "$2"
   let start=$line-$FZF_PREVIEW_LINES/4
   test $start -ge 1 || start="1"
   #let end=$line+10
-  bat "$file" -f -H $line -r $start: --terminal-width $FZF_PREVIEW_COLUMNS
+  case "$1" in
+    bat)
+      bat "$file" -f -H $line -r $start: --terminal-width $FZF_PREVIEW_COLUMNS
+      ;;
+    vim)
+      vim "$file" +$start
+      ;;
+    *)
+      { echo "$1 - is not a valid opener" >&2; return 1; }
+      ;;
+  esac
 }
-export -f __rg__pick_preview
+export -f __rg__pick_open
 
 function rg__pick {
   test -n "$1" || { echo "No input string" >&2; return 1; }
 
-  fzfSelected=$(rg --color always -in --no-heading "$1" | fzf --ansi --preview "__rg__pick_preview {}")
+  fzfSelected=$(rg --color always -in --no-heading "$1" | fzf --ansi --preview "__rg__pick_open bat {}")
   fzfResult="$?"
 
   if [ "$fzfResult" = "0" -a -n "$fzfSelected" ]; then
-    subl "${fzfSelected%:*}"
+    #Remove suffix - line content
+    __rg__pick_open vim "$fzfSelected"
   fi
 }
 
