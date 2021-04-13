@@ -10,4 +10,3 @@ source $STD_PATH_CONFIG/before-plug/commands.vim
 source $STD_PATH_CONFIG/before-plug/mappings.vim
 source $STD_PATH_CONFIG/before-plug/autocmd.vim
 source $STD_PATH_CONFIG/plug.vim
-source $STD_PATH_CONFIG/autocmd.vim

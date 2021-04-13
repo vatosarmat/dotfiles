@@ -41,23 +41,18 @@ function! s:InitPlugins() abort
   call plug#end()
 
   "Config
-  call s:Fugitive()
   call s:Commentary()
+  call s:Surround()
   call s:Vista()
   call s:Wordmotion()
   call s:Asterisk()
   call s:Colorscheme()
+  source $STD_PATH_CONFIG/plug-config/fugitive.vim
   source $STD_PATH_CONFIG/plug-config/fzf.vim
   source $STD_PATH_CONFIG/plug-config/coc.vim
   luafile $STD_PATH_CONFIG/plug-config/treesitter.lua
 endfunction
 
-"Config functions
-function! s:Fugitive() abort
-  nnoremap <silent><M-d> :Gvdiffsplit! HEAD<cr>
-  cnoreabbrev G G \| execute "resize" string(&lines * 0.3)
-  cnoreabbrev hg h fugitive
-endfunction
 
 function! s:Vista() abort
   let g:vista_sidebar_position = 'vertical topleft'
@@ -90,8 +85,33 @@ function! s:Asterisk() abort
   map g# <Plug>(asterisk-gz#)
 endfunction
 
-function s:Commentary() abort
-  function s:CommentaryImplExpr(a)
+function! s:Surround() abort
+  augroup PlugSurround
+    autocmd!
+
+    autocmd FileType sh call s:TypeSh()
+    autocmd FileType haskell call s:TypeHaskell()
+    autocmd FileType lisp call s:TypeLisp()
+  augroup END
+
+  function! s:TypeSh() abort
+    let b:surround_{char2nr("p")} = "$(\r)"
+    let b:surround_{char2nr("s")} = "${\r}"
+  endfunction
+
+  function! s:TypeHaskell() abort
+    xmap <buffer> sf s<C-f>
+    cnoreabbrev <buffer> lfix !hlint --refactor --refactor-options="--inplace" '%:p'
+  endfunction
+
+  function! s:TypeLisp() abort
+    xmap <buffer> sf s<C-f>
+    let b:coc_pairs_disabled = ["'"]
+  endfunction
+endfunction
+
+function! s:Commentary() abort
+  function! s:CommentaryImplExpr(a)
     lua require('ts_context_commentstring.internal').update_commentstring()
     if a:a == 1
       return "\<Plug>Commentary"
