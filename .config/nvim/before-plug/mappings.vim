@@ -21,11 +21,17 @@ nnoremap <silent> <leader>ocl :set cul! cuc!<CR>
 nnoremap <silent><M-q> :bw<cr>
 nnoremap <silent>Q :q<cr>
 
+"Comfy buffer switching
+nnoremap <M-n> <cmd>bn<cr>
+nnoremap <M-p> <cmd>bp<cr>
+
 "Useful before reviewing delta and commit
-nnoremap <silent><leader>iub :call DotfilesShowUnsavedBuffers()<cr>
+nnoremap <silent><leader>iub :call utils#ShowUnsavedBuffers()<cr>
 
 "Syntax element under cursor
 nnoremap <silent><leader>isn :echo synIDattr(synID(line("."), col("."), 1), "name")<cr>
+
+nnoremap <leader>itl :lua print(require'nvim-treesitter.parsers'.get_buf_lang(0))<cr>
 
 "Terminal normal mode
 tnoremap <c-o> <C-\><C-n>

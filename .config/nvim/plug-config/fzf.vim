@@ -2,11 +2,18 @@
 "LOCAL GIT HAS CHANGES
 "Default file picker
 nnoremap <silent><C-p> :Files<cr>
+nnoremap <silent><M-m> :Buffers<cr>
 let g:fzf_action = { 'ctrl-l': 'vsplit', 'ctrl-t': 'tab split', 'ctrl-x': 'split' }
 
 "Navigate marks just like files
 nnoremap <silent><leader>ml :call <sid>MarksLocal()<cr>
 nnoremap <silent><leader>mg :call <sid>MarksGlobal()<cr>
+
+"[Rip]grep shortcuts
+"Simple, smart-case
+nnoremap <leader>gs :Rg<space>
+"With file glob pattern
+nnoremap <leader>gp :Rga '' -- -g *
 
 "Handy abbrevs
 cnoreabbrev ht h \| Helptags
@@ -17,9 +24,6 @@ let s:rga_shell_command = "rg --column --line-number --no-heading --color=always
 command! -bang -nargs=* Rga
   \ call fzf#vim#grep(s:rga_shell_command." ".<q-args>, 1, fzf#vim#with_preview(), <bang>0)
 
-"Marks show only letter-based
-" command! -bar -bang Ml call <sid>MarksLocal(<bang>0)
-
 "Implementations
 function! s:MarksLocal() abort
   let list = s:GetLocalMarksList()
@@ -28,7 +32,7 @@ function! s:MarksLocal() abort
     \'--preview-window', '+{2}-/2',
     \"--prompt", "Local marks> ",
     \'--preview', printf("bat '%s' --color=always --style=numbers --pager=never --highlight-line {+2}", bufname("%"))]
-  return fzf#run(fzf#wrap('marks', #{ source: list, options: options }))
+  return fzf#run(fzf#wrap('marks', #{ source: list, options: options, sink: function('s:MarkSink') }))
 endfunction
 
 function! s:MarksGlobal() abort
@@ -41,7 +45,11 @@ function! s:MarksGlobal() abort
     \'--nth=1,3..',
     \'--with-nth=1,3..',
     \'--preview', "bat '{+2}' --color=always --style=numbers --pager=never --highlight-line {+4}"]
-  return fzf#run(fzf#wrap('marks', #{ source: list, options: options }))
+  return fzf#run(fzf#wrap('marks', #{ source: list, options: options, sink: function('s:MarkSink') }))
+endfunction
+
+function! s:MarkSink(line) abort
+  execute "normal" "'".a:line[0].'zz'
 endfunction
 
 function! s:GetLocalMarksList() abort
@@ -51,7 +59,7 @@ function! s:GetLocalMarksList() abort
     let name = item.mark[-1:]
     if name =~ "^\\l$"
       let [_, lnum, _, _] = item.pos
-      call add(outList, printf("%s%s %s%5d %s%s", g:color8.red, name, g:color8.cyan, lnum, g:color_reset, getline(lnum)))
+      call add(outList, printf("%s%s %s%5d %s%s", g:utils#color8.red, name, g:utils#color8.cyan, lnum, g:utils#color_reset, getline(lnum)))
     endif
   endfor
   return outList
@@ -98,9 +106,9 @@ function! s:GetGlobalMarksList() abort
 
     "mark, file, line num, line content
     let format =
-      \g:color8.red."%s".g:color_reset.
+      \g:utils#color8.red."%s".g:utils#color_reset.
       \" %s %".truncFileLength."s ".
-      \g:color8.cyan."%5s".g:color_reset.
+      \g:utils#color8.cyan."%5s".g:utils#color_reset.
       \" %s"
     let format = substitute(format, " ", "\ua0", "g")
     call add(outList, printf(format, item.name, item.file, fileTrunc, item.line, lineContent))

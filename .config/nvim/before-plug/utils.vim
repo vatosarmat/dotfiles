@@ -1,4 +1,4 @@
-function! DotfilesShowUnsavedBuffers() abort
+function! utils#ShowUnsavedBuffers() abort
   let unsavedBuffers = []
   for buf in getbufinfo({'bufmodified':1})
     if !empty(buf['name']) && empty(getbufvar(buf['bufnr'], '&buftype'))
@@ -16,7 +16,7 @@ function! DotfilesShowUnsavedBuffers() abort
   endif
 endfunction
 
-function! Reduce(array, oper, accumInit) abort
+function! utils#Reduce(array, oper, accumInit) abort
   let accum = a:accumInit
   for item in a:array
     let accum = a:oper(accum, item)
@@ -25,7 +25,7 @@ function! Reduce(array, oper, accumInit) abort
   return accum
 endfunction
 
-function! ListToDictKeys(list, oper, dictInit) abort
+function! utils#ListToDictKeys(list, oper, dictInit) abort
   let dictResult = deepcopy(a:dictInit)
 
   for item in a:list
@@ -35,7 +35,7 @@ function! ListToDictKeys(list, oper, dictInit) abort
   return dictResult
 endfunction
 
-let g:color8 = #{
+let g:utils#color8 = #{
   \ black: "\e[30m",
   \ red: "\e[31m",
   \ green: "\e[32m",
@@ -46,4 +46,4 @@ let g:color8 = #{
   \ white: "\e[37m",
   \ }
 
-let g:color_reset = "\e[m"
+let g:utils#color_reset = "\e[m"

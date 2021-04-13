@@ -12,7 +12,7 @@ augroup Plug
    \| endif
 augroup END
 
-function s:InitPlugins() abort
+function! s:InitPlugins() abort
   call plug#begin(stdpath("data").'/site/plugged')
     "Major
     Plug 'tpope/vim-fugitive'
@@ -64,13 +64,13 @@ function! s:Vista() abort
   let g:vista_sidebar_width = 60
   let g:vista_cursor_delay = 0
   let g:vista_echo_cursor_strategy = 'scroll'
-  let g:vista_executive_for = ListToDictKeys(['vim', 'typescript', 'lua', 'javascript','json', 'c', 'cpp'], {_ -> 'coc'}, {})
+  let g:vista_executive_for = utils#ListToDictKeys(['vim', 'typescript', 'lua', 'javascript','json', 'c', 'cpp'], {_ -> 'coc'}, {})
 
   nnoremap <silent><leader>vf :Vista finder<cr>
   nnoremap <silent><leader>vo :Vista!!<cr>
 endfunction
 
-function s:Wordmotion() abort
+function! s:Wordmotion() abort
   let g:wordmotion_nomap = 1
 
   nmap <M-w>          <Plug>WordMotion_w
@@ -83,7 +83,7 @@ function s:Wordmotion() abort
   omap i<M-w>         <Plug>WordMotion_iw
 endfunction
 
-function s:Asterisk() abort
+function! s:Asterisk() abort
   map *  <Plug>(asterisk-z*)
   map #  <Plug>(asterisk-z#)
   map g* <Plug>(asterisk-gz*)
@@ -104,7 +104,7 @@ function s:Commentary() abort
   nmap <expr><C-_> <sid>CommentaryImplExpr(0)
 endfunction
 
-function s:Colorscheme() abort
+function! s:Colorscheme() abort
   colorscheme nvcode
   hi! link TSTypeBuiltin TSType
   hi! link CocErrorSign LspDiagnosticsSignError
