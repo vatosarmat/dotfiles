@@ -25,7 +25,8 @@ function! s:InitPlugins() abort
     Plug 'nvim-treesitter/playground'
 
     "Minor
-    Plug 'airblade/vim-gitgutter'
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'lewis6991/gitsigns.nvim'
     Plug 'airblade/vim-rooter'
     Plug 'tpope/vim-surround' | let g:surround_indent = 1
     Plug 'tpope/vim-endwise'
@@ -51,6 +52,7 @@ function! s:InitPlugins() abort
   source $STD_PATH_CONFIG/plug-config/fzf.vim
   source $STD_PATH_CONFIG/plug-config/coc.vim
   luafile $STD_PATH_CONFIG/plug-config/treesitter.lua
+  luafile $STD_PATH_CONFIG/plug-config/gitsigns.lua
 endfunction
 
 
@@ -137,6 +139,22 @@ function! s:Colorscheme() abort
   hi Search guibg=#613214
   hi LspDiagnosticsSignError guifg=#c87a7a
 
+  " hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#2c323c ctermbg=236 gui=NONE cterm=NONE
+  " hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=NONE ctermbg=NONE gui=NONE cterm=NONE
+  " hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#1e1e1e ctermbg=NONE gui=NONE cterm=NONE
+
+  hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#000000 ctermbg=236 gui=NONE cterm=NONE
+  hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE cterm=NONE
+
+  " hi GitSignsAdd    guifg=NONE guibg=#608b4e
+  " hi GitSignsChange guifg=NONE guibg=#dcdcaa
+  " hi GitSignsDelete guifg=NONE guibg=#d16969
+
+  " More saturated colours if needed
+  " hi GitSignsAdd    guifg=#00ff00
+  " hi GitSignsChange guifg=#ffff00
+  " hi GitSignsDelete guibg=#d16969
+  "
   " hi Folded guifg=#555fd6
 endfunction
 

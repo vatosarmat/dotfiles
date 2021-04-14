@@ -93,8 +93,8 @@ nnoremap <silent>{ :<C-u>execute "keepjumps norm! " . v:count1 . "{"<CR>
 nnoremap <silent><M-f> :DiffOrig<cr>
 
 "Diff, jump to the next hunk. With default 'c' it may be erroneously changed
-nnoremap [w [czz
-nnoremap ]w ]czz
+nmap [w [czz
+nmap ]w ]czz
 
 "Replace last search pattern, i.e. '/' register content
 nnoremap U :%s//<c-r>=<sid>GetSearchPatternWithoutFlags()<cr>/gc<left><left><left>

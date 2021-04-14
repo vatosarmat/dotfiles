@@ -10,6 +10,8 @@ set mouse=a
 
 set virtualedit=block
 
+set updatetime=1000
+
 set expandtab tabstop=2 softtabstop=2 shiftwidth=2 nosmarttab
 set autoindent smartindent
 
