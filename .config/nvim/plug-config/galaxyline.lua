@@ -75,6 +75,10 @@ print(vim.fn.getbufvar(0, 'ts'))
 vim.fn.getbufvar(0, 'ts')
 
 addLeft({
+    SFileName = {provider = 'SFileName', condition = condition.buffer_not_empty, highlight = {colors.grey, colors.bg}}
+})
+
+addLeft({
     GitIcon = {
         provider = function()
             return ' '

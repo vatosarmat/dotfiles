@@ -25,6 +25,7 @@ function! s:InitPlugins() abort
     Plug 'nvim-treesitter/playground'
 
     "Minor
+    " Plug 'glepnir/galaxyline.nvim'
     Plug 'nvim-lua/plenary.nvim'
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'airblade/vim-rooter'
