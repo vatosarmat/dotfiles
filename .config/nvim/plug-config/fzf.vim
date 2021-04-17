@@ -29,9 +29,9 @@ function! s:MarksLocal() abort
   let list = s:GetLocalMarksList()
   let options = [
     \'--ansi',
-    \'--preview-window', '+{2}-/2',
+    \'--preview-window', '+{2}/4',
     \"--prompt", "Local marks> ",
-    \'--preview', printf("bat '%s' --color=always --style=numbers --pager=never --highlight-line {+2}", bufname("%"))]
+    \'--preview', printf("bat '%s' --color=always --style=numbers --pager=never --highlight-line {2}", bufname("%"))]
   return fzf#run(fzf#wrap('marks', #{ source: list, options: options, sink: function('s:MarkSink') }))
 endfunction
 
@@ -39,12 +39,12 @@ function! s:MarksGlobal() abort
   let list = s:GetGlobalMarksList()
   let options = [
     \'--ansi',
-    \'--preview-window', '+{4}-/2',
+    \'--preview-window', '+{4}/4',
     \"--prompt", "GlobalMarks> ",
     \"--delimiter=\ua0",
     \'--nth=1,3..',
     \'--with-nth=1,3..',
-    \'--preview', "bat '{+2}' --color=always --style=numbers --pager=never --highlight-line {+4}"]
+    \'--preview', "bat '{2}' --color=always --style=numbers --pager=never --highlight-line {4}"]
   return fzf#run(fzf#wrap('marks', #{ source: list, options: options, sink: function('s:MarkSink') }))
 endfunction
 

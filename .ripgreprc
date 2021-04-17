@@ -1,2 +1,6 @@
+--smart-case
 --hidden
+--no-ignore
 --glob=!.git
+--type-add
+web:*.{html,css,js}*

@@ -5,7 +5,7 @@ shopt -s histverify
 HISTSIZE=
 HISTFILESIZE=
 HISTCONTROL=ignoreboth:erasedups
-HISTIGNORE="ls *":"cd *":"man *":"help *"
+HISTIGNORE="ls *":"cd *":"man *":"help *":"r":"exit"
 HISTTIMEFORMAT="%F %T:%Z - "
 #PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 PS1='\[\033[01;34m\]\w\[\033[00m\]\$ '
@@ -15,6 +15,7 @@ export LESS='-s -M -R -I -j10 +Gg'
 export MANPAGER="$PAGER"
 export SYSTEMD_LESS="-M -R"
 export BAT_PAGER=""
+export BAT_THEME="1337"
 export FZF_DEFAULT_COMMAND="fd --type file --follow --hidden --exclude .git"
 export FZF_DEFAULT_OPTS="--reverse --height 55% --extended --bind alt-f:half-page-down,alt-b:half-page-up"
 export RIPGREP_CONFIG_PATH="$HOME/dotfiles/.ripgreprc"
@@ -42,14 +43,8 @@ alias scun="systemctl --user --no-pager"
 alias perl_info='perl -V'
 alias perl_cpan='perl -MCPAN -Mlocal::lib -e shell'
 
-alias ebrc='$EDITOR "$HOME/.bashrc_custom"'
-alias sbrc='source "$HOME/.bashrc_custom"'
-alias ebrchs='$EDITOR "$HOME/.bashrc_host-specific"'
-alias sbrchs='source "$HOME/.bashrc_host-specific"'
-alias ebp='$EDITOR "$HOME/.profile_custom"'
-alias sbp='source "$HOME/.profile_custom"'
-alias etmc='$EDITOR "$HOME/.tmux.conf"'
-alias ealc='$EDITOR "$HOME/.config/alacritty/alacritty.yml"'
+alias sbrc='source "$HOME/.bashrc"'
+alias ebp='$EDITOR "$HOME/.profile"'
 
 alias info='info --vi-keys'
 alias hcurl='curl -s -o /dev/null -D -'
@@ -141,37 +136,20 @@ function apt__search {
 }
 
 #rg
-function __rg__pick_open {
-  #$1 bat|vim
-  #$2 is FILE:LINE  CONTENT
-  #$FZF_PREVIEW_LINES
-  IFS=: read -r file line rest <<< "$2"
-  let start=$line-$FZF_PREVIEW_LINES/4
-  test $start -ge 1 || start="1"
-  #let end=$line+10
-  case "$1" in
-    bat)
-      bat "$file" -f -H $line -r $start: --terminal-width $FZF_PREVIEW_COLUMNS
-      ;;
-    vim)
-      vim "$file" +$start
-      ;;
-    *)
-      { echo "$1 - is not a valid opener" >&2; return 1; }
-      ;;
-  esac
-}
-export -f __rg__pick_open
-
 function rg__pick {
   test -n "$1" || { echo "No input string" >&2; return 1; }
 
-  fzfSelected=$(rg --color always -in --no-heading "$1" | fzf --ansi --preview "__rg__pick_open bat {}")
+  #file:line:content
+  fzfSelected=$(rg --color always --line-number --no-heading --smart-case "$1" | \
+    fzf --ansi --delimiter=':' --preview-window '+{2}/4' --preview  \
+    'bat {1} --wrap=character --color=always --highlight-line {2} --terminal-width ${FZF_PREVIEW_COLUMNS}')
   fzfResult="$?"
 
   if [ "$fzfResult" = "0" -a -n "$fzfSelected" ]; then
-    #Remove suffix - line content
-    __rg__pick_open vim "$fzfSelected"
+    IFS=: read -r file line content <<< "$fzfSelected"
+    let start=$line-8
+    test $start -ge 1 || start="1"
+    vim "$file" +"$start"
   fi
 }
 
