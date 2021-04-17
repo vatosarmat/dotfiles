@@ -5,7 +5,7 @@ shopt -s histverify
 HISTSIZE=
 HISTFILESIZE=
 HISTCONTROL=ignoreboth:erasedups
-HISTIGNORE="ls *":"cd *":"man *":"help *":"r":"exit"
+HISTIGNORE="ls *":"cd *":"man *":"help *":"r":"exit":"ll"
 HISTTIMEFORMAT="%F %T:%Z - "
 #PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 PS1='\[\033[01;34m\]\w\[\033[00m\]\$ '
@@ -44,7 +44,8 @@ alias perl_info='perl -V'
 alias perl_cpan='perl -MCPAN -Mlocal::lib -e shell'
 
 alias sbrc='source "$HOME/.bashrc"'
-alias ebp='$EDITOR "$HOME/.profile"'
+alias vimi='vim -i .shada'
+alias vimd="cd ~/dotfiles ; vim -i .shada bashrc.bash"
 
 alias info='info --vi-keys'
 alias hcurl='curl -s -o /dev/null -D -'
