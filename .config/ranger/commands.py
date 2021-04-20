@@ -14,10 +14,28 @@ import os
 
 # You always need to import ranger.api.commands here to get the Command class:
 from ranger.api.commands import Command
+from ranger.core.linemode import LinemodeBase
+from ranger.api import register_linemode
+from ranger.ext.human_readable import human_readable, human_readable_time
 
+
+@register_linemode
+class LsVerbose(LinemodeBase):
+    name = "ls_verbose"
+    uses_metadata = False
+
+    def filetitle(self, file, metadata):
+        return file.relative_path
+
+    def infostring(self, file, metadata):
+        return "{} {}  {}".format('->' if file.is_link else '',
+                                  human_readable(file.size),
+                                  file.stat.st_nlink)
 
 # Any class that is a subclass of "Command" will be integrated into ranger as a
 # command.  Try typing ":my_edit<ENTER>" in ranger!
+
+
 class my_edit(Command):
     # The so-called doc-string of the class will be visible in the built-in
     # help that is accessible by typing "?c" inside ranger.
@@ -60,3 +78,8 @@ class my_edit(Command):
         # This is a generic tab-completion function that iterates through the
         # content of the current directory.
         return self._tab_directory_content()
+
+
+class ping(Command):
+    def execute(self):
+        os.system('ping facebook.com')

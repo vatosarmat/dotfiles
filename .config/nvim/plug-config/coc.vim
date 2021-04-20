@@ -1,7 +1,7 @@
 
 let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
   \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
-  \'coc-tsserver', 'coc-lua']
+  \'coc-tsserver', 'coc-lua', 'coc-python']
 
 "Various 'go to' actions
 nmap <silent> gd <Plug>(coc-definition)
