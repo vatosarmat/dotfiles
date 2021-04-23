@@ -1,3 +1,15 @@
+
+"Handy blockw movement
+nnoremap K {
+nnoremap J }
+
+"Handy line start/end
+nnoremap <C-h> _
+nnoremap <C-l> g_
+
+"Redraw
+nnoremap g_ <C-l>
+
 "Paste from vim to system clipboard
 nnoremap <silent> <M-y> :let @+=@"<cr>
 
@@ -7,6 +19,9 @@ inoremap <silent> <C-s> <Esc>:w<cr>
 
 "yy - for string, Y - for rest of string, same with 'c' and 'd'
 nnoremap Y y$
+
+"No overwrite paste
+xnoremap p "_dP
 
 "Line in 'less' utility
 nnoremap <silent> <M-u> :noh<CR>

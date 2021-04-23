@@ -20,7 +20,7 @@ xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
 
 "If has hover provider, doHover; otherwise - default 'K' 'man'
-nnoremap <silent> K :call <sid>HoverOrMan()<CR>
+nnoremap <silent> <C-j> :call <sid>HoverOrMan()<CR>
 
 "Move default 'K' 'man' under the \
 nnoremap <silent><leader>K :normal! K <CR>
