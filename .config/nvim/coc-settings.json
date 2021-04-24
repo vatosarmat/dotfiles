@@ -14,7 +14,22 @@
   "coc.preferences.formatOnSaveFiletypes": ["*"],
   "list.previewSplitRight": true,
   "clangd.semanticHighlighting": true,
+  "diagnostic-languageserver.filetypes": {
+    "sh": "shellcheck"
+  },
   "languageserver": {
+    "dls": {
+      "command": "diagnostic-languageserver",
+      "args": ["--stdio"],
+      "filetypes": ["sh"]
+    },
+    "bash": {
+      "enable": false,
+      "command": "bash-language-server",
+      "args": ["start"],
+      "filetypes": ["sh"],
+      "ignoredRootPaths": ["~"]
+    },
     "haskell": {
       "enable": true,
       "command": "haskell-language-server-wrapper",

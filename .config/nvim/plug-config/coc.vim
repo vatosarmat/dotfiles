@@ -1,7 +1,7 @@
 
 let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
   \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
-  \'coc-tsserver', 'coc-lua', 'coc-python']
+  \'coc-tsserver', 'coc-eslint', 'coc-lua', 'coc-python', 'coc-sh', 'coc-diagnostic']
 
 "Various 'go to' actions
 nmap <silent> gd <Plug>(coc-definition)
@@ -18,6 +18,9 @@ xmap ic <Plug>(coc-classobj-i)
 omap ic <Plug>(coc-classobj-i)
 xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
+
+nmap <silent> [v <Plug>(coc-diagnostic-prev)
+nmap <silent> ]v <Plug>(coc-diagnostic-next)
 
 "If has hover provider, doHover; otherwise - default 'K' 'man'
 nnoremap <silent> <C-j> :call <sid>HoverOrMan()<CR>
@@ -56,7 +59,7 @@ vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(
 nnoremap <silent> <C-n> :CocCommand explorer<CR>
 
 "List providers
-command! -nargs=0 -complete=command ListCocProviders silent call <sid>ListCocProviders()
+command! -nargs=0 -complete=command ListCocProviders call <sid>ListCocProviders()
 
 "Restart helps with frozen signs
 cnoreabbrev cr CocRestart

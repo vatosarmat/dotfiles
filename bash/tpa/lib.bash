@@ -1,4 +1,5 @@
-__TPA_CACHE_FILE="$(dirname $(realpath ${BASH_SOURCE}))/.cache"
+#shellcheck shell=bash
+__TPA_CACHE_FILE="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.cache"
 
 function __tpa__validate_exe {
   # name, in Dist
@@ -23,6 +24,7 @@ function tpa__symlink_install {
   chmod +x "$exe_file"
 
   if [[ -s "$__TPA_CACHE_FILE" ]]; then
+    #shellcheck disable=1003
     sed 'a\'"$symlink_name" < "$__TPA_CACHE_FILE" | sort -u | sponge "$__TPA_CACHE_FILE"
   else
     echo "$symlink_name" > "$__TPA_CACHE_FILE"
@@ -47,6 +49,7 @@ function tpa__symlink_uninstall {
 
 function __tpa__symlink_uninstall_completions {
   if [[ -s "$__TPA_CACHE_FILE" ]]; then
+    #I don't want to bother with completion for now
     COMPREPLY=($(compgen -W "$(<"$__TPA_CACHE_FILE")" -- "${COMP_WORDS[1]}"))
   fi
 }

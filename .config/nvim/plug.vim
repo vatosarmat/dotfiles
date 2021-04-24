@@ -89,6 +89,7 @@ function! s:Asterisk() abort
 endfunction
 
 function! s:Surround() abort
+  xmap s S
   augroup PlugSurround
     autocmd!
 

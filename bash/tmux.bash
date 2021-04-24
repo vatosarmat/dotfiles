@@ -1,8 +1,9 @@
-
+#shellcheck shell=bash
 function tmux__pane_has_process {
   #1 - process name
   test -n "$1" || { echo "No process name" >&2; return 1; }
   pattern='^[^TXZ ]+ +'"${1}"'$'
+  #shellcheck disable=2009
   ps -o state= -o comm= -t "$(tmux display-message -p '#{pane_tty}')" | grep -iqE "$pattern"
 }
 

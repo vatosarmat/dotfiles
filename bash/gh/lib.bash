@@ -1,7 +1,8 @@
+#shellcheck shell=bash
 function __gh__prompt_repo_action {
   repo=${1##+( )}
   while true; do
-    read -n 1 -p "${t_bold}${repo}${t_norm} - [${t_bold}w${t_norm}]eb, [${t_bold}v${t_norm}]iew, [${t_bold}r${t_norm}]elease? " act;
+    read -rn 1 -p "\e[1m${repo}\e[m - [\e[1mw\e[m]eb, [\e[1mv\e[m]iew, [\e[1mr\e[m]elease? " act;
     echo -e "\n"
 
     case $act in
@@ -19,18 +20,19 @@ function __gh__prompt_repo_action {
         ;;
     esac
   done
-  cache_file="$(dirname $(realpath ${BASH_SOURCE}))/.cache"
+  cache_file="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.cache"
+  #shellcheck disable=1003
   sed '$a\'"${repo}" < "$cache_file" | sort -u | sponge "${cache_file}"
 }
 
 function gh__cache {
   q="$*"
-  cache_file="$(dirname $(realpath ${BASH_SOURCE}))/.cache"
+  cache_file="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.cache"
 
   fzfSelected=$(fzf --query "$q" < "$cache_file")
   fzfStatus="$?"
 
-  if [ "$fzfStatus" = "0" -a -n "$fzfSelected" ]; then
+  if [ "$fzfStatus" = "0" ] && [ -n "$fzfSelected" ]; then
     __gh__prompt_repo_action "$fzfSelected"
   fi
 }
@@ -40,7 +42,7 @@ function __gh__assets {
   tag="$2"
   fieldSep=$'\ua0'
 
-  fzfSelected=$(gh api repos/${repo}/releases/tags/${tag} | \
+  fzfSelected=$(gh api repos/"${repo}"/releases/tags/"${tag}" | \
     jq --arg F__ "$fieldSep" '.assets | map( .name +
       $F__ + (.size |
         if .>1000000 then (./1000000)|floor|tostring+" M"
@@ -50,10 +52,11 @@ function __gh__assets {
     fzf --nth=1,2 --delimiter="$fieldSep" -m )
   fzfStatus="$?"
 
-  if [ "$fzfStatus" = "0" -a -n "$fzfSelected" ]; then
+  if [ "$fzfStatus" = "0" ] && [ -n "$fzfSelected" ]; then
     path="$HOME/Dist/${repo#*/}/$tag"
     mkdir -p "$path"
     asset_args=$(echo "$fzfSelected" | awk -F "$fieldSep" '{ r=r" -p "$1 } END{ print r }')
+    #shellcheck disable=2086
     gh release download -R "$repo" $asset_args -D "$path"
   fi
 }
@@ -71,7 +74,8 @@ function gh__releases {
   fzfSelected=$(gh release list -R "$1" | fzf )
   fzfStatus="$?"
 
-  if [ "$fzfStatus" = "0" -a -n "$fzfSelected" ]; then
+  if [ "$fzfStatus" = "0" ] && [ -n "$fzfSelected" ]; then
+    #shellcheck disable=2034
     IFS=$'\t' read -r title comment tag rest<<< "$fzfSelected"
     __faketty gh release view -R "$1" "$tag" | $PAGER
     __gh__assets "$1" "$tag"
@@ -93,8 +97,9 @@ function gh__search {
         --preview 'echo {3}' --preview-window wrap)
   fzfStatus="$?"
 
-  if [ "$fzfStatus" = "0" -a -n "$fzfSelected" ]; then
-    IFS="$fieldSep" read stars repo rest <<< "$fzfSelected"
+  if [ "$fzfStatus" = "0" ] && [ -n "$fzfSelected" ]; then
+    #shellcheck disable=2034
+    IFS="$fieldSep" read -r stars repo rest <<< "$fzfSelected"
     __gh__prompt_repo_action "$repo"
   fi
 }

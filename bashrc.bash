@@ -1,10 +1,13 @@
+#shellcheck shell=bash
+#shellcheck disable=1090
 stty -ixon
 set -o ignoreeof
-
 shopt -s histverify
+
 HISTSIZE=
 HISTFILESIZE=
 HISTCONTROL=ignoreboth:erasedups
+#shellcheck disable=2140
 HISTIGNORE="ls *":"cd *":"man *":"help *":"r":"exit":"ll"
 HISTTIMEFORMAT="%F %T:%Z - "
 #PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
@@ -65,19 +68,14 @@ alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
 
 #Not actually aliasses but usefull commands to remember
-alias binecho="dd of=/dev/stdout count=1 status=none"
+#dd is not like echo, it requires file
+alias binecho="dd of=/dev/stdout count=1 status=none <<< "
 alias fodiff="vim -d  <(fc-match JetBrainsMono --format '%{charset}' | tr ' ' '\n') <(fc-match 'JetBrainsMono NerdFont' --format '%{charset}' | tr ' ' '\n')"
 alias notif="while inotifywait -q -q -e modify pg.lua ; do lua pg.lua; done"
 alias color8='printf "\e[40m  \e[41m  \e[42m  \e[43m  \e[44m  \e[45m  \e[46m  \e[47m  \e[m\n"'
 
 alias ghus="gh__search"
 alias ghuc="gh__cache"
-
-
-#escapes
-
-t_bold=$(tput bold)
-t_norm=$(tput sgr0)
 
 #Functions
 
@@ -93,6 +91,7 @@ function bindiff {
 }
 
 #add filed or directory to dotfiles
+#shellcheck disable=2164
 function dotfiles__mv {
   test -n "$1" || { echo "No file or directory name" >&2; return 1; }
   expandedArg="$(realpath "${1}")"
@@ -122,7 +121,7 @@ complete -fd dotfiles__mv
 #List package executables
 function dpkg__lsexe {
   test -n "$1" || { echo "No package name" >&2; return 1; }
-  dpkg -L $1 | while read filePath; do test -x "$filePath" -a -f "$filePath" && echo "$filePath"; done
+  dpkg -L "$1" | while read -r filePath; do test -x "$filePath" -a -f "$filePath" && echo "$filePath"; done
 }
 
 #Sort dependencies in package.json
@@ -141,15 +140,17 @@ function rg__pick {
   test -n "$1" || { echo "No input string" >&2; return 1; }
 
   #file:line:content
+  #shellcheck disable=2016
   fzfSelected=$(rg --color always --line-number --no-heading --smart-case "$1" | \
     fzf --ansi --delimiter=':' --preview-window '+{2}/4' --preview  \
     'bat {1} --wrap=character --color=always --highlight-line {2} --terminal-width ${FZF_PREVIEW_COLUMNS}')
   fzfResult="$?"
 
-  if [ "$fzfResult" = "0" -a -n "$fzfSelected" ]; then
+  if [ "$fzfResult" = "0" ] && [ -n "$fzfSelected" ]; then
+    #shellcheck disable=2034
     IFS=: read -r file line content <<< "$fzfSelected"
-    let start=$line-8
-    test $start -ge 1 || start="1"
+    ((start=line-8))
+    test "$start" -ge 1 || start="1"
     vim "$file" +"$start"
   fi
 }
@@ -181,7 +182,6 @@ function font__ls_chars {
 }
 
 BASH_LIBS="gh/lib.bash tpa/lib.bash"
-
 for f in $BASH_LIBS; do
   source "$HOME/dotfiles/bash/$f"
 done
