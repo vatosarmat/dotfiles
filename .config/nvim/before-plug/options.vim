@@ -1,3 +1,4 @@
+set nomodeline
 set hidden
 set autoread
 set noundofile

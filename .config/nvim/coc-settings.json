@@ -1,5 +1,8 @@
 {
   "suggest.autoTrigger": "none",
+  "diagnostic.errorSign": "⛔",
+  "diagnostic.infoSign": "ℹ",
+  "diagnostic.hintSign": "💡",
   "explorer.icon.enableNerdfont": true,
   "explorer.position": "left",
   "explorer.file.hiddenRules": {

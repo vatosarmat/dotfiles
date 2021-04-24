@@ -1,3 +1,14 @@
+let s:ft_ext = #{
+  \ sh: ['sh', 'bash', 'bashrc'],
+  \ vim: ['vim'],
+  \ json: ['json'],
+  \ python: ['py']
+  \ }
+
+function! IsFtUnordinary(ft, ext) abort
+  return index(get(s:ft_ext, a:ft, []), a:ext) == -1
+endfunction
+
 function! FileStatusLine() abort
   return "%<"
     \."%f"
@@ -28,11 +39,11 @@ function! ExplorerStatusLine() abort
 endfunction
 
 function! StatusCoc() abort
-  return winwidth(0) >= 70 ? '  ['.coc#status().']' : ''
+  return winwidth(0) >= 70 ? ' ['.coc#status().']' : ''
 endfunction
 
 function! StatusFileType() abort
-  return winwidth(0) >= 90 ? ' ['.&filetype.']' : ''
+  return IsFtUnordinary(&filetype, expand("%:e")) && winwidth(0) >= 90 ? ' ['.&filetype.'] ' : ''
 endfunction
 
 function! StatusRootDir() abort
@@ -42,12 +53,12 @@ function! StatusRootDir() abort
   let root = fnamemodify(maybeRoot ? maybeRoot : getcwd(), ':t')
   let gitStatus = get(b:, 'gitsigns_status_dict', '')
   if empty(gitStatus)
-    return '  ['.root.'/NO GIT]'
+    return ' ['.root.'/NO GIT] '
   else
     let changes = (get(gitStatus, 'added', 0) ? '  '.gitStatus.added : '')
       \.(get(gitStatus, 'removed', 0) ? '  '.gitStatus.removed : '')
       \.(get(gitStatus, 'changed', 0) ? '  '.gitStatus.changed : '')
-    return  '  [ '.root.'/'.gitStatus.head.(empty(changes) ? '' : ' |'.changes ).']'
+    return  ' [ '.root.'/'.gitStatus.head.(empty(changes) ? '' : ' |'.changes ).'] '
   endif
 endfunction
 
