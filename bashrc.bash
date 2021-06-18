@@ -66,6 +66,9 @@ alias gisi="git status --ignored"
 alias lbat='BAT_PAGER="less ${LESS}" bat'
 alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
+alias tmzs='tmux__zero_session'
+alias tmclr="rm .tmux/resurrect/*"
+alias tso='tmux show -A'
 
 #Not actually aliasses but usefull commands to remember
 #dd is not like echo, it requires file
@@ -153,6 +156,37 @@ function rg__pick {
     test "$start" -ge 1 || start="1"
     vim "$file" +"$start"
   fi
+}
+
+#tmux
+function tmux__zero_session {
+  tmux \
+    new-session -s 0 \; \
+    new-window -d -n misc -t 0 \; \
+    new-window -n dotfiles -t 2 -c ~/dotfiles \; send-keys vimd C-m \; select-window -t 1 \; \
+    rename-window main
+}
+
+function tmux__list_options {
+  local range
+  case $1 in
+    -s)
+      range='/^ {5}Available server options/,/^ {5}Available session options/p'
+      ;;
+    -e)
+      range='/^ {5}Available session options/,/^ {5}Available window options/p'
+      ;;
+    -w)
+      range='/^ {5}Available window options/,/^ {5}Available pane options/p'
+      ;;
+    -p)
+      range='/^ {5}Available pane options/,/^[A-Z]/p'
+      ;;
+    *)
+      range='/^ {5}Available server options/,/^[A-Z]/p'
+      ;;
+  esac
+  man -P cat tmux | sed -En "$range" | grep -E --color=never '^ {5}[a-z]'
 }
 
 #font
