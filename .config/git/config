@@ -1,0 +1,28 @@
+[merge]
+  tool = nvim
+  conflictStyle = diff3
+
+[mergetool]
+  keepBackup = false
+
+[mergetool "nvim"]
+  cmd = nvim -d $MERGED $LOCAL $BASE $REMOTE -c 'wincmd J'
+  trustExitCode = false
+
+[diff]
+  tool = nvim
+  algorithm = patience
+  indentHeuristic = true
+
+[difftool]
+  keepBackup = false
+
+[difftool "nvim"]
+  cmd = nvim -d $LOCAL $REMOTE
+
+[alias]
+  ss = status
+  s = status --short
+  lg = log --oneline --decorate --graph --all
+  ba = branch -a
+  fap = fetch --all --prune
