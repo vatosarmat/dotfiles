@@ -2,3 +2,5 @@
 C        filter \^[A-Z][A-Z\/ ]*$
 c        forw-search \^[A-Z][A-Z\/ ]*$
 o        forw-search \^\\s*-
+a        forw-search \^\\s{3}[A-Z][A-Za-z/ ]*$
+\ebp     forw-search \^\\s*\\$\\{parameter
