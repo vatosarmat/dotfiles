@@ -8,28 +8,38 @@ HISTSIZE=
 HISTFILESIZE=
 HISTCONTROL=ignoreboth:erasedups
 #shellcheck disable=2140
-HISTIGNORE="ls *":"cd *":"man *":"help *":"r":"exit":"ll"
+HISTIGNORE="ll *":"cd *":"help *":"r":"exit"
 HISTTIMEFORMAT="%F %T:%Z - "
 #PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 PS1='\[\033[01;34m\]\w\[\033[00m\]\$ '
 export EDITOR=nvim
 export PAGER=less
-export LESS='-s -M -R -I -j10 +Gg'
+export LESS='-s -M -R -F -i -j10'
 export MANPAGER="$PAGER"
 export SYSTEMD_LESS="-M -R"
-export BAT_PAGER=""
-export BAT_THEME="1337"
+export BAT_PAGER="less -R"
+export BAT_THEME="Visual Studio Dark+"
 export FZF_DEFAULT_COMMAND="fd --type file --follow --hidden --exclude .git"
-export FZF_DEFAULT_OPTS="--reverse --height 55% --extended --bind alt-f:half-page-down,alt-b:half-page-up"
+export FZF_DEFAULT_OPTS
+FZF_DEFAULT_OPTS="--reverse --height 55% --extended"
+FZF_DEFAULT_OPTS+=" --bind='ctrl-d:half-page-down,ctrl-u:half-page-up,f2:toggle-preview,f3:toggle-preview-wrap'"
 export RIPGREP_CONFIG_PATH="$HOME/dotfiles/.ripgreprc"
 
-#export LESS_TERMCAP_mb=$'\E[1;31m'     # begin bold
-#export LESS_TERMCAP_md=$'\E[1;36m'     # begin blink
-#export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
-#export LESS_TERMCAP_so=$'\E[01;44;33m' # begin reverse video
-#export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
-export LESS_TERMCAP_us=$'\E[1;36m'     # begin underline
-export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+BOLD=$(tput bold)
+BLUE=$(tput setaf 4)
+CYAN=$(tput setaf 6)
+SGR0=$(tput sgr0)
+export BOLD
+export BLUE
+export CYAN
+export SGR0
+
+export LESS_TERMCAP_md
+export LESS_TERMCAP_us
+export LESS_TERMCAP_ue
+LESS_TERMCAP_md="${BOLD}${BLUE}" # begin bold
+LESS_TERMCAP_us="$CYAN"          # begin underline
+LESS_TERMCAP_ue="$SGR0"          # reset underline
 
 #Aliases
 #Sys-admin things first, application least
@@ -42,6 +52,7 @@ alias sc="systemctl"
 alias scn="systemctl --no-pager"
 alias scu="systemctl --user"
 alias scun="systemctl --user --no-pager"
+alias apt_lsppa="apt policy"
 
 alias perl_info='perl -V'
 alias perl_cpan='perl -MCPAN -Mlocal::lib -e shell'
@@ -52,18 +63,15 @@ alias vimd="cd ~/dotfiles ; vim -i .shada bashrc.bash"
 
 alias info='info --vi-keys'
 alias hcurl='curl -s -o /dev/null -D -'
-alias hgrep='history | grep'
 alias r=". ranger"
 alias l="lf"
-alias tcls="rm .tmux/resurrect/*"
+alias g="git"
 alias torh="transmission-remote"
 alias torls="transmission-remote -l"
 alias torad="transmission-remote --add"
 alias vpnup="nmcli con up vpn99"
 alias vpndown="nmcli con down vpn99"
 
-alias gisi="git status --ignored"
-alias lbat='BAT_PAGER="less ${LESS}" bat'
 alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
 alias tmzs='tmux__zero_session'
@@ -75,7 +83,7 @@ alias tso='tmux show -A'
 alias binecho="dd of=/dev/stdout count=1 status=none <<< "
 alias fodiff="vim -d  <(fc-match JetBrainsMono --format '%{charset}' | tr ' ' '\n') <(fc-match 'JetBrainsMono NerdFont' --format '%{charset}' | tr ' ' '\n')"
 alias notif="while inotifywait -q -q -e modify pg.lua ; do lua pg.lua; done"
-alias color8='printf "\e[40m  \e[41m  \e[42m  \e[43m  \e[44m  \e[45m  \e[46m  \e[47m  \e[m\n"'
+alias color8='printf "\e[40;37m 0 \e[41;36m 1 \e[42;35m 2 \e[43;34m 3 \e[44;33m 4 \e[45;32m 5 \e[46;31m 6 \e[47;30m 7 \e[m\n"'
 
 alias ghus="gh__search"
 alias ghuc="gh__cache"
