@@ -1,23 +1,35 @@
+" An action can be a reference to a function that processes selected lines
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+endfunction
 
-"LOCAL GIT HAS CHANGES
 "Default file picker
 nnoremap <silent><C-p> :Files<cr>
 nnoremap <silent><M-m> :Buffers<cr>
-let g:fzf_action = { 'ctrl-l': 'vsplit', 'ctrl-t': 'tab split', 'ctrl-x': 'split' }
+let g:fzf_action = {
+  \'ctrl-q': function('s:build_quickfix_list'),
+  \'ctrl-l': 'vsplit',
+  \'ctrl-t': 'tab split',
+  \'ctrl-x': 'split' }
 
 "Navigate marks just like files
 nnoremap <silent><leader>ml :call <sid>MarksLocal()<cr>
-nnoremap <silent><leader>mg :call <sid>MarksGlobal()<cr>
+nnoremap <silent><leader>mm :call <sid>MarksGlobal()<cr>
 
 "[Rip]grep shortcuts
 "Simple, smart-case
-nnoremap <leader>gs :Rg<space>
+nnoremap <leader>rs :Rg<space>
+nnoremap <leader>rp :Rg <C-r>=utils#GetSearchPatternWithoutFlags()<cr>
 "With file glob pattern
-nnoremap <leader>gp :Rga '' -- -g *
+nnoremap <leader>ra :Rga ''<left>
 
 "Handy abbrevs
 cnoreabbrev ht h \| Helptags
 cnoreabbrev hf h fzf-vim
+
+"Find quesitions
+cnoreabbrev rq Rga -F '???'
 
 "Ripgrep taking command line args
 let s:rga_shell_command = "rg --column --line-number --no-heading --color=always --smart-case"
@@ -28,6 +40,7 @@ command! -bang -nargs=* Rga
 function! s:MarksLocal() abort
   let list = s:GetLocalMarksList()
   let options = [
+    \'--query', '^',
     \'--ansi',
     \'--preview-window', '+{2}/4',
     \"--prompt", "Local marks> ",
@@ -38,6 +51,7 @@ endfunction
 function! s:MarksGlobal() abort
   let list = s:GetGlobalMarksList()
   let options = [
+    \'--query', '^',
     \'--ansi',
     \'--preview-window', '+{4}/4',
     \"--prompt", "GlobalMarks> ",
@@ -49,7 +63,7 @@ function! s:MarksGlobal() abort
 endfunction
 
 function! s:MarkSink(line) abort
-  execute "normal" "'".a:line[0].'zz'
+  execute "normal!" "'".a:line[0].'zz'
 endfunction
 
 function! s:GetLocalMarksList() abort

@@ -1,4 +1,5 @@
 "Help abbrevs
+cnoreabbrev ht Helptags
 cnoreabbrev hq h quickref
 cnoreabbrev he h eval.txt
 

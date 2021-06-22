@@ -1,6 +1,7 @@
 {
   "suggest.autoTrigger": "none",
-  "diagnostic.errorSign": "⛔",
+  "suggest.noselect": false,
+  "diagnostic.errorSign": "❌",
   "diagnostic.infoSign": "ℹ",
   "diagnostic.hintSign": "💡",
   "explorer.icon.enableNerdfont": true,
@@ -15,44 +16,67 @@
   "signature.enable": false,
   "coc.preferences.formatOnType": true,
   "coc.preferences.formatOnSaveFiletypes": ["*"],
+  "coc.source.around.firstMatch": true,
+  "coc.source.buffer.firstMatch": true,
+  "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   "list.previewSplitRight": true,
   "clangd.semanticHighlighting": true,
+  /*Shellcheck is better for that*/
+  "sh.highlightParsingErrors": false,
   "diagnostic-languageserver.filetypes": {
     "sh": "shellcheck"
   },
-  "languageserver": {
-    "dls": {
-      "command": "diagnostic-languageserver",
-      "args": ["--stdio"],
-      "filetypes": ["sh"]
-    },
-    "bash": {
-      "enable": false,
-      "command": "bash-language-server",
-      "args": ["start"],
-      "filetypes": ["sh"],
-      "ignoredRootPaths": ["~"]
-    },
-    "haskell": {
-      "enable": true,
-      "command": "haskell-language-server-wrapper",
-      "args": ["--lsp"],
-      "rootPatterns": [
-        "*.cabal",
-        "stack.yaml",
-        "cabal.project",
-        "package.yaml",
-        "hie.yaml"
-      ],
-      "filetypes": ["haskell", "lhaskell"],
-      "initializationOptions": {
-        "languageServerHaskell": {
-          "hlintOn": true,
-          "maxNumberOfProblems": 10,
-          "completionSnippetsOn": true,
-          "formattingProvider": "ormolu"
-        }
-      }
+  "diagnostic-languageserver.formatFiletypes": {
+    // format `sh` (includes `bash`) files using formatter defined below
+    "sh": "shfmt"
+  },
+  "diagnostic-languageserver.formatters": {
+    // define our formatter so that we can reference it from
+    // `diagnostic-languageserver.formatFiletypes`
+    "shfmt": {
+      "command": "shfmt",
+      // all the below args are entirely optional
+      // primarily listed here to call out that flags which take an
+      // argument (such as `-i <num-spaces>` for specifying indentation)
+      // should be split into two strings, the flag and then the value
+      "args": ["-i", "2", "-bn", "-ci", "-sr"]
     }
+  },
+  /* "tsserver.trace.server": "verbose", */
+  /* "tsserver.log": "verbose", */
+  "languageserver": {
+    /* "dls": { */
+    /*   "command": "diagnostic-languageserver", */
+    /*   "args": ["--stdio", "--log-level=4"], */
+    /*   "filetypes": ["sh"], */
+    /*   "initializationOptions": { */
+    /*     "linters": { */
+    /*       "shellcheck": { */
+    /*         "args": ["--format=json", "--shell=sh", "-"] */
+    /*       } */
+    /*     } */
+    /*   } */
+    /* }, */
+    /* "haskell": { */
+    /*   "enable": false, */
+    /*   "command": "haskell-language-server-wrapper", */
+    /*   "args": ["--lsp"], */
+    /*   "rootPatterns": [ */
+    /*     "*.cabal", */
+    /*     "stack.yaml", */
+    /*     "cabal.project", */
+    /*     "package.yaml", */
+    /*     "hie.yaml" */
+    /*   ], */
+    /*   "filetypes": ["haskell", "lhaskell"], */
+    /*   "initializationOptions": { */
+    /*     "languageServerHaskell": { */
+    /*       "hlintOn": true, */
+    /*       "maxNumberOfProblems": 10, */
+    /*       "completionSnippetsOn": true, */
+    /*       "formattingProvider": "ormolu" */
+    /*     } */
+    /*   } */
+    /* } */
   }
 }

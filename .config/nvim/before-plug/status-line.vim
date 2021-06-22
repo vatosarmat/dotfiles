@@ -1,8 +1,13 @@
 let s:ft_ext = #{
   \ sh: ['sh', 'bash', 'bashrc'],
   \ vim: ['vim'],
+  \ lua: ['lua'],
   \ json: ['json'],
-  \ python: ['py']
+  \ markdown: ['md'],
+  \ python: ['py'],
+  \ typescriptreact: ['tsx'],
+  \ typescript: ['ts'],
+  \ text: ['txt']
   \ }
 
 function! IsFtUnordinary(ft, ext) abort
@@ -39,7 +44,24 @@ function! ExplorerStatusLine() abort
 endfunction
 
 function! StatusCoc() abort
-  return winwidth(0) >= 70 ? ' ['.coc#status().']' : ''
+  if winwidth(0) < 70 | return '' | endif
+
+  const cs = coc#status()
+  const cf = get(b:,'coc_current_function','')
+  let items = []
+
+  if !empty(cs)
+    call add(items, cs)
+  endif
+  if !empty(cf)
+    call add(items, cf)
+  endif
+
+  if empty(items)
+    return ''
+  endif
+
+  return ' ['.join(items, ' | ').']'
 endfunction
 
 function! StatusFileType() abort

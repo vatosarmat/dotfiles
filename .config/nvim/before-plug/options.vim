@@ -4,6 +4,8 @@ set autoread
 set noundofile
 set nobackup nowritebackup
 set noswapfile
+" set cmdheight=2
+" set shortmess+=c
 
 set scrolloff=5
 
@@ -11,7 +13,7 @@ set mouse=a
 
 set virtualedit=block
 
-set updatetime=1000
+set updatetime=100
 
 set expandtab tabstop=2 softtabstop=2 shiftwidth=2 nosmarttab
 set autoindent smartindent
@@ -21,11 +23,15 @@ set keywordprg=:vert\ Man
 
 set number
 set relativenumber
+set signcolumn=yes
 
 set ignorecase
 set smartcase
 set nowrapscan
 set noincsearch
+
+set grepprg=grep\ -n\ --with-filename\ -I\ -R
+set grepformat=%f:%l:%m
 
 set tgc
 "set noshowmode
@@ -33,7 +39,7 @@ set tgc
 " set wildmode=longest,list,full
 
 "Disable folds in diffview
-set diffopt+=vertical,context:10000
+set diffopt+=vertical,context:10000,foldcolumn:0,indent-heuristic,algorithm:patience,hiddenoff
 
 let mapleader = " "
 nnoremap <Space> <Nop>

@@ -53,7 +53,7 @@ function! s:InitPlugins() abort
   source $STD_PATH_CONFIG/plug-config/fzf.vim
   source $STD_PATH_CONFIG/plug-config/coc.vim
   luafile $STD_PATH_CONFIG/plug-config/treesitter.lua
-  luafile $STD_PATH_CONFIG/plug-config/gitsigns.lua
+  lua require'plug-config.gitsigns'.setup()
 endfunction
 
 
@@ -70,6 +70,9 @@ endfunction
 
 function! s:Wordmotion() abort
   let g:wordmotion_nomap = 1
+
+  " TODO: configure whitespaces
+  " nnoremap <expr><leader>twd add(g:word_motion_spaces, '.')
 
   nmap <M-w>          <Plug>WordMotion_w
   nmap <M-b>          <Plug>WordMotion_b
@@ -116,7 +119,7 @@ endfunction
 
 function! s:Commentary() abort
   function! s:CommentaryImplExpr(a)
-    lua require('ts_context_commentstring.internal').update_commentstring()
+    silent! lua require('ts_context_commentstring.internal').update_commentstring()
     if a:a == 1
       return "\<Plug>Commentary"
     else
@@ -140,6 +143,8 @@ function! s:Colorscheme() abort
   hi Visual guibg=#264f78
   hi Search guibg=#613214
   hi LspDiagnosticsSignError guifg=#c87a7a
+  hi CocHighlightText guibg=#3a3a3a
+  hi YankHighlight guibg=#1d3a3a
 
   " hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#2c323c ctermbg=236 gui=NONE cterm=NONE
   " hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=NONE ctermbg=NONE gui=NONE cterm=NONE
@@ -147,6 +152,19 @@ function! s:Colorscheme() abort
 
   hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#000000 ctermbg=236 gui=NONE cterm=NONE
   hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE cterm=NONE
+
+  " hi DiffAdd guifg=NONE guibg=#4b5632
+  " hi DiffDelete guifg=NONE guibg=NONE
+  " hi DiffChange guifg=NONE guibg=#053f4f
+  " hi DiffDelete guifg=NONE guibg=#4a0a0d
+  "
+  hi RedBlue guifg=#ff0000, guibg=#00ff00
+
+  hi DiffAdd guifg=NONE guibg=#151e00
+  hi DiffDelete guifg=NONE guibg=#101010
+  hi DiffChange guifg=NONE gui=NONE guibg=#01181e
+  hi DiffText guifg=NONE guibg=#1e0000
+  hi DiffConflictMarker guibg=#666666 guifg=#000000
 
   " hi GitSignsAdd    guifg=NONE guibg=#608b4e
   " hi GitSignsChange guifg=NONE guibg=#dcdcaa

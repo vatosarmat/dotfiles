@@ -1,12 +1,16 @@
+" let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
+"   \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
+"   \'coc-tsserver', 'coc-eslint', 'coc-lua', 'coc-python', 'coc-sh', 'coc-diagnostic']
 
 let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
   \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
-  \'coc-tsserver', 'coc-eslint', 'coc-lua', 'coc-python', 'coc-sh', 'coc-diagnostic']
+  \'coc-tsserver', 'coc-eslint', 'coc-lua', 'coc-python',
+  \'coc-sh', 'coc-diagnostic']
 
 "Various 'go to' actions
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> <leader>ci <Plug>(coc-implementation)
+nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
 "Function and clss text objects for operator and visual modes
@@ -19,30 +23,34 @@ omap ic <Plug>(coc-classobj-i)
 xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
 
-nmap <silent> [v <Plug>(coc-diagnostic-prev)
-nmap <silent> ]v <Plug>(coc-diagnostic-next)
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 "If has hover provider, doHover; otherwise - default 'K' 'man'
 nnoremap <silent> <C-j> :call <sid>HoverOrMan()<CR>
 
 "Move default 'K' 'man' under the \
-nnoremap <silent><leader>K :normal! K <CR>
+nnoremap <silent><leader>K <cmd>normal! K <CR>
 
 "CoC outline is not much useful, better use something like Vista.vim
-nnoremap <silent><leader>co :CocList --normal --no-quit outline<cr>
+nnoremap <silent><leader>co <cmd>CocList --normal --no-quit outline<cr>
 
 "Diagnostics list
-nnoremap <silent><leader>cld :CocList diagnostics<cr>
+nnoremap <silent><leader>cld <cmd>CocList diagnostics<cr>
 nmap <leader>cf <Plug>(coc-fix-current)
 
+"Symbol rename
+nmap <leader>cr <Plug>(coc-rename)
+
 "Format
-vnoremap <silent> <leader>= :call CocAction('formatSelected', visualmode())<CR>
-nnoremap <silent> <leader>= :call CocAction('format')<CR>
+vnoremap <silent> <leader>cm <cmd>call CocAction('formatSelected', visualmode())<CR>
+nnoremap <silent> <leader>cm <cmd>call CocAction('format')<CR>
 "Autoformat
 inoremap <silent> <CR> <C-r>=<SID>OnEnter()<CR>
 
 "Autocomplete
 inoremap <silent> <TAB> <C-r>=<SID>OnTab()<CR>
+imap <silent> <Backspace> <C-r>=<SID>OnBackspace()<CR>
 "Snippetes signed with '~' in autocomplete hover
 let g:coc_snippet_prev = '<C-j>'
 let g:coc_snippet_next = '<tab>'
@@ -55,8 +63,30 @@ inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float
 vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1,3) : "\<C-f>"
 vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0,3) : "\<C-b>"
 
+"Esc closes popups
+nnoremap <silent><expr> <esc> coc#float#has_float() ? "\<cmd>call coc#float#close_all()\<cr>" : "\<esc>"
+
 "COC explorer
-nnoremap <silent> <C-n> :CocCommand explorer<CR>
+nnoremap <silent> <C-n> <cmd>CocCommand explorer<CR>
+
+" ??? Code actions - various refactorings, I suppose
+xmap <leader>ca <Plug>(coc-codeaction-selected)
+nmap <leader>ca <Plug>(coc-codeaction)
+
+"Range select, backward is broken
+nmap <silent> s <Plug>(coc-range-select)
+xmap <silent> <Right> <Plug>(coc-range-select)
+xmap <silent> <Left> <Plug>(coc-range-select-backward)
+
+" ???
+" " Search workspace symbols.
+" nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
+" " Do default action for next item.
+" nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+" " Do default action for previous item.
+" nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+" " Resume latest coc list.
+" nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
 "List providers
 command! -nargs=0 -complete=command ListCocProviders call <sid>ListCocProviders()
@@ -66,6 +96,20 @@ cnoreabbrev cr CocRestart
 
 "Help
 cnoreabbrev hc h coc-nvim.txt
+
+augroup coc
+  autocmd!
+
+  "Highlight symbol
+  autocmd CursorHold * silent call CocActionAsync('highlight')
+
+  " Setup formatexpr if has format-provider
+  autocmd FileType * silent call s:SetFormatExpr()
+
+  " Update signature help on jump placeholder.
+  " ??? Somehow related to snippets, I don't certainly know
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
 
 "Implementations
 function! s:IsSpaceBefore() abort
@@ -81,7 +125,14 @@ function! s:OnEnter() abort
   endif
 endfunction
 
+function! s:SetFormatExpr() abort
+  if CocHasProvider('format')
+    setl formatexpr=CocAction('formatSelected')
+  endif
+endfunction
+
 function! s:OnTab() abort
+  echom "ontab"
   if pumvisible()
     return "\<C-n>"
   elseif coc#expandableOrJumpable()
@@ -90,9 +141,18 @@ function! s:OnTab() abort
     if <sid>IsSpaceBefore()
       return "\<tab>"
     else
+    echom "fuck you"
       return coc#refresh()
     endif
   endif
+endfunction
+
+function! s:OnBackspace() abort
+  if pumvisible()
+    return "\<C-h>".coc#refresh()
+"     " return \<C-h>\<esc>a\<tab>
+  endif
+  return "\<C-h>"
 endfunction
 
 function! s:HoverOrMan() abort
