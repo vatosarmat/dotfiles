@@ -1,6 +1,13 @@
+--engine
+auto
 --smart-case
 --hidden
---no-ignore
+--no-ignore-vcs
+--no-ignore-parent
+--no-ignore-exclude
+--no-ignore-global
+--ignore-dot
 --glob=!.git
+--glob=!.shada
 --type-add
 web:*.{html,css,js}*

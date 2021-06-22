@@ -91,28 +91,44 @@ alias ghuc="gh__cache"
 #Functions
 
 function __faketty {
-    script -qfc "$(printf "%q " "$@")" /dev/null
+  script -qfc "$(printf "%q " "$@")" /dev/null
+}
+
+function watch_input_source {
+  gsettings monitor org.gnome.desktop.input-sources mru-sources | cut -d\' -f4
 }
 
 #compare binary files
 function bindiff {
-  test -n "$1" || { echo "No input files" >&2; return 1; }
-  test -n "$2" || { echo "No second input file" >&2; return 1; }
+  test -n "$1" || {
+    echo "No input files" >&2
+    return 1
+  }
+  test -n "$2" || {
+    echo "No second input file" >&2
+    return 1
+  }
   diff -u --color=always <(xxd "$1") <(xxd "$2")
 }
 
 #add filed or directory to dotfiles
 #shellcheck disable=2164
 function dotfiles__mv {
-  test -n "$1" || { echo "No file or directory name" >&2; return 1; }
+  test -n "$1" || {
+    echo "No file or directory name" >&2
+    return 1
+  }
   expandedArg="$(realpath "${1}")"
   if ! { [ -f "$expandedArg" ] || [ -d "$expandedArg" ]; }; then
-    echo "No such file or directory" >&2;
-    return 1;
+    echo "No such file or directory" >&2
+    return 1
   fi
-  test -h "$1" && { echo "Symlink already created" >&2; return 1; }
+  test -h "$1" && {
+    echo "Symlink already created" >&2
+    return 1
+  }
 
-  pushd "$HOME" >/dev/null
+  pushd "$HOME" > /dev/null
   src=$(realpath --relative-to="$HOME" "$expandedArg")
   dirName=$(dirname "$src")
   baseName=$(basename "$src")
@@ -125,14 +141,34 @@ function dotfiles__mv {
 
   mkdir -p "$dstDirName"
   mv "$src" "$dstDirName" && ln -s -T "$dstDirName/$baseName" "$src"
-  popd >/dev/null
+  popd > /dev/null
 }
 complete -fd dotfiles__mv
 
 #List package executables
 function dpkg__lsexe {
-  test -n "$1" || { echo "No package name" >&2; return 1; }
+  test -n "$1" || {
+    echo "No package name" >&2
+    return 1
+  }
   dpkg -L "$1" | while read -r filePath; do test -x "$filePath" -a -f "$filePath" && echo "$filePath"; done
+}
+
+#List package files
+function dpkg__lsf {
+  test -n "$1" || {
+    echo "No package name" >&2
+    return 1
+  }
+  w="${2:-48}"
+  p=""
+  for f in $(dpkg -L "$1" | sort); do
+    if [[ "$f" != "$p"* ]] && [[ "$p" != "/." ]]; then
+      printf "%-${w}s    %s\n" "$p" "$(file -bi "$p")"
+    fi
+    p=$f
+  done
+  printf "%-${w}s   %s\n" "$p" "$(file -bi "$p")"
 }
 
 #Sort dependencies in package.json
@@ -142,25 +178,31 @@ function yarn__sortdeps {
 
 #Check if string may be used as alias
 function apt__search {
-  test -n "$1" || { echo "No name to search" >&2; return 1; }
+  test -n "$1" || {
+    echo "No name to search" >&2
+    return 1
+  }
   apt search -n "\b$1\b"
 }
 
 #rg
 function rg__pick {
-  test -n "$1" || { echo "No input string" >&2; return 1; }
+  test -n "$1" || {
+    echo "No input string" >&2
+    return 1
+  }
 
   #file:line:content
   #shellcheck disable=2016
-  fzfSelected=$(rg --color always --line-number --no-heading --smart-case "$1" | \
-    fzf --ansi --delimiter=':' --preview-window '+{2}/4' --preview  \
-    'bat {1} --wrap=character --color=always --highlight-line {2} --terminal-width ${FZF_PREVIEW_COLUMNS}')
+  fzfSelected=$(rg --color always --line-number --no-heading --smart-case "$1" \
+    | fzf --ansi --delimiter=':' --preview-window '+{2}/4' --preview \
+      'bat {1} --wrap=character --color=always --highlight-line {2} --terminal-width ${FZF_PREVIEW_COLUMNS}')
   fzfResult="$?"
 
   if [ "$fzfResult" = "0" ] && [ -n "$fzfSelected" ]; then
     #shellcheck disable=2034
     IFS=: read -r file line content <<< "$fzfSelected"
-    ((start=line-8))
+    ((start = line - 8))
     test "$start" -ge 1 || start="1"
     vim "$file" +"$start"
   fi
@@ -200,10 +242,16 @@ function tmux__list_options {
 #font
 function font__ls_chars {
   font_pattern=${1}
-  test -n "$font_pattern" || { echo "font_pattern must be first argument" >&2; return 1; }
+  test -n "$font_pattern" || {
+    echo "font_pattern must be first argument" >&2
+    return 1
+  }
 
   rows_count=${2:-1}
-  (( rows_count >= 1 && rows_count <= 10 )) || { echo "rows_count must be [1;10]" >&2; return 1; }
+  ((rows_count >= 1 && rows_count <= 10)) || {
+    echo "rows_count must be [1;10]" >&2
+    return 1
+  }
 
   fc-match --format='%{family}\n' "$font_pattern"
   for range in $(fc-match --format='%{charset}\n' "$font_pattern"); do
