@@ -9,5 +9,6 @@ source $STD_PATH_CONFIG/before-plug/fold.vim
 source $STD_PATH_CONFIG/before-plug/status-line.vim
 source $STD_PATH_CONFIG/before-plug/commands.vim
 source $STD_PATH_CONFIG/before-plug/mappings.vim
+source $STD_PATH_CONFIG/before-plug/docfavs.vim
 source $STD_PATH_CONFIG/before-plug/autocmd.vim
 source $STD_PATH_CONFIG/plug.vim
