@@ -341,12 +341,21 @@ handle_proc() {
     esac
 }
 
+handle_gzipped_doc() {
+    case "${FILE_PATH}" in
+      /usr/share/doc/*.gz)
+        less "${FILE_PATH}" && exit 5
+        exit 1;;
+    esac
+}
+
 handle_fallback() {
     echo '----- File Type Classification -----' && file --dereference --brief -- "${FILE_PATH}" && exit 5
     exit 1
 }
 
 handle_proc
+handle_gzipped_doc
 MIMETYPE="$( file --dereference --brief --mime-type -- "${FILE_PATH}" )"
 if [[ "${PV_IMAGE_ENABLED}" == 'True' ]]; then
     handle_image "${MIMETYPE}"
