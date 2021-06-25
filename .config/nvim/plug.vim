@@ -104,6 +104,7 @@ function! s:Surround() abort
   function! s:TypeSh() abort
     let b:surround_{char2nr("p")} = "$(\r)"
     let b:surround_{char2nr("s")} = "${\r}"
+    let b:coc_pairs_disabled = ["'", "\""]
   endfunction
 
   function! s:TypeHaskell() abort

@@ -1,5 +1,5 @@
 #shellcheck shell=bash
-#shellcheck disable=1090
+#shellcheck disable=1090,1091
 stty -ixon
 set -o ignoreeof
 shopt -s histverify
@@ -87,6 +87,8 @@ alias color8='printf "\e[40;37m 0 \e[41;36m 1 \e[42;35m 2 \e[43;34m 3 \e[44;33m 
 
 alias ghus="gh__search"
 alias ghuc="gh__cache"
+
+source z
 
 #Functions
 
