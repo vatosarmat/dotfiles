@@ -79,6 +79,7 @@ alias tmclr="rm .tmux/resurrect/*"
 alias tso='tmux show -A'
 
 #Not actually aliasses but usefull commands to remember
+alias cevt='cat -evt'
 #dd is not like echo, it requires file
 alias binecho="dd of=/dev/stdout count=1 status=none <<< "
 alias fodiff="vim -d  <(fc-match JetBrainsMono --format '%{charset}' | tr ' ' '\n') <(fc-match 'JetBrainsMono NerdFont' --format '%{charset}' | tr ' ' '\n')"
