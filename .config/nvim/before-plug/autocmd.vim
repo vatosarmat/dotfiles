@@ -16,6 +16,8 @@ augroup BeforePlug
 
   autocmd DiffUpdated * call s:HighlightDiffConflictMarker()
   autocmd VimEnter * call s:HighlightDiffConflictMarker()
+  "C-x C-e
+  autocmd VimEnter /tmp/bash-* exe "normal!" "ggO#shellcheck shell=bash\<cr>" | startinsert
 
   autocmd BufRead,BufNewFile *.json set filetype=jsonc
 

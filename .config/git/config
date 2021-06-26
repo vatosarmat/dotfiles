@@ -21,8 +21,9 @@
   cmd = nvim -d $LOCAL $REMOTE
 
 [alias]
-  ss = status
-  s = status --short
-  lg = log --oneline --decorate --graph --all
   ba = branch -a
   fap = fetch --all --prune
+  lg = log --oneline --decorate --graph --all
+  pum = push -u origin/master
+  s = status --short
+  ss = status

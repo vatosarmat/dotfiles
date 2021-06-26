@@ -4,12 +4,9 @@ stty -ixon
 set -o ignoreeof
 shopt -s histverify
 
-HISTSIZE=
-HISTFILESIZE=
-HISTCONTROL=ignoreboth:erasedups
-#shellcheck disable=2140
-HISTIGNORE="ll *":"cd *":"help *":"r":"exit"
-HISTTIMEFORMAT="%F %T:%Z - "
+source "$HOME/.history.bash"
+history_config
+
 #PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 PS1='\[\033[01;34m\]\w\[\033[00m\]\$ '
 export EDITOR=nvim
@@ -21,8 +18,12 @@ export BAT_PAGER="less -R"
 export BAT_THEME="Visual Studio Dark+"
 export FZF_DEFAULT_COMMAND="fd --type file --follow --hidden --exclude .git"
 export FZF_DEFAULT_OPTS
-FZF_DEFAULT_OPTS="--reverse --height 55% --extended"
-FZF_DEFAULT_OPTS+=" --bind='ctrl-d:half-page-down,ctrl-u:half-page-up,f2:toggle-preview,f3:toggle-preview-wrap'"
+FZF_DEFAULT_OPTS="--reverse --height 55% --extended --bind='"
+FZF_DEFAULT_OPTS+="ctrl-d:half-page-down,ctrl-u:half-page-up,"
+FZF_DEFAULT_OPTS+="f2:toggle-preview,f3:toggle-preview-wrap,"
+FZF_DEFAULT_OPTS+="alt-y:execute(echo -n '{}' | xsel -ib)'"
+export FZF_CTRL_R_OPTS
+FZF_CTRL_R_OPTS="--bind='alt-r:execute(source $HOME/.history.bash && history_config && history_read && history -d {1} && history -w)+reload(source $HOME/.history.bash && history_config && history_read && source "$HOME/.fzf.bash" && __fzf_history_source__ )'"
 export RIPGREP_CONFIG_PATH="$HOME/dotfiles/.ripgreprc"
 
 BOLD=$(tput bold)

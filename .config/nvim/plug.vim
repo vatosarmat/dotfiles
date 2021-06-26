@@ -19,6 +19,7 @@ function! s:InitPlugins() abort
     Plug 'neoclide/coc.nvim'
     Plug '~/.fzf'
     Plug 'junegunn/fzf.vim'
+    Plug 'antoinemadec/coc-fzf'
     Plug 'liuchengxu/vista.vim'
     Plug 'dhruvasagar/vim-table-mode'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -104,7 +105,6 @@ function! s:Surround() abort
   function! s:TypeSh() abort
     let b:surround_{char2nr("p")} = "$(\r)"
     let b:surround_{char2nr("s")} = "${\r}"
-    let b:coc_pairs_disabled = ["'", "\""]
   endfunction
 
   function! s:TypeHaskell() abort
@@ -114,7 +114,6 @@ function! s:Surround() abort
 
   function! s:TypeLisp() abort
     xmap <buffer> sf s<C-f>
-    let b:coc_pairs_disabled = ["'"]
   endfunction
 endfunction
 

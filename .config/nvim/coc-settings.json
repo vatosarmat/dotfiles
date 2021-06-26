@@ -13,6 +13,7 @@
   },
   "explorer.file.autoReveal": true,
   "explorer.openAction.relativePath": true,
+  "pairs.enableCharacters": ["(", "[", "{"],
   "signature.enable": false,
   "coc.preferences.formatOnType": true,
   "coc.preferences.formatOnSaveFiletypes": ["*"],

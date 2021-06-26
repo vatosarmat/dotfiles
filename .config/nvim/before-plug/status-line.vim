@@ -7,7 +7,8 @@ let s:ft_ext = #{
   \ python: ['py'],
   \ typescriptreact: ['tsx'],
   \ typescript: ['ts'],
-  \ text: ['txt']
+  \ text: ['txt'],
+  \ go: ['go']
   \ }
 
 function! IsFtUnordinary(ft, ext) abort
