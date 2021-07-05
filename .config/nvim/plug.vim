@@ -97,6 +97,7 @@ function! s:Surround() abort
     autocmd FileType sh call s:TypeSh()
     autocmd FileType haskell call s:TypeHaskell()
     autocmd FileType lisp call s:TypeLisp()
+    autocmd FileType rust call s:TypeRust()
   augroup END
 
   function! s:TypeSh() abort
@@ -111,6 +112,11 @@ function! s:Surround() abort
 
   function! s:TypeLisp() abort
     xmap <buffer> sf s<C-f>
+  endfunction
+
+  function! s:TypeRust() abort
+    let b:surround_{char2nr("p")} = "println!(\"{:#?}\", \r);"
+    let b:surround_{char2nr("o")} = "Ok(\r)"
   endfunction
 endfunction
 

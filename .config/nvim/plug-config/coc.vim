@@ -1,11 +1,7 @@
-" let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
-"   \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
-"   \'coc-tsserver', 'coc-eslint', 'coc-lua', 'coc-python', 'coc-sh', 'coc-diagnostic']
-
 let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
   \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
   \'coc-tsserver', 'coc-eslint', 'coc-lua', 'coc-python',
-  \'coc-sh', 'coc-diagnostic', 'coc-go']
+  \'coc-sh', 'coc-diagnostic', 'coc-go', 'coc-rust-analyzer']
 
 "Various 'go to' actions
 nmap <silent> gd <Plug>(coc-definition)
@@ -33,7 +29,8 @@ nnoremap <silent> <C-j> :call <sid>HoverOrMan()<CR>
 nnoremap <silent><leader>K <cmd>normal! K <CR>
 
 "CoC outline is not much useful, better use something like Vista.vim
-nnoremap <silent><leader>co <cmd>CocList --normal --no-quit outline<cr>
+nnoremap <silent><leader>cco <cmd>CocList --normal --no-quit outline<cr>
+nnoremap <silent><leader><M-Left> <cmd>CocFzfList outline<cr>
 
 "Diagnostics list
 nnoremap <silent><leader>cld <cmd>CocList diagnostics<cr>
@@ -49,6 +46,7 @@ nnoremap <silent> <leader>cm <cmd>call CocAction('format')<CR>
 inoremap <silent> <CR> <C-r>=<SID>OnEnter()<CR>
 
 "Autocomplete
+inoremap <silent> <S-TAB> <C-r>=coc#refresh()<CR>
 inoremap <silent> <TAB> <C-r>=<SID>OnTab()<CR>
 imap <silent> <Backspace> <C-r>=<SID>OnBackspace()<CR>
 "Snippetes signed with '~' in autocomplete hover
@@ -74,7 +72,7 @@ xmap <leader>ca <Plug>(coc-codeaction-selected)
 nmap <leader>ca <Plug>(coc-codeaction)
 
 "Range select, backward is broken
-nmap <silent> s <Plug>(coc-range-select)
+xmap <silent> v <Plug>(coc-range-select)
 xmap <silent> <Right> <Plug>(coc-range-select)
 xmap <silent> <Left> <Plug>(coc-range-select-backward)
 
@@ -132,7 +130,6 @@ function! s:SetFormatExpr() abort
 endfunction
 
 function! s:OnTab() abort
-  echom "ontab"
   if pumvisible()
     return "\<C-n>"
   elseif coc#expandableOrJumpable()
@@ -141,7 +138,6 @@ function! s:OnTab() abort
     if <sid>IsSpaceBefore()
       return "\<tab>"
     else
-    echom "fuck you"
       return coc#refresh()
     endif
   endif

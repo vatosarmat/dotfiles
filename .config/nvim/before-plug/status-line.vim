@@ -8,6 +8,9 @@ let s:ft_ext = #{
   \ typescriptreact: ['tsx'],
   \ typescript: ['ts'],
   \ text: ['txt'],
+  \ yaml: ['yml', 'yaml'],
+  \ rust: ['rs'],
+  \ toml: ['toml'],
   \ go: ['go']
   \ }
 

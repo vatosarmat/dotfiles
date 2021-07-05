@@ -19,9 +19,18 @@
   "coc.preferences.formatOnSaveFiletypes": ["*"],
   "coc.source.around.firstMatch": true,
   "coc.source.buffer.firstMatch": true,
+  "coc.source.around.enable": false,
+  "coc.source.buffer.enable": false,
   "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   "list.previewSplitRight": true,
   "clangd.semanticHighlighting": true,
+  "rust-analyzer.inlayHints.typeHints": false,
+  "rust-analyzer.inlayHints.chainingHints": false,
+  "rust-analyzer.disableSnippetCompletion": true,
+  "rust-analyzer.completion.postfix.enable": false,
+  "rust-analyzer.trace.server": "verbose",
+  "rust-analyzer.diagnostics.enable": false,
+  "rust-analyzer.checkOnSave.enable": true,
   /*Shellcheck is better for that*/
   "sh.highlightParsingErrors": false,
   "diagnostic-languageserver.filetypes": {
