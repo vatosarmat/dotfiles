@@ -16,10 +16,13 @@ function! s:InitPlugins() abort
   call plug#begin(stdpath("data").'/site/plugged')
     "Major
     Plug 'tpope/vim-fugitive'
-    Plug 'neoclide/coc.nvim'
+    if $NO_COC
+    else
+      Plug 'neoclide/coc.nvim'
+      Plug 'antoinemadec/coc-fzf'
+    endif
     Plug '~/.fzf'
     Plug 'junegunn/fzf.vim'
-    Plug 'antoinemadec/coc-fzf'
     Plug 'liuchengxu/vista.vim'
     Plug 'dhruvasagar/vim-table-mode'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -52,7 +55,10 @@ function! s:InitPlugins() abort
   call s:Colorscheme()
   source $STD_PATH_CONFIG/plug-config/fugitive.vim
   source $STD_PATH_CONFIG/plug-config/fzf.vim
-  source $STD_PATH_CONFIG/plug-config/coc.vim
+  if $NO_COC
+  else
+    source $STD_PATH_CONFIG/plug-config/coc.vim
+  endif
   luafile $STD_PATH_CONFIG/plug-config/treesitter.lua
   lua require'plug-config.gitsigns'.setup()
 endfunction

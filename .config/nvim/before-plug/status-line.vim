@@ -23,7 +23,7 @@ function! StatusLineFile() abort
     \."%f"
     \."%{StatusFileType()}"
     \."%{StatusRootDir()}"
-    \."%{StatusCoc()}"
+    \."%{StatusLSP()}"
     \."%="
     \." %m"
     \."%r"
@@ -34,7 +34,7 @@ function! StatusLineFugitiveFile() abort
   return "%<"
     \."%f"
     \."%{StatusFileType()}"
-    \."%{StatusCoc()}"
+    \."%{StatusLSP()}"
     \."%="
     \." %m"
     \."%r"
@@ -58,26 +58,32 @@ function! StatusLineExplorer() abort
     \." %P"
 endfunction
 
-function! StatusCoc() abort
-  if winwidth(0) < 70 | return '' | endif
-
-  const cs = coc#status()
-  const cf = get(b:,'coc_current_function','')
-  let items = []
-
-  if !empty(cs)
-    call add(items, cs)
-  endif
-  if !empty(cf)
-    call add(items, cf)
-  endif
-
-  if empty(items)
+if $NO_COC
+  function! StatusLSP() abort
     return ''
-  endif
+  endfunction
+else
+  function! StatusLSP() abort
+    if winwidth(0) < 70 | return '' | endif
 
-  return ' ['.join(items, ' | ').']'
-endfunction
+    const cs = coc#status()
+    const cf = get(b:,'coc_current_function','')
+    let items = []
+
+    if !empty(cs)
+      call add(items, cs)
+    endif
+    if !empty(cf)
+      call add(items, cf)
+    endif
+
+    if empty(items)
+      return ''
+    endif
+
+    return ' ['.join(items, ' | ').']'
+  endfunction
+endif
 
 function! StatusFileType() abort
   return IsFtUnordinary(&filetype, expand("%:e")) && winwidth(0) >= 90 ? ' ['.&filetype.'] ' : ''
