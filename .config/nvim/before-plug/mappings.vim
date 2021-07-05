@@ -15,16 +15,17 @@ xnoremap <expr><silent>J "\<cmd>keepjumps normal! ".
   \(<sid>IsLineEmpty() ? '}{j' : <sid>IsLineEmpty(+1) ? 'j}{j' : '}k')."\<cr>"
 
 "Handy line start/end
-nnoremap <C-h> _
-xnoremap <C-h> _
-nnoremap <C-l> g_
-xnoremap <C-l> g_
+noremap <C-h> _
+noremap <C-h> _
+noremap <C-l> g_
+noremap <C-l> g_
 
 "Handier than ,
 nnoremap <M-;> ,
 
 "Let , to be register selector
 nmap , "
+xmap , "
 
 "Redraw
 nnoremap g_ <C-l>
@@ -54,7 +55,8 @@ function! s:RemapPaste() abort
   for i in range(char2nr('a'), char2nr('z'))
     let a = nr2char(i)
     " let A = toupper(a)
-    execute 'xnoremap' '"'.a.'p' '_d"'.a.'P'
+    execute 'xnoremap' ','.a.'p' '<cmd>normal! "_d"'.a.'P<cr>'
+    execute 'xnoremap' '"'.a.'p' '<cmd>normal! "_d"'.a.'P<cr>'
   endfor
 endfunction
 call s:RemapPaste()
@@ -171,7 +173,7 @@ inoremap <M-BS> <C-w>
 inoremap <M-d> <C-o>de
 cnoremap <M-BS> <C-w>
 "Delete line end
-inoremap <C-y> <C-o>d$
+inoremap <C-k> <C-o>d$
 "Undo
 inoremap <C-_> <C-o>u
 

@@ -75,12 +75,9 @@ function! s:Wordmotion() abort
   " TODO: configure whitespaces
   " nnoremap <expr><leader>twd add(g:word_motion_spaces, '.')
 
-  nmap <M-w>          <Plug>WordMotion_w
-  nmap <M-b>          <Plug>WordMotion_b
-  nmap <M-e>          <Plug>WordMotion_e
-  omap <M-w>          <Plug>WordMotion_w
-  omap <M-b>          <Plug>WordMotion_b
-  omap <M-e>          <Plug>WordMotion_e
+  map <M-w>          <Plug>WordMotion_w
+  map <M-b>          <Plug>WordMotion_b
+  map <M-e>          <Plug>WordMotion_e
   omap a<M-w>         <Plug>WordMotion_aw
   omap i<M-w>         <Plug>WordMotion_iw
 endfunction
