@@ -18,7 +18,7 @@ function! IsFtUnordinary(ft, ext) abort
   return index(get(s:ft_ext, a:ft, []), a:ext) == -1
 endfunction
 
-function! FileStatusLine() abort
+function! StatusLineFile() abort
   return "%<"
     \."%f"
     \."%{StatusFileType()}"
@@ -30,7 +30,18 @@ function! FileStatusLine() abort
     \." %L | %l, %c%V% , %P"
 endfunction
 
-function! NofileStatusLine() abort
+function! StatusLineFugitiveFile() abort
+  return "%<"
+    \."%f"
+    \."%{StatusFileType()}"
+    \."%{StatusCoc()}"
+    \."%="
+    \." %m"
+    \."%r"
+    \." %L | %l, %c%V% , %P"
+endfunction
+
+function! StatusLineNofile() abort
   return "%<"
     \."%f"
     \."%{StatusFileType()}"
@@ -40,7 +51,7 @@ function! NofileStatusLine() abort
     \." %L | %l, %c%V% , %P"
 endfunction
 
-function! ExplorerStatusLine() abort
+function! StatusLineExplorer() abort
   return "%<"
     \."%<%Y"
     \."%="
@@ -88,14 +99,18 @@ function! StatusRootDir() abort
   endif
 endfunction
 
-function! SetStatusLine()
+function! s:SetStatusLine(file) abort
   if empty(&buftype)
-    setl statusline=%!FileStatusLine()
+    if a:file =~ "fugitive:///"
+      setl statusline=%!StatusLineFugitiveFile()
+    else
+      setl statusline=%!StatusLineFile()
+    endif
   else
     if &filetype == 'coc-explorer'
-      setl statusline=%!ExplorerStatusLine()
+      setl statusline=%!StatusLineExplorer()
     else
-      setl statusline=%!NofileStatusLine()
+      setl statusline=%!StatusLineNofile()
     endif
   endif
 endfunction
@@ -103,7 +118,7 @@ endfunction
 augroup StatusLine
   autocmd!
   " autocmd BufEnter,BufNewFile,BufReadPost,ShellCmdPost,BufWritePost * call SetStatusLine()
-  autocmd FileType * call SetStatusLine()
-  autocmd FileChangedShellPost * call SetStatusLine()
+  autocmd FileType * call s:SetStatusLine(bufname())
+  autocmd FileChangedShellPost * call s:SetStatusLine(bufname())
 augroup end
 
