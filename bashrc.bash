@@ -72,6 +72,7 @@ alias torls="transmission-remote -l"
 alias torad="transmission-remote --add"
 alias vpnup="nmcli con up vpn99"
 alias vpndown="nmcli con down vpn99"
+alias ffmpeg='ffmpeg -hide_banner'
 
 alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
@@ -218,6 +219,13 @@ function tmux__zero_session {
     new-session -s 0 \; \
     new-window -d -n misc -t 0 \; \
     new-window -n dotfiles -t 2 -c ~/dotfiles \; send-keys vimd C-m \; select-window -t 1 \; \
+    rename-window main
+}
+
+function tmux__zs {
+  tmux \
+    new-session -s 0 \; \
+    new-window -n dotfiles -t 0 -c ~/dotfiles \; send-keys vimd C-m \; select-window -t 1 \; \
     rename-window main
 }
 
