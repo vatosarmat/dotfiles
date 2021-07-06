@@ -44,7 +44,6 @@ set diffopt+=vertical,context:10000,foldcolumn:0,indent-heuristic,algorithm:pati
 "nvim-lsp recommended
 "set completeopt=menuone,noinsert,noselect
 "set shortmess+=c
-"set shortmess+=s
 
 
 let mapleader = " "

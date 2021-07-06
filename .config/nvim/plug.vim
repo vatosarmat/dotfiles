@@ -20,6 +20,14 @@ function! s:InitPlugins() abort
       Plug 'neovim/nvim-lspconfig'
       Plug 'nvim-lua/lsp_extensions.nvim'
       Plug 'nvim-lua/completion-nvim'
+
+      Plug 'nvim-lua/popup.nvim'
+
+      Plug 'nvim-lua/plenary.nvim'
+      Plug 'nvim-telescope/telescope.nvim'
+
+      Plug 'kyazdani42/nvim-web-devicons'
+      Plug 'kyazdani42/nvim-tree.lua'
     else
       Plug 'neoclide/coc.nvim'
       Plug 'antoinemadec/coc-fzf'
@@ -61,6 +69,8 @@ function! s:InitPlugins() abort
   if $NO_COC
     luafile $STD_PATH_CONFIG/plug-config/nvim-lsp.lua
     source $STD_PATH_CONFIG/plug-config/nvim-lsp.vim
+
+    call s:NvimTree()
   else
     source $STD_PATH_CONFIG/plug-config/coc.vim
   endif
@@ -143,6 +153,52 @@ function! s:Commentary() abort
 
   xmap <expr><C-_> <sid>CommentaryImplExpr(1)
   nmap <expr><C-_> <sid>CommentaryImplExpr(0)
+endfunction
+
+function! s:NvimTree() abort
+  let g:nvim_tree_lsp_diagnostics = 1
+  let g:nvim_tree_root_folder_modifier = ':t'
+
+  let g:nvim_tree_show_icons = {
+    \ 'git': 1,
+    \ 'folders': 1,
+    \ 'files': 1,
+    \ 'folder_arrows': 1,
+    \}
+
+  let g:nvim_tree_icons = {
+    \ 'default': '',
+    \ 'symlink': '',
+    \ 'git': {
+    \   'unstaged': "✗",
+    \   'staged': "✓",
+    \   'unmerged': "",
+    \   'renamed': "➜",
+    \   'untracked': "★",
+    \   'deleted': "",
+    \   'ignored': "◌"
+    \   },
+    \ 'folder': {
+    \   'arrow_open': "",
+    \   'arrow_closed': "",
+    \   'default': "",
+    \   'open': "",
+    \   'empty': "",
+    \   'empty_open': "",
+    \   'symlink': "",
+    \   'symlink_open': "",
+    \   },
+    \   'lsp': {
+    \     'hint': "",
+    \     'info': "",
+    \     'warning': "",
+    \     'error': "",
+    \   }
+    \ }
+
+  let g:nvim_tree_special_files = {}
+
+  nnoremap <C-n> :NvimTreeToggle<CR>
 endfunction
 
 function! s:Colorscheme() abort

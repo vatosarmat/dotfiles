@@ -26,4 +26,5 @@
   lg = log --oneline --decorate --graph --all
   pum = push -u origin/master
   s = status --short
+  smu = submodule update --init --recursive
   ss = status
