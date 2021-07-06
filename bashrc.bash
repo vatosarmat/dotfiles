@@ -27,6 +27,7 @@ FZF_CTRL_R_OPTS="--bind='alt-r:execute(source $HOME/.history.bash && history_con
 export RIPGREP_CONFIG_PATH="$HOME/dotfiles/.ripgreprc"
 
 BOLD=$(tput bold)
+# RED=$(tput setaf 1)
 BLUE=$(tput setaf 4)
 CYAN=$(tput setaf 6)
 SGR0=$(tput sgr0)
@@ -190,6 +191,24 @@ function apt__search {
     return 1
   }
   apt search -n "\b$1\b"
+}
+
+function apt__lsppa {
+  find /etc/apt/ -name \*.list | while IFS=$'\n' read -r file; do
+    # echo "$RED$file$SGR0"
+    # Extract from between 'dev ' and 'start_of_comment or end of line'
+    grep --color=never -Po "(?<=^deb\s).*?(?=#|$)" "$file" | while read -r entry; do
+      host=$(echo "$entry" | cut -d/ -f3)
+      user=$(echo "$entry" | cut -d/ -f4)
+      ppa=$(echo "$entry" | cut -d/ -f5)
+      # printf "%-32s%-48s%-48s\n" "$host" "$ppa" "$user"
+      if [[ "ppa.launchpad.net" = "$host" ]]; then
+        echo "ppa:$user/$ppa"
+      else
+        echo "$entry"
+      fi
+    done
+  done
 }
 
 #rg
