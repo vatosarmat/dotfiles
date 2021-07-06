@@ -41,6 +41,12 @@ set tgc
 "Disable folds in diffview
 set diffopt+=vertical,context:10000,foldcolumn:0,indent-heuristic,algorithm:patience,hiddenoff
 
+"nvim-lsp recommended
+"set completeopt=menuone,noinsert,noselect
+"set shortmess+=c
+"set shortmess+=s
+
+
 let mapleader = " "
 nnoremap <Space> <Nop>
 

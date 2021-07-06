@@ -17,6 +17,9 @@ function! s:InitPlugins() abort
     "Major
     Plug 'tpope/vim-fugitive'
     if $NO_COC
+      Plug 'neovim/nvim-lspconfig'
+      Plug 'nvim-lua/lsp_extensions.nvim'
+      Plug 'nvim-lua/completion-nvim'
     else
       Plug 'neoclide/coc.nvim'
       Plug 'antoinemadec/coc-fzf'
@@ -56,6 +59,8 @@ function! s:InitPlugins() abort
   source $STD_PATH_CONFIG/plug-config/fugitive.vim
   source $STD_PATH_CONFIG/plug-config/fzf.vim
   if $NO_COC
+    luafile $STD_PATH_CONFIG/plug-config/nvim-lsp.lua
+    source $STD_PATH_CONFIG/plug-config/nvim-lsp.vim
   else
     source $STD_PATH_CONFIG/plug-config/coc.vim
   endif
