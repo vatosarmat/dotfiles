@@ -4,7 +4,7 @@ local utils = {}
 
 function utils.omit(tbl, idx)
   local res = tablex.deepcopy(tbl)
-  for i = 1,#idx do
+  for i = 1, #idx do
     res[idx[i]] = nil
   end
 
