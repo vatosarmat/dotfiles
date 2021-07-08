@@ -26,6 +26,12 @@ nnoremap <leader>ra :Rga ''<left>
 
 "Handy abbrevs
 cnoreabbrev ht h \| Helptags
+cnoreabbrev bl BLines
+cnoreabbrev li Lines
+cnoreabbrev ma Mappings
+cnoreabbrev gf GFiles?
+cnoreabbrev gc Commits
+cnoreabbrev gb BCommits
 cnoreabbrev hf h fzf-vim
 
 "Find quesitions

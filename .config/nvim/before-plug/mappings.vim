@@ -4,6 +4,10 @@ nnoremap <M-[> zt
 nnoremap <M-i> zz
 nnoremap <M-]> zb
 
+"quickfix list mappings
+nnoremap q <cmd>cnext<cr>
+nnoremap <C-q> <cmd>cprevious<cr>
+
 "Handy block movement
 nnoremap <expr><silent>K '<cmd>keepjumps normal! '.
   \(<sid>IsLineEmpty() ? '{}k' : <sid>IsLineEmpty(-1) ? 'k{}k' : '{j')."\<cr>"
@@ -47,19 +51,13 @@ inoremap <silent> <C-s> <Esc>:w<cr>
 nnoremap Y y$
 
 "No overwrite paste and change
-xnoremap p "_dP
 nnoremap c "_c
 xnoremap c "_c
 
-function! s:RemapPaste() abort
-  for i in range(char2nr('a'), char2nr('z'))
-    let a = nr2char(i)
-    " let A = toupper(a)
-    execute 'xnoremap' ','.a.'p' '<cmd>normal! "_d"'.a.'P<cr>'
-    execute 'xnoremap' '"'.a.'p' '<cmd>normal! "_d"'.a.'P<cr>'
-  endfor
+function! s:PasteOver() abort
+  execute 'normal!' '"_d"'.v:register.( col('.')+1==col('$') ? 'p' : 'P')
 endfunction
-call s:RemapPaste()
+xnoremap p <cmd>call <sid>PasteOver()<cr>
 
 "Line in 'less' utility
 nnoremap <silent> <M-u> :noh<CR>

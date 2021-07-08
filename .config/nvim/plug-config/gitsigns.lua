@@ -90,12 +90,11 @@ function pcgs.setup()
   }
 end
 
-function withIndexBufUpdate(f)
+local function withIndexBufUpdate(f)
   return function()
     f()
     local indexBufname = vim.fn.FugitiveFind(':' .. vim.fn.bufname())
     if vim.fn.bufexists(indexBufname) then
-      local b = vim.fn.win_getid()
       vim.fn.win_gotoid(vim.fn.bufwinid(indexBufname))
       vim.cmd('e ' .. indexBufname)
       -- vim.wait(100, function() end)
