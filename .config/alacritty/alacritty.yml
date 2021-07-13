@@ -767,26 +767,22 @@ key_bindings:
   - { key: LBracket, mods: Control, chars: "\e[F" }
     # We already have Enter, so let ^M to be Home
   - { key: M, mods: Control, chars: "\e[H" }
-    # Emualte arrows
+    # Use M-hjkl as arrows
   - { key: J, mods: Alt, chars: "\e[B" }
   - { key: K, mods: Alt, chars: "\e[A" }
   - { key: H, mods: Alt, chars: "\e[D" }
   - { key: L, mods: Alt, chars: "\e[C" }
-    # Emualte arrows with Shift
-  - { key: J, mods: Shift|Alt, chars: "\e[1;2B" }
-  - { key: K, mods: Shift|Alt, chars: "\e[1;2A" }
-  - { key: H, mods: Shift|Alt, chars: "\e[1;2D" }
-  - { key: L, mods: Shift|Alt, chars: "\e[1;2C" }
-    # Emualte arrows with Ctrl
-  - { key: J, mods: Control|Alt, chars: "\e[1;5B" }
-  - { key: K, mods: Control|Alt, chars: "\e[1;5A" }
-  - { key: H, mods: Control|Alt, chars: "\e[1;5D" }
-  - { key: L, mods: Control|Alt, chars: "\e[1;5C" }
-    # Emualte arrows with Alt
-  - { key: Semicolon, mods: Control, chars: "\e[1;3B" }
-  - { key: Apostrophe, mods: Control, chars: "\e[1;3A" }
-  - { key: Comma, mods: Control, chars: "\e[1;3D" }
-  - { key: Period, mods: Control, chars: "\e[1;3C" }
+    # Use C-;' as M-jk
+  - { key: Semicolon, mods: Control, chars: "\ej" }
+  - { key: Apostrophe, mods: Control, chars: "\ek" }
+    # Use C-,. as M-hl
+  - { key: Comma, mods: Control, chars: "\eh" }
+  - { key: Period, mods: Control, chars: "\el" }
+    # Use C-S-hjkl as C-arrows
+  - { key: J, mods: Control|Shift, chars: "\e[1;5B" }
+  - { key: K, mods: Control|Shift, chars: "\e[1;5A" }
+  - { key: H, mods: Control|Shift, chars: "\e[1;5D" }
+  - { key: L, mods: Control|Shift, chars: "\e[1;5C" }
   #- { key: V,              mods: Control|Shift, mode: ~Vi,        action: Paste            }
   #- { key: C,              mods: Control|Shift,                   action: Copy             }
   #- { key: F,              mods: Control|Shift, mode: ~Search,    action: SearchForward    }

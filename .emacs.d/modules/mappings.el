@@ -21,3 +21,7 @@
 (if window-system (global-set-key [escape] 'keyboard-escape-quit))
 ;Replacehg
 ; (global-set-key (kbd "M-u") 'universal-argument)
+(global-set-key (kbd "M-[") 'org-backward-element)
+(global-set-key (kbd "M-]") 'org-forward-element)
+(global-set-key (kbd "C-M-[") 'org-up-element)
+(global-set-key (kbd "C-M-]") 'org-down-element)

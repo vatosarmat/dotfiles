@@ -76,6 +76,9 @@ alias torad="transmission-remote --add"
 alias vpnup="nmcli con up vpn99"
 alias vpndown="nmcli con down vpn99"
 alias ffmpeg='ffmpeg -hide_banner'
+alias hd='hexdump'
+alias hdh="hd -v -e '/1 \"%02X \"'"
+alias hdhl="hd -v -e '/1 \"%02X \"' ; echo"
 
 alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
