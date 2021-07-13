@@ -1,6 +1,6 @@
 let g:coc_global_extensions = ['coc-json', 'coc-flow', 'coc-vimlsp', 'coc-marketplace',
   \'coc-pairs', 'coc-explorer', 'coc-prettier', 'coc-snippets', 'coc-clangd',
-  \'coc-tsserver', 'coc-eslint', 'coc-lua', 'coc-python',
+  \'coc-tsserver', 'coc-eslint', 'coc-python',
   \'coc-sh', 'coc-diagnostic', 'coc-go', 'coc-rust-analyzer']
 
 "Various 'go to' actions
@@ -30,7 +30,7 @@ nnoremap <silent><leader>K <cmd>normal! K <CR>
 
 "CoC outline is not much useful, better use something like Vista.vim
 nnoremap <silent><leader>cco <cmd>CocList --normal --no-quit outline<cr>
-nnoremap <silent><leader><M-Left> <cmd>CocFzfList outline<cr>
+nnoremap <silent><leader><M-h> <cmd>CocFzfList outline<cr>
 
 "Diagnostics list
 nnoremap <silent><leader>cld <cmd>CocList diagnostics<cr>

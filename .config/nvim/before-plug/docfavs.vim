@@ -30,7 +30,7 @@ function! s:ParseFavFunctionsSection(lines, lineToAdd) abort
         echoerr 'No subsection for function '.line
         call interrupt()
       endif
-      if line == lineToAdd
+      if line == a:lineToAdd
         echon printf('''%s'' is already faved in section ', matchstr(line, '^\k\+(.*)'))
         echohl helpHeader
         echon currentSubsection

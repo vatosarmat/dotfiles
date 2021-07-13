@@ -28,7 +28,7 @@ nnoremap <leader>ra :Rga ''<left>
 cnoreabbrev ht h \| Helptags
 cnoreabbrev bl BLines
 cnoreabbrev li Lines
-cnoreabbrev ma Mappings
+cnoreabbrev ma Maps
 cnoreabbrev gf GFiles?
 cnoreabbrev gc Commits
 cnoreabbrev gb BCommits

@@ -8,6 +8,9 @@ nnoremap <M-]> zb
 nnoremap q <cmd>cnext<cr>
 nnoremap <C-q> <cmd>cprevious<cr>
 
+"Macro, <Home> is C-m
+nnoremap g<Home> q
+
 "Handy block movement
 nnoremap <expr><silent>K '<cmd>keepjumps normal! '.
   \(<sid>IsLineEmpty() ? '{}k' : <sid>IsLineEmpty(-1) ? 'k{}k' : '{j')."\<cr>"
@@ -203,19 +206,6 @@ nnoremap <expr><silent> <M-p> &diff ? ":keepjumps norm [c\<cr>" : ":bp\<cr>"
 nnoremap <M-r> :.,$s//<c-r>=utils#GetSearchPatternWithoutFlags()<cr>/gc<left><left><left>
 xnoremap <M-r> :s///gc<left><left><left>
 
-"Implementations
 function! s:IsLineEmpty(...) abort
   return getline(line('.') + get(a:, '1', 0)) !~ '\S'
-endfunction
-
-function! s:ToggleNzz() abort
-  if !exists("b:dotfiles_nzz") || !b:dotfiles_nzz
-    nnoremap n nzz
-    nnoremap N Nzz
-    let b:dotfiles_nzz = 1
-  else
-    nunmap n
-    nunmap N
-    let b:dotfiles_nzz = 0
-  endif
 endfunction

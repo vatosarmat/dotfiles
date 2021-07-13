@@ -7,10 +7,11 @@ augroup BeforePlug
   autocmd BufAdd * if !empty(&buftype) | call mappings#NopDiff() | endif
 
   autocmd FileType qf setlocal norelativenumber
-  autocmd FileType help if expand('%:t') == 'eval.txt' | call docfavs#Init() | endif
+  autocmd FileType help call docfavs#Init()
   autocmd FileType typescript call s:KeywordMovements()
   autocmd FileType rust call s:KeywordMovements()
   autocmd FileType vim call s:KeywordMovements()
+  autocmd FileType lua call s:KeywordMovements()
 
   "Move help window right
   autocmd WinNew * call s:OnWinNew()
