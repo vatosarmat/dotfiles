@@ -41,6 +41,8 @@ function bind_switching_command {
 
 tmux bind-key -T 'COMMAND' 'Any' 'switch-client'
 
+bind_command ',' 'command-prompt -I "#W" "rename-window '"'"'%%'"'"'"'
+
 #Resize
 bind_switching_command 'Left' 'resize-pane -L 5'
 bind_switching_command 'Down' 'resize-pane -D 5'
