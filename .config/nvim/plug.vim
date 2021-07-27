@@ -235,29 +235,15 @@ function! s:Colorscheme() abort
   hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#000000 ctermbg=236 gui=NONE cterm=NONE
   hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE cterm=NONE
 
-  " hi DiffAdd guifg=NONE guibg=#4b5632
-  " hi DiffDelete guifg=NONE guibg=NONE
-  " hi DiffChange guifg=NONE guibg=#053f4f
-  " hi DiffDelete guifg=NONE guibg=#4a0a0d
-  "
-  hi RedBlue guifg=#ff0000, guibg=#00ff00
-
   hi DiffAdd guifg=NONE guibg=#151e00
   hi DiffDelete guifg=NONE guibg=#101010
   hi DiffChange guifg=NONE gui=NONE guibg=#01181e
   hi DiffText guifg=NONE guibg=#1e0000
   hi DiffConflictMarker guibg=#666666 guifg=#000000
 
-  " hi GitSignsAdd    guifg=NONE guibg=#608b4e
-  " hi GitSignsChange guifg=NONE guibg=#dcdcaa
-  " hi GitSignsDelete guifg=NONE guibg=#d16969
-
-  " More saturated colours if needed
-  " hi GitSignsAdd    guifg=#00ff00
-  " hi GitSignsChange guifg=#ffff00
-  " hi GitSignsDelete guibg=#d16969
-  "
-  " hi Folded guifg=#555fd6
+  execute 'highlight!' 'User5' 'guifg='.utils#GetHlAttr('GitSignsAdd', 'fg') 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+  execute 'highlight!' 'User6' 'guifg='.utils#GetHlAttr('GitSignsChange', 'fg' ) 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+  execute 'highlight!' 'User7' 'guifg='.utils#GetHlAttr('GitSignsDelete', 'fg') 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
 endfunction
 
 call s:InitPlugins()

@@ -22,8 +22,9 @@ function! StatusLineFile() abort
   return "%<"
     \."%f"
     \."%{StatusFileType()}"
-    \."%{StatusRootDir()}"
+    \."%{%StatusRootDir()%}"
     \."%{%StatusLSP()%}"
+    \." %3*%{nvim_treesitter#statusline()}%*"
     \."%="
     \." %m"
     \."%r"
@@ -35,6 +36,7 @@ function! StatusLineFugitiveFile() abort
     \."%f"
     \."%{StatusFileType()}"
     \."%{%StatusLSP()%}"
+    \." %3*%{nvim_treesitter#statusline()}%*"
     \."%="
     \." %m"
     \."%r"
@@ -104,10 +106,10 @@ function! StatusRootDir() abort
   if empty(gitStatus)
     return ' ['.root.'/No GIT] '
   else
-    let changes = (get(gitStatus, 'added', 0) ? '  '.gitStatus.added : '')
-      \.(get(gitStatus, 'removed', 0) ? '  '.gitStatus.removed : '')
-      \.(get(gitStatus, 'changed', 0) ? '  '.gitStatus.changed : '')
-    return  ' [ '.root.'/'.gitStatus.head.(empty(changes) ? '' : ' |'.changes ).'] '
+    let changes = (get(gitStatus, 'added', 0) ? ' %5* %*'.gitStatus.added : '')
+      \.(get(gitStatus, 'changed', 0) ? ' %6* %*'.gitStatus.changed : '')
+      \.(get(gitStatus, 'removed', 0) ? ' %7* %*'.gitStatus.removed : '')
+    return  ' [%4* %*'.root.'/'.gitStatus.head.(empty(changes) ? '' : ' |'.changes ).'] '
   endif
 endfunction
 
