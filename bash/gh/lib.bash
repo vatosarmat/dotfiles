@@ -54,8 +54,9 @@ function __gh__assets {
       $F__ + (.size |
         if .>1000000 then (./1000000)|floor|tostring+" M"
         elif .>1000 then (./1000)|floor|tostring+" K"
-        else .|tostring+" B" end))[]' -r \
-    | awk -v FS="$fieldSep" -v OFS="$fieldSep" '{ print sprintf("%-32s", $1), $2}' \
+        else .|tostring+" B" end) +
+      $F__ + .label)[]' -r \
+        | awk -v FS="$fieldSep" -v OFS="$fieldSep" '{ print sprintf("%-32s", $1), sprintf("%8s  ", $2), $3}' \
     | fzf --nth=1,2 --delimiter="$fieldSep" -m)
   fzfStatus="$?"
 

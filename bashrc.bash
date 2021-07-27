@@ -20,6 +20,7 @@ export FZF_DEFAULT_COMMAND="fd --type file --follow --hidden --exclude .git"
 export FZF_DEFAULT_OPTS
 FZF_DEFAULT_OPTS="--reverse --height 55% --extended --bind='"
 FZF_DEFAULT_OPTS+="ctrl-d:half-page-down,ctrl-u:half-page-up,"
+FZF_DEFAULT_OPTS+="ctrl-alt-j:preview-down,ctrl-alt-k:preview-up,"
 FZF_DEFAULT_OPTS+="f2:toggle-preview,f3:toggle-preview-wrap,"
 FZF_DEFAULT_OPTS+="alt-y:execute(echo -n '{}' | xsel -ib)'"
 export FZF_CTRL_R_OPTS
@@ -85,6 +86,10 @@ alias ghw="gh repo view --web"
 alias tmzs='tmux__zero_session'
 alias tmclr="rm .tmux/resurrect/*"
 alias tso='tmux show -A'
+alias tpv='tmux splitw -vI \; copy-mode \; send-keys gg'
+alias tph='tmux splitw -hI \; copy-mode \; send-keys gg'
+alias batc='bat --color=always'
+alias luatp='lua -e '\''local p = require"pl.pretty"; p.dump(p.read(io.read()))'\'
 
 #Not actually aliasses but usefull commands to remember
 alias cevt='cat -evt'
