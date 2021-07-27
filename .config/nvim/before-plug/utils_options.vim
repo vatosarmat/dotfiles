@@ -27,3 +27,14 @@ call s:MapAllFlags()
 "the same way
 "In routine workflow it distracts
 nnoremap <silent> <leader>ocl :set cul! cuc!<CR>
+
+let s:scroll_view = 1
+function s:ScrollViewToggle() abort
+  if s:scroll_view
+    ScrollViewDisable
+  else
+    ScrollViewEnable
+  endif
+  let s:scroll_view = !s:scroll_view
+endfunction
+nnoremap <silent> <leader>osv <cmd>call <SID>ScrollViewToggle()<cr>

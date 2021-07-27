@@ -35,7 +35,7 @@ function! s:InitPlugins() abort
     Plug 'junegunn/fzf.vim'
     Plug 'liuchengxu/vista.vim'
     Plug 'dhruvasagar/vim-table-mode'
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    Plug 'nvim-treesitter/nvim-treesitter', {'branch': '0.5-compat', 'do': ':TSUpdate'}
     Plug 'nvim-treesitter/playground'
 
     "Minor
@@ -52,6 +52,7 @@ function! s:InitPlugins() abort
     Plug 'chaoren/vim-wordmotion'
     Plug 'haya14busa/vim-asterisk'
     Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
+    Plug 'dstein64/nvim-scrollview'
 
     Plug 'christianchiarulli/nvcode-color-schemes.vim'
   call plug#end()
@@ -63,6 +64,7 @@ function! s:InitPlugins() abort
   call s:Wordmotion()
   call s:Asterisk()
   call s:Colorscheme()
+  call s:ScrollView()
   source $STD_PATH_CONFIG/plug-config/fugitive.vim
   source $STD_PATH_CONFIG/plug-config/fzf.vim
   if $NO_COC
@@ -77,6 +79,13 @@ function! s:InitPlugins() abort
   lua require'plug-config.gitsigns'.setup()
 endfunction
 
+
+function! s:ScrollView() abort
+ let g:scrollview_on_startup = 1
+ let g:scrollview_winblend = 60
+ let g:scrollview_column = 1
+ let g:scrollview_auto_mouse = 0
+endfunction
 
 function! s:Vista() abort
   let g:vista_sidebar_position = 'vertical topleft'
@@ -240,6 +249,8 @@ function! s:Colorscheme() abort
   hi DiffChange guifg=NONE gui=NONE guibg=#01181e
   hi DiffText guifg=NONE guibg=#1e0000
   hi DiffConflictMarker guibg=#666666 guifg=#000000
+
+  hi ScrollView guibg=#000000
 
   execute 'highlight!' 'User5' 'guifg='.utils#GetHlAttr('GitSignsAdd', 'fg') 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
   execute 'highlight!' 'User6' 'guifg='.utils#GetHlAttr('GitSignsChange', 'fg' ) 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
