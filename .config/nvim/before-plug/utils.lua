@@ -1,8 +1,8 @@
 local tablex = require 'pl.tablex'
 
-local utils = {}
+local M = {}
 
-function utils.omit(tbl, idx)
+function M.omit(tbl, idx)
   local res = tablex.deepcopy(tbl)
   for i = 1, #idx do
     res[idx[i]] = nil
@@ -11,4 +11,4 @@ function utils.omit(tbl, idx)
   return res
 end
 
-return utils
+return M

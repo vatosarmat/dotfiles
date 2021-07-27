@@ -28,14 +28,14 @@ function! utils#Reduce(array, oper, accumInit) abort
 endfunction
 
 function! utils#Find(array, cb) abort
-  for i in range(len(array))
-    let v = array[i]
-    if cb(v, i)
+  for i in range(len(a:array))
+    let v = a:array[i]
+    if a:cb(v, i)
       return [v, i]
     endif
   endfor
 
-  return -1
+  return [0, -1]
 endfunction
 
 function! utils#MatchStrAll(str, pat) abort

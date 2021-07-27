@@ -31,9 +31,14 @@ augroup BeforePlug
 augroup END
 
 function! s:OnBufWinEnterTxt() abort
-  if win_getid() == g:autocmd#last_win_new && &buftype == 'help' && !exists('w:help_moved')
-    let w:help_moved = 1
-    wincmd L
+  "Move each new help window right if no other help windows
+  if g:utils_options.hl &&
+    \ win_getid() == g:autocmd#last_win_new &&
+    \ &buftype == 'help' &&
+    \ !exists('w:help_moved') &&
+    \ utils#Find(tabpagebuflist(), {bnr -> bnr!=bufnr() && getbufvar(bnr, '&filetype') == 'help'})[1] == -1
+        let w:help_moved = 1
+        wincmd L
   endif
 endfunction
 

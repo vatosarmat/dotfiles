@@ -6,7 +6,10 @@ nnoremap <M-]> zb
 
 "quickfix list mappings
 nnoremap q <cmd>cnext<cr>
-nnoremap <C-q> <cmd>cprevious<cr>
+nnoremap Q <cmd>cprevious<cr>
+
+nnoremap ]t gt
+nnoremap [t gT
 
 "Macro, <Home> is C-m
 nnoremap g<Home> q
@@ -65,15 +68,12 @@ xnoremap p <cmd>call <sid>PasteOver()<cr>
 "Line in 'less' utility
 nnoremap <silent> <M-u> :noh<CR>
 
-"The options useful when iterating through many similarly highlighted search
-"results - Vim unfortunately highlights 'current' result and all the others in
-"the same way
-"In routine workflow it distracts
-nnoremap <silent> <leader>ocl :set cul! cuc!<CR>
+nnoremap <expr> n g:utils_options.nz ? 'nzz' : 'n'
+nnoremap <expr> N g:utils_options.nz ? 'Nzz' : 'N'
 
 "Wipe buffer or close its window - all via 'q'
 nnoremap <silent><M-q> <cmd>q<cr>
-nnoremap <silent>Q <cmd>call <SID>Wipe()<cr>
+nnoremap <silent><C-q> <cmd>call <SID>Wipe()<cr>
 
 function! s:Wipe()
   if empty(expand('#'))
@@ -96,13 +96,17 @@ function! s:Wipe()
           endif
         endif
       endfor
-      if prevNr != cnr
+      "No prev help buffer, wipe this
+      if prevNr == cnr
+        bw %
+      else
         execute 'b' prevNr
+        bw #
       endif
     else
       bp
+      bw #
     endif
-    bw #
   endif
 endfunction
 
@@ -136,19 +140,16 @@ nnoremap <Down> <C-w>j
 nnoremap <Up> <C-w>k
 nnoremap <Right> <C-w>l
 
-nnoremap <silent><C-left>  <cmd>vertical resize -5<cr>
-nnoremap <silent><C-down>  <cmd>         resize -5<cr>
-nnoremap <silent><C-up>    <cmd>         resize +5<cr>
-nnoremap <silent><C-right> <cmd>vertical resize +5<cr>
+nnoremap <silent><C-M-h>  <cmd>vertical resize -5<cr>
+nnoremap <silent><C-M-j>  <cmd>         resize -5<cr>
+nnoremap <silent><C-M-k>    <cmd>         resize +5<cr>
+nnoremap <silent><C-M-l> <cmd>vertical resize +5<cr>
 
 "Jump forward/back in split
 nnoremap <C-w><C-o> <C-w>v<C-o>
 nnoremap <C-w>O <C-w>s<C-o>
 nnoremap <C-w><C-i> <C-w>v<C-i>
 nnoremap <C-w>I <C-w>s<C-i>
-
-"Same with searching things, but sometimes
-nnoremap <silent><leader>tnz :call <sid>ToggleNzz()<cr>
 
 "Pair braces and quotes in command line
 cnoremap <M-9> ()<left>
