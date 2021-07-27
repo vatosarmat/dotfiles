@@ -23,7 +23,6 @@ function! s:InitPlugins() abort
 
       Plug 'nvim-lua/popup.nvim'
 
-      Plug 'nvim-lua/plenary.nvim'
       Plug 'nvim-telescope/telescope.nvim'
 
       Plug 'kyazdani42/nvim-web-devicons'
@@ -67,8 +66,8 @@ function! s:InitPlugins() abort
   source $STD_PATH_CONFIG/plug-config/fugitive.vim
   source $STD_PATH_CONFIG/plug-config/fzf.vim
   if $NO_COC
-    luafile $STD_PATH_CONFIG/plug-config/nvim-lsp.lua
-    source $STD_PATH_CONFIG/plug-config/nvim-lsp.vim
+    luafile $STD_PATH_CONFIG/plug-config/lsp.lua
+    source $STD_PATH_CONFIG/plug-config/lsp.vim
 
     call s:NvimTree()
   else
@@ -189,10 +188,10 @@ function! s:NvimTree() abort
     \   'symlink_open': "",
     \   },
     \   'lsp': {
-    \     'hint': "",
-    \     'info': "",
-    \     'warning': "",
-    \     'error': "",
+    \     'hint': "",
+    \     'info': "",
+    \     'warning': "",
+    \     'error': "",
     \   }
     \ }
 
@@ -203,6 +202,19 @@ endfunction
 
 function! s:Colorscheme() abort
   colorscheme nvcode
+  "Error
+  hi! LspDiagnosticsVirtualTextError guifg=#f44747
+  hi! link LspDiagnosticsFloatingError LspDiagnosticsVirtualTextError
+  hi! LspDiagnosticsSignError guifg=#f41d1d
+  "Information
+  hi! LspDiagnosticsVirtualTextInformation guifg=#4fc1ff
+  hi! link LspDiagnosticsSignInformation LspDiagnosticsVirtualTextInformation
+  hi! link LspDiagnosticsFloatingInformation LspDiagnosticsVirtualTextInformation
+  "Hint
+  hi! LspDiagnosticsVirtualTextHint guifg=#3bc03d
+  hi! link LspDiagnosticsSignHint LspDiagnosticsVirtualTextHint
+  hi! link LspDiagnosticsFloatingHint LspDiagnosticsVirtualTextHint
+
   hi! link TSTypeBuiltin TSType
   hi! link CocErrorSign LspDiagnosticsSignError
   hi Pmenu guifg=#e6eeff
@@ -212,13 +224,8 @@ function! s:Colorscheme() abort
   hi CursorLine guibg=#2b2b2b
   hi Visual guibg=#264f78
   hi Search guibg=#613214
-  hi LspDiagnosticsSignError guifg=#c87a7a
   hi CocHighlightText guibg=#3a3a3a
   hi YankHighlight guibg=#1d3a3a
-
-  " hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#2c323c ctermbg=236 gui=NONE cterm=NONE
-  " hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=NONE ctermbg=NONE gui=NONE cterm=NONE
-  " hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#1e1e1e ctermbg=NONE gui=NONE cterm=NONE
 
   hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#000000 ctermbg=236 gui=NONE cterm=NONE
   hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE cterm=NONE

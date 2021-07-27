@@ -62,7 +62,7 @@ function! s:PromptForSubsection(favFunctionsBySections) abort
   let sectionsList = keys(a:favFunctionsBySections)
 
   function! DocfavsCompleteSection(a,cl,cp) closure
-    return filter(sectionsList, {section -> section =~ a:a.'.*'})
+    return filter(sectionsList, {_, section -> section =~ a:a.'.*'})
   endfunction
 
   let section = ''

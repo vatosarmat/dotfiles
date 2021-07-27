@@ -23,7 +23,7 @@ function! StatusLineFile() abort
     \."%f"
     \."%{StatusFileType()}"
     \."%{StatusRootDir()}"
-    \."%{StatusLSP()}"
+    \."%{%StatusLSP()%}"
     \."%="
     \." %m"
     \."%r"
@@ -34,7 +34,7 @@ function! StatusLineFugitiveFile() abort
   return "%<"
     \."%f"
     \."%{StatusFileType()}"
-    \."%{StatusLSP()}"
+    \."%{%StatusLSP()%}"
     \."%="
     \." %m"
     \."%r"
@@ -58,9 +58,15 @@ function! StatusLineExplorer() abort
     \." %P"
 endfunction
 
+
 if $NO_COC
   function! StatusLSP() abort
-    return ''
+    if winwidth(0) < 70 | return '' | endif
+    let str = luaeval('lsp_utils.render_status_string()')
+    if str == ''
+      let str = 'No LSP'
+    endif
+    return '['.str.']'
   endfunction
 else
   function! StatusLSP() abort
@@ -96,7 +102,7 @@ function! StatusRootDir() abort
   let root = fnamemodify(maybeRoot ? maybeRoot : getcwd(), ':t')
   let gitStatus = get(b:, 'gitsigns_status_dict', '')
   if empty(gitStatus)
-    return ' ['.root.'/NO GIT] '
+    return ' ['.root.'/No GIT] '
   else
     let changes = (get(gitStatus, 'added', 0) ? '  '.gitStatus.added : '')
       \.(get(gitStatus, 'removed', 0) ? '  '.gitStatus.removed : '')

@@ -66,6 +66,10 @@ function! utils#GetCursorOff() abort
   return line2byte(line('.')) + col('.') - 2
 endfunction
 
+function! utils#GetHlAttr(hl, attr) abort
+  return synIDattr(synIDtrans(hlID(a:hl)), a:attr, 'gui')
+endfunction
+
 let g:utils#color8 = #{
   \ black: "\e[30m",
   \ red: "\e[31m",

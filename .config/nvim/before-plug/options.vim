@@ -44,6 +44,7 @@ set diffopt+=vertical,context:10000,foldcolumn:0,indent-heuristic,algorithm:pati
 "nvim-lsp recommended
 "set completeopt=menuone,noinsert,noselect
 "set shortmess+=c
+set omnifunc=v:lua.vim.lsp.omnifunc
 
 
 let mapleader = " "
