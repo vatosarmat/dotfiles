@@ -206,14 +206,19 @@ function! s:Colorscheme() abort
   hi! LspDiagnosticsVirtualTextError guifg=#f44747
   hi! link LspDiagnosticsFloatingError LspDiagnosticsVirtualTextError
   hi! LspDiagnosticsSignError guifg=#f41d1d
+  hi! link NvimTreeLspDiagnosticsError LspDiagnosticsSignError
+  "Warning
+  hi! link NvimTreeLspDiagnosticsWarning LspDiagnosticsSignWarning
   "Information
   hi! LspDiagnosticsVirtualTextInformation guifg=#4fc1ff
   hi! link LspDiagnosticsSignInformation LspDiagnosticsVirtualTextInformation
   hi! link LspDiagnosticsFloatingInformation LspDiagnosticsVirtualTextInformation
+  hi! link NvimTreeLspDiagnosticsInformation LspDiagnosticsSignInformation
   "Hint
   hi! LspDiagnosticsVirtualTextHint guifg=#3bc03d
   hi! link LspDiagnosticsSignHint LspDiagnosticsVirtualTextHint
   hi! link LspDiagnosticsFloatingHint LspDiagnosticsVirtualTextHint
+  hi! link NvimTreeLspDiagnosticsHint LspDiagnosticsSignHint
 
   hi! link TSTypeBuiltin TSType
   hi! link CocErrorSign LspDiagnosticsSignError
