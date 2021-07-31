@@ -252,9 +252,9 @@ function! s:Colorscheme() abort
 
   hi ScrollView guibg=#000000
 
-  execute 'highlight!' 'User5' 'guifg='.utils#GetHlAttr('GitSignsAdd', 'fg') 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
-  execute 'highlight!' 'User6' 'guifg='.utils#GetHlAttr('GitSignsChange', 'fg' ) 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
-  execute 'highlight!' 'User7' 'guifg='.utils#GetHlAttr('GitSignsDelete', 'fg') 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+  execute 'highlight!' 'User5' 'guifg=#727c5d' 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+  execute 'highlight!' 'User6' 'guifg=#76959d' 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+  execute 'highlight!' 'User7' 'guifg=#946f71' 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
 endfunction
 
 call s:InitPlugins()

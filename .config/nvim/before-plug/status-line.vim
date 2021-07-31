@@ -19,12 +19,11 @@ function! IsFtUnordinary(ft, ext) abort
 endfunction
 
 function! StatusLineFile() abort
-  return "%<"
-    \."%f"
+  return "%f"
     \."%{StatusFileType()}"
     \."%{%StatusRootDir()%}"
     \."%{%StatusLSP()%}"
-    \." %3*%{nvim_treesitter#statusline()}%*"
+    \." %<%3*%{StatusTreesitter()}%*"
     \."%="
     \." %m"
     \."%r"
@@ -32,11 +31,10 @@ function! StatusLineFile() abort
 endfunction
 
 function! StatusLineFugitiveFile() abort
-  return "%<"
-    \."%f"
+  return "%f"
     \."%{StatusFileType()}"
     \."%{%StatusLSP()%}"
-    \." %3*%{nvim_treesitter#statusline()}%*"
+    \." %<%3*%{StatusTreesitter()}%*"
     \."%="
     \." %m"
     \."%r"
@@ -58,6 +56,13 @@ function! StatusLineExplorer() abort
     \."%<%Y"
     \."%="
     \." %P"
+endfunction
+
+
+function StatusTreesitter() abort
+  let w = winwidth(0)
+  if w < 100 | return '' | endif
+  return nvim_treesitter#statusline(#{separator: '->', indicator_size: w/2})
 endfunction
 
 
@@ -106,9 +111,9 @@ function! StatusRootDir() abort
   if empty(gitStatus)
     return ' ['.root.'/No GIT] '
   else
-    let changes = (get(gitStatus, 'added', 0) ? ' %5* %*'.gitStatus.added : '')
-      \.(get(gitStatus, 'changed', 0) ? ' %6* %*'.gitStatus.changed : '')
-      \.(get(gitStatus, 'removed', 0) ? ' %7* %*'.gitStatus.removed : '')
+    let changes = (get(gitStatus, 'added', 0) ? ' %5*落%*'.gitStatus.added : '')
+      \.(get(gitStatus, 'changed', 0) ? ' %6*ﱴ %*'.gitStatus.changed : '')
+      \.(get(gitStatus, 'removed', 0) ? ' %7* %*'.gitStatus.removed : '')
     return  ' [%4* %*'.root.'/'.gitStatus.head.(empty(changes) ? '' : ' |'.changes ).'] '
   endif
 endfunction
@@ -129,10 +134,16 @@ function! s:SetStatusLine(file) abort
   endif
 endfunction
 
+command! SetStatusLine silent call<sid>SetStatusLine(bufnr())
+
 augroup StatusLine
   autocmd!
   " autocmd BufEnter,BufNewFile,BufReadPost,ShellCmdPost,BufWritePost * call SetStatusLine()
   autocmd FileType * call s:SetStatusLine(bufname())
   autocmd FileChangedShellPost * call s:SetStatusLine(bufname())
 augroup end
+
+"Sometimes FileType is missing
+nnoremap <leader>zz <cmd>let &ft=&ft<cr>
+
 

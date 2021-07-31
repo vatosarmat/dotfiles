@@ -6,7 +6,7 @@ nnoremap <M-]> zb
 
 "quickfix list mappings
 nnoremap q <cmd>cnext<cr>
-nnoremap Q <cmd>cprevious<cr>
+nnoremap <M-q> <cmd>cprevious<cr>
 
 nnoremap ]t gt
 nnoremap [t gT
@@ -72,7 +72,7 @@ nnoremap <expr> n g:utils_options.nz ? 'nzz' : 'n'
 nnoremap <expr> N g:utils_options.nz ? 'Nzz' : 'N'
 
 "Wipe buffer or close its window - all via 'q'
-nnoremap <silent><M-q> <cmd>q<cr>
+nnoremap <silent>Q <cmd>q<cr>
 nnoremap <silent><C-q> <cmd>call <SID>Wipe()<cr>
 
 function! s:Wipe()
@@ -159,7 +159,7 @@ cnoremap <M-[> []<left>
 "Emacs keybindings in insert and command modes
 "Line begin-end
 inoremap <expr><C-a> getline('.')[0] == ' ' ? "\<Home>\<C-Right>" : "\<Home>"
-inoremap <C-e> <End>
+inoremap <expr><C-e> pumvisible() ? "\<C-e>": "\<End>"
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 "Word backward-forward
