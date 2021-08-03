@@ -24,10 +24,6 @@ local function map(modes, lhs, rhs, opts)
   end
 end
 
-local function map_cmd(modes, lhs, rhs, opts)
-  return map(modes, lhs, '<cmd>lua ' .. rhs .. '<cr>', opts)
-end
-
 local function mk_sourcer(path)
   if vim.endswith(path, '.vim') then
     return string.format('vim.cmd(\'source %s\')', path)
