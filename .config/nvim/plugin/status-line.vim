@@ -66,37 +66,14 @@ function StatusTreesitter() abort
 endfunction
 
 
-if $NO_COC
-  function! StatusLSP() abort
-    if winwidth(0) < 70 | return '' | endif
-    let str = luaeval('lsp_utils.render_status_string()')
-    if str == ''
-      let str = 'No LSP'
-    endif
-    return '['.str.']'
-  endfunction
-else
-  function! StatusLSP() abort
-    if winwidth(0) < 70 | return '' | endif
-
-    const cs = coc#status()
-    const cf = get(b:,'coc_current_function','')
-    let items = []
-
-    if !empty(cs)
-      call add(items, cs)
-    endif
-    if !empty(cf)
-      call add(items, cf)
-    endif
-
-    if empty(items)
-      return ''
-    endif
-
-    return ' ['.join(items, ' | ').']'
-  endfunction
-endif
+function! StatusLSP() abort
+  if winwidth(0) < 70 | return '' | endif
+  let str = luaeval('service.lsp.status_line()')
+  if str == ''
+    let str = 'No LSP'
+  endif
+  return '['.str.']'
+endfunction
 
 function! StatusFileType() abort
   return IsFtUnordinary(&filetype, expand("%:e")) && winwidth(0) >= 90 ? ' ['.&filetype.'] ' : ''

@@ -11,10 +11,15 @@ let s:lsp_flags = #{
  \ laf: 1,
  \ }
 
+function utils_options#toggle(flag) abort
+  let g:utils_options[a:option] = !g:utils_options[a:option]
+  echom a:option.' '.(g:utils_options[a:option] ? 'SET' : 'UNset')
+endfunction
+
 function s:MapAllFlags() abort
   for f in keys(s:utils_flags)
     execute 'nnoremap' '<leader>o'.f
-      \ printf('<cmd>let g:utils_options.%s=!g:utils_options.%s \| echom "%s ".(g:utils_options.%s ? "SET" : "UNset" )<cr>', f, f, f, f)
+      \ printf('<cmd>call utils_options#toggle("%s")<cr>', f)
   endfor
 endfunction
 

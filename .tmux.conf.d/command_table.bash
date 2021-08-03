@@ -52,7 +52,7 @@ bind_switching_command 'H' 'resize-pane -L'
 bind_switching_command 'J' 'resize-pane -D'
 bind_switching_command 'K' 'resize-pane -U'
 bind_switching_command 'L' 'resize-pane -R'
-bind_command 'Z' 'resize-pane -Z'
+bind_command 'z' 'resize-pane -Z'
 bind_command 'E' 'select-layout -E'
 
 #Select

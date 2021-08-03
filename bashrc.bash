@@ -63,8 +63,7 @@ alias perl_cpan='perl -MCPAN -Mlocal::lib -e shell'
 alias sbrc='source "$HOME/.bashrc"'
 alias vimi='vim -i .shada'
 alias vimd="cd ~/dotfiles ; vim -i .shada bashrc.bash"
-alias nvimi='NO_COC=1 vim -i .shada'
-alias nvimd="cd ~/dotfiles ; NO_COC=1 vim -i .shada bashrc.bash"
+alias vim_update="nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'"
 
 alias info='info --vi-keys'
 alias hcurl='curl -s -o /dev/null -D -'

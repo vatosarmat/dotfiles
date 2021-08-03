@@ -42,9 +42,9 @@ set tgc
 set diffopt+=vertical,context:10000,foldcolumn:0,indent-heuristic,algorithm:patience,hiddenoff
 
 "nvim-lsp recommended
-"set completeopt=menuone,noinsert,noselect
+set completeopt=menu
 "set shortmess+=c
-set omnifunc=v:lua.vim.lsp.omnifunc
+set omnifunc=v:lua.service.lsp.omnifunc
 
 
 let mapleader = " "

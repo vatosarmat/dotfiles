@@ -1,5 +1,8 @@
+local bind1 = require'pl.func'.bind1
 vim.lsp.log = require 'vim.lsp.log'
 local lspconfig = require 'lspconfig'
+local map = require'before-plug.vim_utils'.map
+local autocmd = require'before-plug.vim_utils'.autocmd
 
 local severities = {
   { name = 'Error', sign = '', hl = 'LspDiagnosticsSignError' },
@@ -8,19 +11,15 @@ local severities = {
   { name = 'Hint', sign = '', hl = 'LspDiagnosticsSignHint' }
 }
 
-local lsp_utils = {}
-
--- local log = io.open('/home/igor/lsp_msg.log', 'w')
-
--- vim.g.lsp_status_string = ''
+local lsp_service = {}
 
 local separator = { clients = '][', diagnostics = ' ', progress = '|' }
 
-function lsp_utils.render_status_string()
+function lsp_service.status_line()
   local clients = vim.lsp.buf_get_clients(0)
 
   local client_strings = {}
-  for _, client in ipairs(clients) do
+  for _, client in pairs(clients) do
 
     local diagnostics = {}
     for i, sev in ipairs(severities) do
@@ -62,22 +61,12 @@ function lsp_utils.render_status_string()
   return table.concat(client_strings, separator.clients)
 end
 
-function lsp_utils.apply_option(option)
-  -- print('option ' .. option)
-  local config = nil
-  if vim.tbl_contains({ 'ldu', 'ldv' }, option) then
-    config = {
-      virtual_text = vim.g.utils_options.ldv == 1,
-      underline = vim.g.utils_options.ldu == 1
-    }
-    for _, client in ipairs(vim.lsp.get_active_clients()) do
-      vim.lsp.diagnostic.display(vim.lsp.diagnostic.get(0, client.id), 0,
-                                 client.id, config)
-    end
-  end
+function lsp_service.omnifunc(...)
+  -- zzz
+  return vim.lsp.omnifunc(unpack({ ... }))
 end
 
-_G.lsp_utils = lsp_utils
+_G.service.lsp = lsp_service
 
 --
 -- UI
@@ -122,14 +111,12 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] =
   })
 
 --
--- Languages
+-- Language servers
 --
-lspconfig.rust_analyzer.setup({})
+lspconfig.rust_analyzer.setup {}
 
 lspconfig.sumneko_lua.setup {
-  -- cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"},
-  cmd = { 'sumneko' },
-  -- cmd={'/home/igor/Dist/lua-language-server/bin/Linux/lua-language-server', '-E', '/home/igor/Dist/lua-language-server/main.lua'},
+  cmd = { 'sumneko 2> ' .. vim.fn.stdpath('cache') .. '/sumneko.log' },
   settings = {
     Lua = {
       runtime = {
@@ -164,4 +151,52 @@ lspconfig.efm.setup {
     }
   }
 }
+
+local function toggle_option(option)
+  vim.fn['utils_options#toggle'](option)
+  if vim.tbl_contains({ 'ldu', 'ldv' }, option) then
+    config = {
+      virtual_text = vim.g.utils_options.ldv == 1,
+      underline = vim.g.utils_options.ldu == 1
+    }
+    for _, client in ipairs(vim.lsp.get_active_clients()) do
+      vim.lsp.diagnostic.display(vim.lsp.diagnostic.get(0, client.id), 0,
+                                 client.id, config)
+    end
+  end
+end
+
+local function autosave()
+  if vim.g.utils_options.laf then
+    vim.lsp.buf.formatting_sync(nil, 400)
+  end
+end
+
+-- Commands
+-- In use
+map('n', '<C-j>', vim.lsp.buf.hover)
+-- Goto's
+map('n', 'gd', vim.lsp.buf.definition)
+map('n', 'gt', vim.lsp.buf.type_definition)
+map('n', 'gr', vim.lsp.buf.references)
+map('n', 'g[', vim.lsp.diagnostic.goto_prev)
+map('n', 'g]', vim.lsp.diagnostic.goto_next)
+map('n', '<leader>ld', vim.lsp.buf.document_symbol)
+map('n', '<leader>lw', vim.lsp.buf.workspace_symbol)
+-- Less in use
+map('n', 'gi', vim.lsp.buf.implementation)
+map('n', '<leader>ls', vim.lsp.buf.signature_help)
+map('n', 'gD', vim.lsp.buf.declaration)
+map('n', 'ga', vim.lsp.buf.code_action)
+map('n', '<C-k>', vim.lsp.diagnostic.show_line_diagnostics)
+
+-- Options
+map('n', '<leader>l<M-v>', bind1(toggle_option, 'ldv'))
+map('n', '<leader>l<M-u>', bind1(toggle_option, 'ldu'))
+map('n', '<leader>l<M-f>', bind1(toggle_option, 'laf'))
+
+autocmd('LSP', {
+  { 'BufWritePre *', autosave }, [[ User LspProgressUpdate redraws! ]],
+  [[ User LspDiagnosticsChanged redraws! ]]
+})
 
