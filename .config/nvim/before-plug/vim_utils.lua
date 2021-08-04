@@ -1,8 +1,11 @@
 local map_key = vim.api.nvim_set_keymap
 
+local function rt(str) return vim.api.nvim_replace_termcodes(str, 1, 0, 1) end
+
 -- noremap by default, multiple modes
 -- rhs: vim-command string or lua function
 local function map(modes, lhs, rhs, opts)
+  lhs = rt(lhs)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
   if type(modes) == 'string' then
@@ -14,7 +17,8 @@ local function map(modes, lhs, rhs, opts)
         _map[mode] = {}
       end
       _map[mode][lhs] = rhs
-      local rhs_str = string.format('lua _map.%s.%s()', mode, lhs)
+      local rhs_str = string.format('<cmd>lua _map[\'%s\'][\'%s\']()<cr>', mode,
+                                    lhs)
       map_key(mode, lhs, rhs_str, opts)
     end
   else
@@ -53,7 +57,7 @@ local function autocmd(group, cmds, clear)
           _augroup[group] = {}
         end
         _augroup[group][event] = handler
-        handler = string.format('lua _augroup.%s.%s()', group, event)
+        handler = string.format('lua _augroup[\'%s\'][\'%s\']()', group, event)
       end
       cmd = event_pat .. ' ' .. handler
     end

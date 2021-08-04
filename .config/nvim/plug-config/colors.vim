@@ -40,6 +40,12 @@ hi DiffConflictMarker guibg=#666666 guifg=#000000
 
 hi ScrollView guibg=#000000
 
+"For git signs
 execute 'highlight!' 'User5' 'guifg=#727c5d' 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
 execute 'highlight!' 'User6' 'guifg=#76959d' 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
 execute 'highlight!' 'User7' 'guifg=#946f71' 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+
+hi DapBreakpointLine guibg=#100010
+hi DapBreakpointSign guifg=#d098f4
+hi DapStoppedLine guibg=#400040
+hi DapStoppedSign guifg=#9e1cf4
