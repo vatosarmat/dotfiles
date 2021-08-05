@@ -36,10 +36,26 @@ dap.adapters.nlua = function(callback, config)
   callback({ type = 'server', host = config.host, port = config.port })
 end
 
+--
+-- Mappings
+--
+
 local function map(key, command)
   require'before-plug.vim_utils'.map('n', '<leader>d' .. key, command)
 end
 
 map('b', dap.toggle_breakpoint)
-map('c', dap.continue)
 
+map('c', dap.continue)
+map('p', dap.pause)
+
+map('i', dap.step_into)
+map('s', dap.step_over)
+map('o', dap.step_out)
+
+map('u', dap.up)
+map('d', dap.down)
+
+map('R', dap.repl.toggle)
+
+vim.fn['utils#Cnoreabbrev']('osv', 'lua require"osv".launch()')

@@ -3,6 +3,8 @@ cnoreabbrev vh vert help
 cnoreabbrev ht Helptags
 cnoreabbrev hq h quickref
 cnoreabbrev he h eval.txt
+cnoreabbrev hd h dap.txt
+cnoreabbrev hl h lsp.txt
 
 "Other abbrevs
 " noreabbrev hit tabe \| so $VIMRUNTIME/syntax/hitest.vim
@@ -10,6 +12,7 @@ cnoreabbrev svrc source $MYVIMRC
 cnoreabbrev mm messages
 
 cnoreabbrev lpi lua print(vim.inspect())<left><left>
+cnoreabbrev lq lua require''.<left><left>
 
 "Commands
 command! -nargs=1 -complete=command Redir silent call <sid>Redir(<f-args>)

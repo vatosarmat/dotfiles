@@ -83,8 +83,10 @@ let g:utils#color8 = #{
 
 let g:utils#color_reset = "\e[m"
 
-function! utils#Cnoreabbrev(from, to)
-  exec 'cnoreabbrev <expr> '.a:from
-        \ .' ((getcmdtype() ==# ":" && getcmdline() ==# "'.a:from.'")'
-        \ .'? ("'.a:to.'") : ("'.a:from.'"))'
+function! utils#Cnoreabbrev(from, to) abort
+  function! s:ExpandAbbrev(lhs, rhs) abort
+    return getcmdtype() == ':' && getcmdline() == a:lhs ? a:rhs : a:lhs
+  endfunction
+  execute 'cnoreabbrev' '<expr>' a:from printf('<sid>ExpandAbbrev(''%s'', ''%s'')',a:from, a:to )
 endfunction
+

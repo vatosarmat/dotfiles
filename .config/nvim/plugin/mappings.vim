@@ -26,8 +26,6 @@ xnoremap <expr><silent>J "\<cmd>keepjumps normal! ".
 
 "Handy line start/end
 noremap <C-h> _
-noremap <C-h> _
-noremap <C-l> g_
 noremap <C-l> g_
 
 "Handier than ,
