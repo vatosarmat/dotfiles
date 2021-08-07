@@ -8,5 +8,9 @@ lua << END
 _G.service = {}
 _G._augroup = {}
 _G._map = {}
+_G._shortmap = {}
+function _G.pprint(value)
+  print(vim.inspect(value))
+end
 END
 luafile $STD_PATH_CONFIG/plug.lua

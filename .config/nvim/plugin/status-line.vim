@@ -19,26 +19,28 @@ function! IsFtUnordinary(ft, ext) abort
 endfunction
 
 function! StatusLineFile() abort
-  return "%f"
+  return "%f "
     \."%{StatusFileType()}"
+    \."%{%StatusIsDebugSession()%}"
+    \."%{%StatusShortmap()%}"
     \."%{%StatusRootDir()%}"
     \."%{%StatusLSP()%}"
     \." %<%3*%{StatusTreesitter()}%*"
     \."%="
     \." %m"
     \."%r"
-    \." %L | %l, %c%V% , %P"
+    \." %L | %l %c%V%  %P"
 endfunction
 
 function! StatusLineFugitiveFile() abort
-  return "%f"
+  return "%f "
     \."%{StatusFileType()}"
     \."%{%StatusLSP()%}"
     \." %<%3*%{StatusTreesitter()}%*"
     \."%="
     \." %m"
     \."%r"
-    \." %L | %l, %c%V% , %P"
+    \." %L | %l %c%V%  %P"
 endfunction
 
 function! StatusLineNofile() abort
@@ -48,7 +50,7 @@ function! StatusLineNofile() abort
     \."%="
     \." %m"
     \."%r"
-    \." %L | %l, %c%V% , %P"
+    \." %L | %l %c%V%  %P"
 endfunction
 
 function! StatusLineExplorer() abort
@@ -58,13 +60,34 @@ function! StatusLineExplorer() abort
     \." %P"
 endfunction
 
-
-function StatusTreesitter() abort
+function! StatusTreesitter() abort
   let w = winwidth(0)
   if w < 100 | return '' | endif
   return nvim_treesitter#statusline(#{separator: '->', indicator_size: w/2})
 endfunction
 
+let s:LIST = type([])
+let s:DICT = type({})
+function! StatusShortmap() abort
+  let content = ''
+  if @" == @+
+    let content .= '%3* %*'
+  endif
+  if type(get(b:,'shortmap',0)) == s:LIST
+    if content != ''
+      let content .= '|'
+    endif
+    let content .= '%2* %*'.b:shortmap[0]
+  endif
+  return content == '' ? '' : '['.content.']'
+endfunction
+
+function! StatusIsDebugSession() abort
+  if luaeval('require"dap".session() ~= nil')
+    return '%8* %*'
+  endif
+  return ''
+endfunction
 
 function! StatusLSP() abort
   if winwidth(0) < 70 | return '' | endif
@@ -86,12 +109,17 @@ function! StatusRootDir() abort
   let root = fnamemodify(maybeRoot ? maybeRoot : getcwd(), ':t')
   let gitStatus = get(b:, 'gitsigns_status_dict', '')
   if empty(gitStatus)
-    return ' ['.root.'/No GIT] '
+    return '['.root.'/No GIT] '
   else
+    if gitStatus.head == 'master'
+      let head = ''
+    else
+      let head = '/'.gitStatus.head
+    endif
     let changes = (get(gitStatus, 'added', 0) ? ' %5*落%*'.gitStatus.added : '')
       \.(get(gitStatus, 'changed', 0) ? ' %6*ﱴ %*'.gitStatus.changed : '')
       \.(get(gitStatus, 'removed', 0) ? ' %7* %*'.gitStatus.removed : '')
-    return  ' [%4* %*'.root.'/'.gitStatus.head.(empty(changes) ? '' : ' |'.changes ).'] '
+    return  '[%4* %*'.root.head.(empty(changes) ? '' : ' |'.changes ).'] '
   endif
 endfunction
 

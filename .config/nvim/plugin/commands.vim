@@ -21,13 +21,16 @@ command! DiffOrig silent call<sid>DiffOrig()
 " Pass channel as first arg, and string as second
 command! -nargs=+ TermPrint call <sid>TermPrint(<f-args>)
 
+command! -nargs=+ Lup lua print(vim.inspect(<args>))
+cnoreabbrev lup Lup
+
 "Implementations
 function! s:Redir(cmd) abort
   "Redirect the output of a Vim or external command into a scratch buffer
   "Doesn't highlight syntax and if manually set ft - becames laggy
   let output = execute(a:cmd)
   tabnew
-  setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+  setlocal buftype=nofile bufhidden=wipe noswapfile
   call setline(1, split(output, "\n"))
 endfunction
 

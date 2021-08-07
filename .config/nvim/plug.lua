@@ -22,11 +22,7 @@ local plug = require('packer').startup(function()
   use 'wbthomason/packer.nvim'
   use 'nvim-lua/plenary.nvim'
 
-  use {
-    'neovim/nvim-lspconfig',
-    config = mk_sourcer 'plug-config.lsp',
-    after = 'nvcode-color-schemes.vim'
-  }
+  use { 'neovim/nvim-lspconfig', config = mk_sourcer 'plug-config.lsp' }
 
   use 'nvim-telescope/telescope.nvim'
 

@@ -18,21 +18,22 @@ end
 function M.asterisk()
   local map = require'before-plug.vim_utils'.map
   local opts = { noremap = false }
-  map({ 'n', 'x', 'o' }, '*', '<Plug>(asterisk-z*)', opts)
-  map({ 'n', 'x', 'o' }, '#', '<Plug>(asterisk-z#)', opts)
-  map({ 'n', 'x', 'o' }, 'g*', '<Plug>(asterisk-gz*)', opts)
-  map({ 'n', 'x', 'o' }, 'g#', '<Plug>(asterisk-gz#)', opts)
+  map('nxo', '*', '<Plug>(asterisk-z*)', opts)
+  map('nxo', '#', '<Plug>(asterisk-z#)', opts)
+  map('nxo', 'g*', '<Plug>(asterisk-gz*)', opts)
+  map('nxo', 'g#', '<Plug>(asterisk-gz#)', opts)
 end
 
 function M.wordmotion()
   local map = require'before-plug.vim_utils'.map
   vim.g.wordmotion_nomap = 1
   local opts = { noremap = false }
-  map({ 'n', 'x', 'o' }, '<M-w>', '<Plug>WordMotion_w', opts)
-  map({ 'n', 'x', 'o' }, '<M-b>', '<Plug>WordMotion_b', opts)
-  map({ 'n', 'x', 'o' }, '<M-e>', '<Plug>WordMotion_e', opts)
-  map({ 'o' }, 'a<M-w>', '<Plug>WordMotion_aw', opts)
-  map({ 'o' }, 'i<M-w>', '<Plug>WordMotion_iw', opts)
+  map('nxo', '<M-w>', '<Plug>WordMotion_w', opts)
+  map('nxo', '<M-b>', '<Plug>WordMotion_b', opts)
+  map('nxo', '<M-e>', '<Plug>WordMotion_e', opts)
+  map('nxo', '<M-s>', '<Plug>WordMotion_ge', opts)
+  map('o', 'a<M-w>', '<Plug>WordMotion_aw', opts)
+  map('o', 'i<M-w>', '<Plug>WordMotion_iw', opts)
 end
 
 function M.surround()

@@ -31,9 +31,11 @@ noremap <C-l> g_
 "Handier than ,
 nnoremap <M-;> ,
 
-"Let , to be register selector
-nmap , "
-xmap , "
+"More convinient register selector
+nmap <C-y> "
+xmap <C-y> "
+nnoremap <M-C-y> <C-y>
+nnoremap <M-C-e> <C-e>
 
 "Redraw
 nnoremap g_ <C-l>
@@ -62,6 +64,27 @@ function! s:PasteOver() abort
   execute 'normal!' '"_d"'.v:register.( col('.')+1==col('$') ? 'p' : 'P')
 endfunction
 xnoremap p <cmd>call <sid>PasteOver()<cr>
+
+" nnoremap <leader>g <cmd>set operatorfunc=<SID>GrepOperator<cr>g@
+" xnoremap <leader>g <cmd>call <SID>GrepOperator(visualmode())<cr>
+
+" function! s:GrepOperator(type)
+"     let saved_unnamed_register = @@
+
+"     if a:type ==# 'v'
+"         normal! `<v`>y
+"     elseif a:type ==# 'char'
+"         normal! `[v`]y
+"     else
+"         return
+"     endif
+
+"     silent execute "grep! -R " . shellescape(@@) . " ."
+"     copen
+
+"     let @@ = saved_unnamed_register
+" endfunction
+
 
 "Line in 'less' utility
 nnoremap <silent> <M-u> :noh<CR>
@@ -208,3 +231,118 @@ xnoremap <M-r> :s///gc<left><left><left>
 function! s:IsLineEmpty(...) abort
   return getline(line('.') + get(a:, '1', 0)) !~ '\S'
 endfunction
+
+function! s:WordMotions() abort
+  function! s:RightExcl() abort
+    return getline('.')[col('.'):]
+  endfunction
+
+  function! s:RightIncl() abort
+    return getline('.')[col('.')-1:]
+  endfunction
+
+  function! s:LeftExcl() abort
+    return getline('.')[:col('.')-2]
+  endfunction
+
+  function! s:LeftIncl() abort
+    return getline('.')[:col('.')-1]
+  endfunction
+
+  function! s:move_w() abort
+    let count = 0
+    let ri = s:RightIncl()
+    "Cursor pos
+    let prevChar = ri[0]
+    for i in range(1, len(ri))
+      let char = ri[i]
+      if prevChar !~ '\k' && char =~ '\k'
+        let count += 1
+        if count == v:count1
+          execute 'normal!' (i).'l'
+          return
+        endif
+      endif
+      let prevChar = char
+    endfor
+
+    "Jump to the line end if no suitable char found
+    normal! g_
+  endfunction
+
+  function! s:move_e() abort
+    let count = 0
+    let re = s:RightExcl()
+    "Right after cursor pos
+    let prevChar = re[0]
+    for i in range(1, len(re))
+      let char = re[i]
+      if prevChar =~ '\k' && char !~ '\k'
+        let count += 1
+        if count == v:count1
+          "Make inclusive
+          let m = mode(1)
+          if m == 'no'
+            let i = i + 1
+          endif
+          execute 'normal!' (i).'l'
+          return
+        endif
+      endif
+      let prevChar = char
+    endfor
+
+    normal! g_
+  endfunction
+
+  function! s:move_b() abort
+    let count = 0
+    let le = s:LeftExcl()
+    let ll = len(le)
+    "Left before cursor pos
+    let nextChar = le[ll-1]
+    for i in range(1, ll)
+      let char = le[ll-1-i]
+      if char !~ '\k' && nextChar =~ '\k'
+        let count += 1
+        if count == v:count1
+          execute 'normal!' (i).'h'
+          return
+        endif
+      endif
+      let nextChar = char
+    endfor
+
+    normal! _
+  endfunction
+
+  function! s:move_ge() abort
+    let count = 0
+    let li = s:LeftIncl()
+    let ll = len(li)
+    "Cursor pos
+    let nextChar = li[ll-1]
+    for i in range(1, ll)
+      let char = li[ll-1-i]
+      if char =~ '\k' && nextChar !~ '\k'
+        let count += 1
+        if count == v:count1
+          execute 'normal!' (i).'h'
+          return
+        endif
+      endif
+      let nextChar = char
+    endfor
+
+    normal! _
+  endfunction
+
+  noremap w <cmd>call <sid>move_w()<cr>
+  noremap b <cmd>call <sid>move_b()<cr>
+  noremap e <cmd>call <sid>move_e()<cr>
+  noremap s <cmd>call <sid>move_ge()<cr>
+
+  noremap S gE
+endfunction
+
+call s:WordMotions()

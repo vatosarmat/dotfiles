@@ -1,31 +1,47 @@
-local map_key = vim.api.nvim_set_keymap
+local allowed_key_modes = {
+  n = true,
+  x = true,
+  o = true,
+  i = true,
+  t = true,
+  c = true
+}
 
-local function rt(str) return vim.api.nvim_replace_termcodes(str, 1, 0, 1) end
+local function assert_key_mode(mode)
+  assert(allowed_key_modes[mode], 'Unexpected key mode:' .. mode)
+end
 
--- noremap by default, multiple modes
+-- modes: 'n', 'nx', 'nxo', etc
 -- rhs: vim-command string or lua function
 local function map(modes, lhs, rhs, opts)
-  lhs = rt(lhs)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
-  if type(modes) == 'string' then
-    modes = { modes }
-  end
+
+  local setter
   if type(rhs) == 'function' then
-    for _, mode in ipairs(modes) do
+    setter = function(mode)
+      assert_key_mode(mode)
       if _map[mode] == nil then
         _map[mode] = {}
       end
       _map[mode][lhs] = rhs
       local rhs_str = string.format('<cmd>lua _map[\'%s\'][\'%s\']()<cr>', mode,
-                                    lhs)
-      map_key(mode, lhs, rhs_str, opts)
+                                    string.gsub(lhs, '<', '<lt>'))
+      vim.api.nvim_set_keymap(mode, lhs, rhs_str, opts)
     end
   else
-    for _, mode in ipairs(modes) do
-      map_key(mode, lhs, rhs, opts)
+    setter = function(mode)
+      assert_key_mode(mode)
+      vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
     end
   end
+
+  -- if type(modes) == 'table' then
+  --   print(vim.inspect(debug.getinfo(2)))
+  --   print(vim.inspect(debug.getinfo(1)))
+  -- end
+  -- print(modes)
+  modes:gsub(".", setter)
 end
 
 local function mk_sourcer(path)
@@ -66,4 +82,18 @@ local function autocmd(group, cmds, clear)
   vim.cmd [[augroup END]]
 end
 
-return { map = map, mk_sourcer = mk_sourcer, autocmd = autocmd }
+-- mapping: {lhs, rhs}
+local function mk_shortmap(name, mappings)
+  local shortmap = mappings
+  -- for _, mp in ipairs(mappings) do
+  --   local lhs, rhs = mp[1], mp[2]
+  -- end
+  _shortmap[name] = shortmap
+end
+
+return {
+  map = map,
+  mk_sourcer = mk_sourcer,
+  autocmd = autocmd,
+  assert_key_mode = assert_key_mode
+}

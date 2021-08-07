@@ -73,9 +73,6 @@ _G.service.lsp = lsp_service
 --
 
 for i, sev in ipairs(severities) do
-  vim.cmd(string.format('highlight User%d guifg=%s guibg=%s', i,
-                        vim.fn['utils#GetHlAttr'](sev.hl, 'fg'),
-                        vim.fn['utils#GetHlAttr']('StatusLine', 'bg')))
   vim.fn.sign_define(sev.hl,
                      { texthl = sev.hl, text = sev.sign, numhl = sev.hl })
 end

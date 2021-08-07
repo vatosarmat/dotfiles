@@ -4,8 +4,7 @@ set autoread
 set noundofile
 set nobackup nowritebackup
 set noswapfile
-" set cmdheight=2
-" set shortmess+=c
+set cpoptions-=_
 
 set scrolloff=5
 

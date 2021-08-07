@@ -1,4 +1,8 @@
 colorscheme nvcode
+
+hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#000000 ctermbg=236 gui=NONE cterm=NONE
+hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE cterm=NONE
+
 "Error
 hi! LspDiagnosticsVirtualTextError guifg=#f44747
 hi! link LspDiagnosticsFloatingError LspDiagnosticsVirtualTextError
@@ -17,6 +21,19 @@ hi! link LspDiagnosticsSignHint LspDiagnosticsVirtualTextHint
 hi! link LspDiagnosticsFloatingHint LspDiagnosticsVirtualTextHint
 hi! link NvimTreeLspDiagnosticsHint LspDiagnosticsSignHint
 
+execute 'highlight!' 'User1'
+  \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignError', 'fg')
+  \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+execute 'highlight!' 'User2'
+  \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignWarning', 'fg')
+  \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+execute 'highlight!' 'User3'
+  \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignInformation', 'fg')
+  \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+execute 'highlight!' 'User4'
+  \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignHint', 'fg')
+  \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+
 hi! link TSTypeBuiltin TSType
 hi! link CocErrorSign LspDiagnosticsSignError
 hi Pmenu guifg=#e6eeff
@@ -28,9 +45,6 @@ hi Visual guibg=#264f78
 hi Search guibg=#613214
 hi CocHighlightText guibg=#3a3a3a
 hi YankHighlight guibg=#1d3a3a
-
-hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#000000 ctermbg=236 gui=NONE cterm=NONE
-hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE cterm=NONE
 
 hi DiffAdd guifg=NONE guibg=#151e00
 hi DiffDelete guifg=NONE guibg=#101010
@@ -49,3 +63,6 @@ hi DapBreakpointLine guibg=#100010
 hi DapBreakpointSign guifg=#d098f4
 hi DapStoppedLine guibg=#400040
 hi DapStoppedSign guifg=#9e1cf4
+execute 'highlight!' 'User8'
+  \ 'guifg='.utils#GetHlAttr('DapStoppedSign', 'fg')
+  \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')

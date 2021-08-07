@@ -8,10 +8,6 @@ augroup BeforePlug
 
   autocmd FileType qf setlocal norelativenumber
   autocmd FileType help call docfavs#Init()
-  autocmd FileType typescript call s:KeywordMovements()
-  autocmd FileType rust call s:KeywordMovements()
-  autocmd FileType vim call s:KeywordMovements()
-  autocmd FileType lua call s:KeywordMovements()
 
   "Move help window right
   autocmd WinNew * call s:OnWinNew()
@@ -58,96 +54,5 @@ function! s:TrimLines()
   call setpos('.', save_cursor)
 endfun
 
-function! s:RightExcl() abort
-  return getline('.')[col('.'):]
-endfunction
 
-function! s:RightIncl() abort
-  return getline('.')[col('.')-1:]
-endfunction
-
-function! s:LeftExcl() abort
-  return getline('.')[:col('.')-2]
-endfunction
-
-function! s:LeftIncl() abort
-  return getline('.')[:col('.')-1]
-endfunction
-
-function! s:KeywordMovements() abort
-  function! s:move_w() abort
-    let ri = s:RightIncl()
-    "Cursor pos
-    let prevChar = ri[0]
-    for i in range(1, len(ri))
-      let char = ri[i]
-      if prevChar !~ '\k' && char =~ '\k'
-        execute 'normal!' (i).'l'
-        return
-      endif
-      let prevChar = char
-    endfor
-
-    normal! g_
-  endfunction
-
-  function! s:move_e() abort
-    let re = s:RightExcl()
-    "Right after cursor pos
-    let prevChar = re[0]
-    for i in range(1, len(re))
-      let char = re[i]
-      if prevChar =~ '\k' && char !~ '\k'
-        execute 'normal!' (i).'l'
-        return
-      endif
-      let prevChar = char
-    endfor
-
-    normal! g_
-  endfunction
-
-  function! s:move_b() abort
-    let le = s:LeftExcl()
-    let ll = len(le)
-    "Left before cursor pos
-    let nextChar = le[ll-1]
-    for i in range(1, ll)
-      let char = le[ll-1-i]
-      if char !~ '\k' && nextChar =~ '\k'
-        execute 'normal!' (i).'h'
-        return
-      endif
-      let nextChar = char
-    endfor
-
-    normal! _
-  endfunction
-
-  function! s:move_ge() abort
-    let li = s:LeftIncl()
-    let ll = len(li)
-    "Cursor pos
-    let nextChar = li[ll-1]
-    for i in range(1, ll)
-      let char = li[ll-1-i]
-      if char =~ '\k' && nextChar !~ '\k'
-        execute 'normal!' (i).'h'
-        return
-      endif
-      let nextChar = char
-    endfor
-
-    normal! _
-  endfunction
-
-  nnoremap w <cmd>call <sid>move_w()<cr>
-  nnoremap b <cmd>call <sid>move_b()<cr>
-  nnoremap e <cmd>call <sid>move_e()<cr>
-  nnoremap ge <cmd>call <sid>move_ge()<cr>
-  xnoremap w <cmd>call <sid>move_w()<cr>
-  xnoremap b <cmd>call <sid>move_b()<cr>
-  xnoremap e <cmd>call <sid>move_e()<cr>
-  xnoremap ge <cmd>call <sid>move_ge()<cr>
-endfunction
 
