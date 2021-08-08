@@ -1,4 +1,6 @@
 
+noremap X J
+
 "zt and zb are inconvinient
 nnoremap <M-[> zt
 nnoremap <M-i> zz
@@ -49,7 +51,16 @@ nnoremap <silent>G <cmd>keepjumps normal! Gzz<cr>
 
 
 "Paste from vim to system clipboard
-nnoremap <silent> <M-y> :let @+=@"<cr>
+nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:utils_options.yc = 1<cr>
+nnoremap <M-C-y> <cmd>call <sid>ToggleRegtype()<cr>
+function! s:ToggleRegtype() abort
+  let urt = getregtype('"')
+  if urt ==# 'v'
+    call setreg('"', @", 'V')
+  elseif urt ==# 'V'
+    call setreg('"', @"[:-2], 'v')
+  endif
+endfunction
 
 "Save file like in all other programs
 nnoremap <silent> <C-s> :w<cr>
@@ -61,6 +72,9 @@ nnoremap Y y$
 "No overwrite paste and change
 nnoremap c "_c
 xnoremap c "_c
+
+nnoremap p ]p
+nnoremap P ]P
 
 function! s:PasteOver() abort
   execute 'normal!' '"_d"'.v:register.( col('.')+1==col('$') ? 'p' : 'P')

@@ -3,6 +3,7 @@ let g:utils_options = #{}
 let s:utils_flags = #{
   \ nz: 0,
   \ hl: 0,
+  \ yc: 0,
   \ }
 
 let s:lsp_flags = #{

@@ -2,7 +2,7 @@ let g:autocmd#last_win_new = -1
 
 augroup BeforePlug
   autocmd!
-  autocmd TextYankPost * silent! lua vim.highlight.on_yank {higroup="YankHighlight", timeout=1000}
+  autocmd TextYankPost * call s:TextYankPost()
 
   autocmd BufAdd * if !empty(&buftype) | call mappings#NopDiff() | endif
 
@@ -25,6 +25,13 @@ augroup BeforePlug
   "Clear trailing spaces
   autocmd BufWritePre * call s:TrimLines()
 augroup END
+
+function! s:TextYankPost() abort
+  if v:event.regname != '+'
+    let g:utils_options.yc = 0
+  endif
+  silent! lua vim.highlight.on_yank {higroup="YankHighlight", timeout=1000}
+endfunction
 
 function! s:OnBufWinEnterTxt() abort
   "Move each new help window right if no other help windows

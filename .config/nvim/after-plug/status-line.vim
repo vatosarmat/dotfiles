@@ -69,10 +69,18 @@ endfunction
 let s:LIST = type([])
 let s:DICT = type({})
 function! StatusShortmap() abort
-  return ''
   let content = ''
-  if @" == @+
-    let content .= '%3* %*'
+  let urt = getregtype('"')
+  if urt ==# 'v'
+    let content .= ' '
+  elseif urt ==# 'V'
+    let content .= ' '
+  endif
+  if g:utils_options.yc == 1
+    let content .= ' '
+  endif
+  if content != ''
+    let content = '%3*'.content.'%*'
   endif
   if type(get(b:,'shortmap',0)) == s:LIST
     if content != ''
