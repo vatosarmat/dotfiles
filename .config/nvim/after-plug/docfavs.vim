@@ -8,7 +8,7 @@ let s:subsectionHeadPattern = '\v^[[:keyword:][:blank:]]+\~$'
 "Function declarations can be in eval.txt, api.txt, lua.txt, lsp.txt, maybe other places
 
 function! docfavs#Init()
-  nnoremap <buffer> s <cmd>call <SID>FavFunction()<cr>
+  nnoremap <buffer> , <cmd>call <SID>FavFunction()<cr>
 endfunction
 
 

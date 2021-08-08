@@ -69,6 +69,7 @@ endfunction
 let s:LIST = type([])
 let s:DICT = type({})
 function! StatusShortmap() abort
+  return ''
   let content = ''
   if @" == @+
     let content .= '%3* %*'

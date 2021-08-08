@@ -36,6 +36,8 @@ nmap <C-y> "
 xmap <C-y> "
 nnoremap <M-C-y> <C-y>
 nnoremap <M-C-e> <C-e>
+xnoremap <M-C-y> <C-y>
+xnoremap <M-C-e> <C-e>
 
 "Redraw
 nnoremap g_ <C-l>
@@ -156,15 +158,15 @@ call s:RemapMarks()
 tnoremap <c-o> <C-\><C-n>
 
 "Easier windows navigation with arrows remapped to 'hjkl' in terminal emulator
-nnoremap <Left> <C-w>h
-nnoremap <Down> <C-w>j
-nnoremap <Up> <C-w>k
+nnoremap <Left>  <C-w>h
+nnoremap <Down>  <C-w>j
+nnoremap <Up>    <C-w>k
 nnoremap <Right> <C-w>l
 
-nnoremap <silent><C-M-h>  <cmd>vertical resize -5<cr>
-nnoremap <silent><C-M-j>  <cmd>         resize -5<cr>
-nnoremap <silent><C-M-k>    <cmd>         resize +5<cr>
-nnoremap <silent><C-M-l> <cmd>vertical resize +5<cr>
+nnoremap <silent><M-C-h>  <cmd>vertical resize -5<cr>
+nnoremap <silent><M-C-j>  <cmd>         resize -5<cr>
+nnoremap <silent><M-C-k>  <cmd>         resize +5<cr>
+nnoremap <silent><M-C-l>  <cmd>vertical resize +5<cr>
 
 "Jump forward/back in split
 nnoremap <C-w><C-o> <C-w>v<C-o>

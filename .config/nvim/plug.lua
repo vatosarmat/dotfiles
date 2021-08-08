@@ -21,6 +21,7 @@ local plug = require('packer').startup(function()
   -- Major
   use 'wbthomason/packer.nvim'
   use 'nvim-lua/plenary.nvim'
+  use 'teal-language/vim-teal'
 
   use { 'neovim/nvim-lspconfig', config = mk_sourcer 'plug-config.lsp' }
 
@@ -34,6 +35,7 @@ local plug = require('packer').startup(function()
 
   use {
     'nvim-treesitter/nvim-treesitter',
+    branch = '0.5-compat',
     config = mk_sourcer 'plug-config.treesitter',
     run = ':TSUpdate'
   }

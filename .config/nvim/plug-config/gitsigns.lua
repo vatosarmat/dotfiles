@@ -28,6 +28,7 @@ gs.setup {
   --   topdelete    = {hl = 'GitSignsDelete', text = ' ‾', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn'},
   --   changedelete = {hl = 'GitSignsChange', text = ' ~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
 
+  update_debounce = 500,
   signs = {
     add = {
       hl = 'GitSignsAdd',
