@@ -69,7 +69,7 @@ function M.enable(name)
   for mode, mode_maps in pairs(mappings) do
     current_keymaps[mode] = buf_get_map(mode)
     overwritten_keymaps[mode] = {}
-    for lhs, rhs in pairs(mappings[mode]) do
+    for lhs, rhs in pairs(mode_maps) do
       local maybe_overwritten = current_keymaps[mode][lhs]
       if maybe_overwritten then
         overwritten_keymaps[mode][lhs] = maybe_overwritten
@@ -89,7 +89,7 @@ function M.disable()
   local overwritten_keymaps = vim.b.overwritten_keymaps
   local mappings = shortmap[2]
   for mode, mode_maps in pairs(mappings) do
-    for lhs, _ in pairs(mappings[mode]) do
+    for lhs, _ in pairs(mode_maps) do
       buf_del_map(mode, lhs)
       local maybe_overwritten = overwritten_keymaps[mode][lhs]
       if maybe_overwritten then

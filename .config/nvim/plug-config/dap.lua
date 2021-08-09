@@ -58,6 +58,10 @@ do
 
   local mapn = bind(map, 'n', func._1, func._2, func._3)
 
+  local function sidebar_frames() widgets.sidebar(widgets.frames).open() end
+
+  local function sidebar_scopes() widgets.sidebar(widgets.scopes).open() end
+
   mapn('b', dap.toggle_breakpoint, '<C-b>')
 
   mapn('c', dap.continue)
@@ -70,12 +74,14 @@ do
   mapn('u', dap.up)
   mapn('d', dap.down)
 
-  mapn('R', dap.repl.toggle)
-
-  mapn('f', bind1(widgets.sidebar, widgets.frames))
-  mapn('v', bind1(widgets.sidebar, widgets.scopes))
   mapn('h', widgets.hover, '<Home>')
-  map('x', 'h', bind1(widgets.hover, dutilsget_visual_selection_text), '<Home>')
+  map('x', 'h', bind1(widgets.hover, dutils.get_visual_selection_text), '<Home>')
+
+  mapn('R', dap.repl.toggle)
+  mapn('f', sidebar_frames, 'gf')
+  mapn('v', sidebar_scopes, 'gv')
+  mapn('<M-f>', bind1(widgets.centered_float, widgets.frames), '<M-f>')
+  mapn('<M-v>', bind1(widgets.centered_float, widgets.scopes), '<M-v>')
 
   mapn('K', bind1(shortmap.toggle, 'debug'))
 

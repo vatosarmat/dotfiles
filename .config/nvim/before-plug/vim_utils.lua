@@ -82,15 +82,6 @@ local function autocmd(group, cmds, clear)
   vim.cmd [[augroup END]]
 end
 
--- mapping: {lhs, rhs}
-local function mk_shortmap(name, mappings)
-  local shortmap = mappings
-  -- for _, mp in ipairs(mappings) do
-  --   local lhs, rhs = mp[1], mp[2]
-  -- end
-  _shortmap[name] = shortmap
-end
-
 return {
   map = map,
   mk_sourcer = mk_sourcer,

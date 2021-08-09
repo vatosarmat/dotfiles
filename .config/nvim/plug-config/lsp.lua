@@ -66,13 +66,13 @@ function lsp_service.omnifunc(...)
   return vim.lsp.omnifunc(unpack({ ... }))
 end
 
-_G.service.lsp = lsp_service
+service.lsp = lsp_service
 
 --
 -- UI
 --
 
-for i, sev in ipairs(severities) do
+for _, sev in ipairs(severities) do
   vim.fn.sign_define(sev.hl,
                      { texthl = sev.hl, text = sev.sign, numhl = sev.hl })
 end
@@ -113,7 +113,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] =
 lspconfig.rust_analyzer.setup {}
 
 lspconfig.sumneko_lua.setup {
-  cmd = { 'sumneko 2> ' .. vim.fn.stdpath('cache') .. '/sumneko.log' },
+  cmd = { 'sumneko', '2>', vim.fn.stdpath('cache') .. '/sumneko.log' },
   settings = {
     Lua = {
       runtime = {
@@ -123,8 +123,9 @@ lspconfig.sumneko_lua.setup {
         path = vim.split(package.path, ';')
       },
       diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = { 'vim' }
+        globals = {
+          'vim', 'service', '_map', '_augroup', '_shortmap', 'use', 'use_rocks'
+        }
       },
       workspace = {
         -- Make the server aware of Neovim runtime files
@@ -152,7 +153,7 @@ lspconfig.efm.setup {
 local function toggle_option(option)
   vim.fn['utils_options#toggle'](option)
   if vim.tbl_contains({ 'ldu', 'ldv' }, option) then
-    config = {
+    local config = {
       virtual_text = vim.g.utils_options.ldv == 1,
       underline = vim.g.utils_options.ldu == 1
     }
