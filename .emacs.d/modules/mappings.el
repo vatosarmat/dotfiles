@@ -11,6 +11,25 @@
 ; (evil-global-set-key 'normal (kbd "<tab>") 'evil-force-normal-state)
 (evil-global-set-key 'visual (kbd "<tab>") 'evil-exit-visual-state)
 
+(defun next-code-buffer ()
+  (interactive)
+  (let (( bread-crumb (buffer-name) ))
+    (next-buffer)
+    (while
+        (and
+         (string-match-p "^\*" (buffer-name))
+         (not ( equal bread-crumb (buffer-name) )) )
+      (next-buffer))))
+
+(defun previous-code-buffer ()
+  (interactive)
+  (let (( bread-crumb (buffer-name) ))
+    (previous-buffer)
+    (while
+        (and
+         (string-match-p "^\*" (buffer-name))
+         (not ( equal bread-crumb (buffer-name) )) )
+      (previous-buffer))))
 ;;Global
 ;My
 ; (global-set-key (kbd "C-y") 'kill-line)
@@ -25,3 +44,5 @@
 (global-set-key (kbd "M-]") 'org-forward-element)
 (global-set-key (kbd "C-M-[") 'org-up-element)
 (global-set-key (kbd "C-M-]") 'org-down-element)
+(global-set-key (kbd "M-n") 'next-code-buffer)
+(global-set-key (kbd "M-p") 'previous-code-buffer)
