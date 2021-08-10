@@ -112,6 +112,13 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] =
 --
 lspconfig.rust_analyzer.setup {}
 
+-- lspconfig.html.setup {}
+-- lspconfig.cssls.setup {}
+lspconfig.jsonls.setup {
+  filetypes = { 'jsonc' },
+  init_options = { provideFormatter = false }
+}
+
 lspconfig.sumneko_lua.setup {
   cmd = { 'sumneko', '2>', vim.fn.stdpath('cache') .. '/sumneko.log' },
   settings = {
@@ -141,11 +148,15 @@ lspconfig.sumneko_lua.setup {
 lspconfig.efm.setup {
   -- on_attach = on_attach,
   init_options = { documentFormatting = true },
-  filetypes = { "lua" },
+  filetypes = { "lua", "json", "jsonc", 'html', 'css' },
   settings = {
     rootMarkers = { ".git/" },
     languages = {
-      lua = { { formatCommand = "lua-format -i", formatStdin = true } }
+      lua = { { formatCommand = "lua-format -i", formatStdin = true } },
+      json = { { formatCommand = 'prettier --parser json', formatStdin = true } },
+      jsonc = { { formatCommand = 'prettier --parser json', formatStdin = true } }
+      -- html = { { formatCommand = 'prettier' } },
+      -- css = { { formatCommand = 'prettier' } }
     }
   }
 }
@@ -164,7 +175,7 @@ local function toggle_option(option)
   end
 end
 
-local function autosave()
+local function auto_format()
   if vim.g.utils_options.laf then
     vim.lsp.buf.formatting_sync(nil, 400)
   end
@@ -194,7 +205,7 @@ map('n', '<leader>l<M-u>', bind1(toggle_option, 'ldu'))
 map('n', '<leader>l<M-f>', bind1(toggle_option, 'laf'))
 
 autocmd('LSP', {
-  { 'BufWritePre *', autosave }, [[ User LspProgressUpdate redraws! ]],
+  { 'BufWritePre *', auto_format }, [[ User LspProgressUpdate redraws! ]],
   [[ User LspDiagnosticsChanged redraws! ]]
 })
 

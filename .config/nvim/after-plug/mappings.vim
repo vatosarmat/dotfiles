@@ -52,7 +52,7 @@ nnoremap <silent>G <cmd>keepjumps normal! Gzz<cr>
 
 "Paste from vim to system clipboard
 nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:utils_options.yc = 1<cr>
-nnoremap <M-C-y> <cmd>call <sid>ToggleRegtype()<cr>
+nnoremap <C-e> <cmd>call <sid>ToggleRegtype()<cr>
 function! s:ToggleRegtype() abort
   let urt = getregtype('"')
   if urt ==# 'v'

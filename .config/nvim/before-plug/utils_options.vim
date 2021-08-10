@@ -13,8 +13,8 @@ let s:lsp_flags = #{
  \ }
 
 function utils_options#toggle(flag) abort
-  let g:utils_options[a:option] = !g:utils_options[a:option]
-  echom a:option.' '.(g:utils_options[a:option] ? 'SET' : 'UNset')
+  let g:utils_options[a:flag] = !g:utils_options[a:flag]
+  echom a:option.' '.(g:utils_options[a:flag] ? 'SET' : 'UNset')
 endfunction
 
 function s:MapAllFlags() abort

@@ -3,6 +3,7 @@ let s:ft_ext = #{
   \ vim: ['vim'],
   \ lua: ['lua'],
   \ json: ['json'],
+  \ jsonc: ['json'],
   \ markdown: ['md'],
   \ python: ['py'],
   \ typescriptreact: ['tsx'],
@@ -108,7 +109,7 @@ function! StatusLSP() abort
 endfunction
 
 function! StatusFileType() abort
-  return IsFtUnordinary(&filetype, expand("%:e")) && winwidth(0) >= 90 ? ' ['.&filetype.'] ' : ''
+  return IsFtUnordinary(&filetype, expand("%:e")) && winwidth(0) >= 90 ? '['.&filetype.'] ' : ''
 endfunction
 
 function! StatusRootDir() abort
