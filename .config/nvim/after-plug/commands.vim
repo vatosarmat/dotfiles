@@ -24,6 +24,9 @@ command! -nargs=+ TermPrint call <sid>TermPrint(<f-args>)
 command! -nargs=+ Lup lua print(vim.inspect(<args>))
 cnoreabbrev lup Lup
 
+command! -nargs=0 Lspt lua vim.lsp.set_log_level('trace')
+cnoreabbrev lspt Lspt
+
 "Implementations
 function! s:Redir(cmd) abort
   "Redirect the output of a Vim or external command into a scratch buffer

@@ -176,8 +176,8 @@ local function toggle_option(option)
 end
 
 local function auto_format()
-  if vim.g.utils_options.laf then
-    vim.lsp.buf.formatting_sync(nil, 400)
+  if vim.g.utils_options.laf == 1 then
+    vim.lsp.buf.formatting_sync(nil, 1500)
   end
 end
 

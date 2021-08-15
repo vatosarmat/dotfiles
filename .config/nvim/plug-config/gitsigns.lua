@@ -18,7 +18,7 @@ local _gitsigns = {}
 _gitsigns.stage_hunk = withIndexBufUpdate(gs.stage_hunk)
 _gitsigns.undo_stage_hunk = withIndexBufUpdate(gs.undo_stage_hunk)
 
-_G._gitsings = _gitsigns
+_G._gitsigns = _gitsigns
 
 gs.setup {
   -- signs = {

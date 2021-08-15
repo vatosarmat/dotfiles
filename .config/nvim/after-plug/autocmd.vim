@@ -23,7 +23,7 @@ augroup BeforePlug
   autocmd WinClosed * diffupdate!
 
   "Clear trailing spaces
-  autocmd BufWritePre * call s:TrimLines()
+  autocmd BufWritePre * if g:utils_options.laf | call s:TrimLines() | endif
 augroup END
 
 function! s:TextYankPost() abort

@@ -23,18 +23,20 @@ dap.configurations.lua = {
     type = 'nlua',
     request = 'attach',
     name = "Attach to running Neovim instance",
-    host = function()
-      local value = vim.fn.input('Host [127.0.0.1]: ')
-      if value ~= "" then
-        return value
-      end
-      return '127.0.0.1'
-    end,
-    port = function()
-      local val = tonumber(vim.fn.input('Port: '))
-      assert(val, "Please provide a port number")
-      return val
-    end
+    -- host = function()
+    --   local value = vim.fn.input('Host [127.0.0.1]: ')
+    --   if value ~= "" then
+    --     return value
+    --   end
+    --   return '127.0.0.1'
+    -- end,
+    host = '127.0.0.1',
+    port = '40001'
+    -- port = function()
+    --   local val = tonumber(vim.fn.input('Port: '))
+    --   assert(val, "Please provide a port number")
+    --   return val
+    -- end
   }
 }
 
@@ -88,4 +90,6 @@ do
   shortmap.define('debug', short_mappings)
 end
 
-vim.fn['utils#Cnoreabbrev']('osv', 'lua require"osv".launch()')
+vim.fn['utils#Cnoreabbrev']('osv', 'lua require"osv".launch({port = 40001})')
+vim.fn['utils#Cnoreabbrev']('osvl',
+                            'lua require"osv".launch({log = true, port = 40001})')

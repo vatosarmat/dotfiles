@@ -78,7 +78,6 @@ alias vpndown="nmcli con down vpn99"
 alias ffmpeg='ffmpeg -hide_banner'
 alias hd='hexdump'
 alias hdh="hd -v -e '/1 \"%02X \"'"
-alias hdhl="hd -v -e '/1 \"%02X \"' ; echo"
 
 alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
@@ -100,10 +99,16 @@ alias color8='printf "\e[40;37m 0 \e[41;36m 1 \e[42;35m 2 \e[43;34m 3 \e[44;33m 
 
 alias ghus="gh__search"
 alias ghuc="gh__cache"
+alias x='xsel -ob'
 
 source z
 
 #Functions
+
+function bytes {
+  cat - | hd -v -e '/1 "%02X "' "$@"
+  echo
+}
 
 function cl {
   cd "$@"
@@ -319,6 +324,38 @@ function font__ls_chars {
     fi
   done
   printf "\n"
+}
+
+#neovim
+function v {
+  local project_markers="README.md package.json"
+  for f in $project_markers; do
+    if [[ -f "$f" ]]; then
+      nvim -i '.shada' "$f"
+      return
+    fi
+  done
+  echo "No project marker found: $project_markers"
+}
+
+function lsp_log {
+  local cmd=''
+  declare -ar pass=()
+  declare -ar block=('"textDocument/publishDiagnostics"' '"$/progress"' '"$/status/report"')
+  if [[ "$1" == '-f' ]]; then
+    cmd="tail -f"
+  else
+    cmd="cat"
+  fi
+  declare -a block_args=()
+  for b in ${block[@]}; do
+    block_args+=('-e' "$b")
+  done
+  $cmd "$HOME/.cache/nvim/lsp.log" | \
+  grep --line-buffered -Fv "${block_args[@]}" | \
+  sed --unbuffered -E -f "$HOME/.config/nvim/misc/lsp_log.sed" | \
+  bat --color=always --pager=never --style=plain -l lua
+  # grep -F -e '"rpc.send.payload"' -e '"decoded"'
 }
 
 BASH_LIBS="gh/lib.bash tpa/lib.bash"

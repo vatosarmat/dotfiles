@@ -7,8 +7,8 @@ nnoremap <M-i> zz
 nnoremap <M-]> zb
 
 "quickfix list mappings
-nnoremap q <cmd>cnext<cr>
-nnoremap <M-q> <cmd>cprevious<cr>
+nnoremap <M-C-n> <cmd>cnext<cr>
+nnoremap <M-C-p> <cmd>cprevious<cr>
 
 nnoremap ]t gt
 nnoremap [t gT
@@ -33,9 +33,11 @@ noremap <C-l> g_
 "Handier than ,
 nnoremap <M-;> ,
 
+nnoremap <C-g> <cmd>echo nvim_treesitter#statusline(#{indicator_size: &columns })<cr>
+
 "More convinient register selector
-nmap <C-y> "
-xmap <C-y> "
+nmap q "
+xmap q "
 nnoremap <M-C-y> <C-y>
 nnoremap <M-C-e> <C-e>
 xnoremap <M-C-y> <C-y>
@@ -52,7 +54,7 @@ nnoremap <silent>G <cmd>keepjumps normal! Gzz<cr>
 
 "Paste from vim to system clipboard
 nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:utils_options.yc = 1<cr>
-nnoremap <C-e> <cmd>call <sid>ToggleRegtype()<cr>
+nnoremap <M-q> <cmd>call <sid>ToggleRegtype()<cr>
 function! s:ToggleRegtype() abort
   let urt = getregtype('"')
   if urt ==# 'v'
@@ -237,8 +239,19 @@ nmap [w [czz
 nmap ]w ]czz
 
 "Comfy buffer switching
-nnoremap <expr><silent> <M-n> &diff ? ":keepjumps norm ]c\<cr>" : ":bn\<cr>"
-nnoremap <expr><silent> <M-p> &diff ? ":keepjumps norm [c\<cr>" : ":bp\<cr>"
+nnoremap <expr><silent> <M-n>
+  \ &diff ? ":keepjumps norm ]c\<cr>" :
+  \ <sid>HasQuickFixWindow() ? ":cnext\<cr>" :
+  \ ":bn\<cr>"
+nnoremap <expr><silent> <M-p>
+  \ &diff ? ":keepjumps norm [c\<cr>" :
+  \ <sid>HasQuickFixWindow() ? ":cprevious\<cr>" :
+  \ ":bp\<cr>"
+function! s:HasQuickFixWindow() abort
+  let a = utils#Find(tabpagebuflist(), {v,_ -> getbufvar(v,'&buftype') == 'quickfix'})[1] != -1
+  echom 'quick window '.a
+  return a
+endfunction
 
 "Replace last search pattern, i.e. '/' register content
 nnoremap <M-r> :.,$s//<c-r>=utils#GetSearchPatternWithoutFlags()<cr>/gc<left><left><left>

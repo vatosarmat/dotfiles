@@ -2,6 +2,7 @@ colorscheme nvcode
 
 hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#000000 ctermbg=236 gui=NONE cterm=NONE
 hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE cterm=NONE
+hi! link Folded Normal
 
 "Error
 hi! LspDiagnosticsVirtualTextError guifg=#f44747

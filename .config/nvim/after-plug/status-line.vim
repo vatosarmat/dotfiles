@@ -121,7 +121,7 @@ function! StatusRootDir() abort
   if empty(gitStatus)
     return '['.root.'/No GIT] '
   else
-    if gitStatus.head == 'master'
+    if gitStatus.head == 'master' || gitStatus.head == 'main'
       let head = ''
     else
       let head = '/'.gitStatus.head

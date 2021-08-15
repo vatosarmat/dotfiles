@@ -2,7 +2,7 @@ let g:utils_options = #{}
 
 let s:utils_flags = #{
   \ nz: 0,
-  \ hl: 0,
+  \ hl: 1,
   \ yc: 0,
   \ }
 
@@ -14,7 +14,7 @@ let s:lsp_flags = #{
 
 function utils_options#toggle(flag) abort
   let g:utils_options[a:flag] = !g:utils_options[a:flag]
-  echom a:option.' '.(g:utils_options[a:flag] ? 'SET' : 'UNset')
+  echom a:flag.' '.(g:utils_options[a:flag] ? 'SET' : 'UNset')
 endfunction
 
 function s:MapAllFlags() abort
