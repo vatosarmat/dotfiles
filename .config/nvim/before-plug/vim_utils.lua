@@ -25,8 +25,14 @@ local function map(modes, lhs, rhs, opts)
         _map[mode] = {}
       end
       _map[mode][lhs] = rhs
-      local rhs_str = string.format('<cmd>lua _map[\'%s\'][\'%s\']()<cr>', mode,
-                                    string.gsub(lhs, '<', '<lt>'))
+      local rhs_str
+      if opts.expr then
+        rhs_str = string.format('luaeval(\'_map[\'\'%s\'\'][\'\'%s\'\']()\')',
+                                mode, string.gsub(lhs, '<', '<lt>'))
+      else
+        rhs_str = string.format('<cmd>lua _map[\'%s\'][\'%s\']()<cr>', mode,
+                                string.gsub(lhs, '<', '<lt>'))
+      end
       vim.api.nvim_set_keymap(mode, lhs, rhs_str, opts)
     end
   else
@@ -36,11 +42,6 @@ local function map(modes, lhs, rhs, opts)
     end
   end
 
-  -- if type(modes) == 'table' then
-  --   print(vim.inspect(debug.getinfo(2)))
-  --   print(vim.inspect(debug.getinfo(1)))
-  -- end
-  -- print(modes)
   modes:gsub(".", setter)
 end
 

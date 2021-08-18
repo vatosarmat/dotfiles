@@ -21,9 +21,21 @@ local plug = require('packer').startup(function()
   -- Major
   use 'wbthomason/packer.nvim'
   use 'nvim-lua/plenary.nvim'
-  use 'teal-language/vim-teal'
 
-  use { 'neovim/nvim-lspconfig', config = mk_sourcer 'plug-config.lsp' }
+  use { 'neovim/nvim-lspconfig' }
+  use { 'hrsh7th/nvim-compe', after = 'nvim-lspconfig' }
+  use { 'L3MON4D3/LuaSnip', after = 'nvim-compe' }
+  use {
+    'windwp/nvim-autopairs',
+    after = 'nvim-compe',
+    config = function()
+      require 'plug-config.lsp'
+      local npairs = require 'nvim-autopairs'
+      npairs.setup()
+      require"nvim-autopairs.completion.compe".setup { map_cr = true }
+      npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
+    end
+  }
 
   use 'nvim-telescope/telescope.nvim'
 
@@ -71,6 +83,8 @@ local plug = require('packer').startup(function()
     'christianchiarulli/nvcode-color-schemes.vim',
     config = mk_sourcer '$STD_PATH_CONFIG/plug-config/colors.vim'
   }
+  -- Rarely needed
+  use 'teal-language/vim-teal'
 end)
 
 return plug

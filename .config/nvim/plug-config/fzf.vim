@@ -4,7 +4,9 @@ function! s:build_quickfix_list(lines)
   copen
 endfunction
 
-"Default file picker
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--tiebreak=end']}), <bang>0)
+
 nnoremap <silent><C-p> :Files<cr>
 nnoremap <silent><M-m> :Buffers<cr>
 let g:fzf_action = {

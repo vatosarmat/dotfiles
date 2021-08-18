@@ -33,15 +33,12 @@ set grepprg=grep\ -n\ --with-filename\ -I\ -R
 set grepformat=%f:%l:%m
 
 set tgc
-"set noshowmode
 
-" set wildmode=longest,list,full
 
 "Disable folds in diffview
 set diffopt+=vertical,context:10000,foldcolumn:0,indent-heuristic,algorithm:patience,hiddenoff
 
-"nvim-lsp recommended
-set completeopt=menu
+set completeopt=menuone,noselect
 "set shortmess+=c
 set omnifunc=v:lua.service.lsp.omnifunc
 
