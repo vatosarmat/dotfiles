@@ -127,7 +127,10 @@ end
 --
 do
   lspconfig.rust_analyzer.setup {}
-
+  lspconfig.vimls.setup {}
+  lspconfig.tsserver.setup {}
+  lspconfig.bashls.setup {}
+  lspconfig.pyright.setup {}
   -- lspconfig.html.setup {}
   -- lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {
@@ -167,17 +170,26 @@ do
   lspconfig.efm.setup {
     -- on_attach = on_attach,
     init_options = { documentFormatting = true },
-    filetypes = { "lua", "json", "jsonc", 'html', 'css' },
+    filetypes = { 'lua', 'json', 'jsonc', 'html', 'css', 'sh', 'python' },
     settings = {
-      rootMarkers = { ".git/" },
+      rootMarkers = { '.git/' },
       languages = {
-        lua = { { formatCommand = "lua-format -i", formatStdin = true } },
+        lua = { { formatCommand = 'lua-format -i', formatStdin = true } },
         json = {
           { formatCommand = 'prettier --parser json', formatStdin = true }
         },
         jsonc = {
           { formatCommand = 'prettier --parser json', formatStdin = true }
-        }
+        },
+        sh = {
+          {
+            formatCommand = 'shfmt -i 2 -ci -sr',
+            lintCommand = 'shellcheck',
+            formatStdin = true,
+            lintStdin = true
+          }
+        },
+        python = { { formatCommand = 'yapf', formatStdin = true } }
         -- html = { { formatCommand = 'prettier' } },
         -- css = { { formatCommand = 'prettier' } }
       }
@@ -188,7 +200,7 @@ end
 --
 -- Compe
 --
-function compe_setup()
+local function compe_setup()
   require'compe'.setup({
     enabled = true,
     autocomplete = false,

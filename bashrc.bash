@@ -242,8 +242,8 @@ function rg__pick {
 
   #file:line:content
   #shellcheck disable=2016
-  fzfSelected=$(rg --color always --line-number --no-heading --smart-case "$1" \
-    | fzf --ansi --delimiter=':' --preview-window '+{2}/4' --preview \
+  fzfSelected=$(rg --color always --line-number --no-heading --smart-case "$1" |
+    fzf --ansi --delimiter=':' --preview-window '+{2}/4' --preview \
       'bat {1} --wrap=character --color=always --highlight-line {2} --terminal-width ${FZF_PREVIEW_COLUMNS}')
   fzfResult="$?"
 
@@ -328,7 +328,7 @@ function font__ls_chars {
 
 #neovim
 function v {
-  local project_markers="README.md package.json"
+  local project_markers="README.md README.rst package.json"
   for f in $project_markers; do
     if [[ -f "$f" ]]; then
       nvim -i '.shada' "$f"
@@ -351,10 +351,10 @@ function lsp_log {
   for b in ${block[@]}; do
     block_args+=('-e' "$b")
   done
-  $cmd "$HOME/.cache/nvim/lsp.log" | \
-  grep --line-buffered -Fv "${block_args[@]}" | \
-  sed --unbuffered -E -f "$HOME/.config/nvim/misc/lsp_log.sed" | \
-  bat --color=always --pager=never --style=plain -l lua
+  $cmd "$HOME/.cache/nvim/lsp.log" |
+    grep --line-buffered -Fv "${block_args[@]}" |
+    sed --unbuffered -E -f "$HOME/.config/nvim/misc/lsp_log.sed" |
+    bat --color=always --pager=never --style=plain -l lua
   # grep -F -e '"rpc.send.payload"' -e '"decoded"'
 }
 

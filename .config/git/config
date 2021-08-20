@@ -21,6 +21,7 @@
   cmd = nvim -d $LOCAL $REMOTE
 
 [alias]
+  c = checkout
   ba = branch -a
   fap = fetch --all --prune
   lg = log --oneline --decorate --graph --all
