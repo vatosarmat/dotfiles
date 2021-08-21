@@ -131,6 +131,8 @@ do
   lspconfig.tsserver.setup {}
   lspconfig.bashls.setup {}
   lspconfig.pyright.setup {}
+  lspconfig.ccls.setup {}
+  lspconfig.cmake.setup {}
   -- lspconfig.html.setup {}
   -- lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {

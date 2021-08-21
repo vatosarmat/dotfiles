@@ -93,7 +93,7 @@ function! s:FavFunction() abort
     echom "Not a function decl"
     return
   endif
-  let funcToAdd = matchstr(funcToAdd, '\v^\k+(.{-})')
+  let funcToAdd = matchstr(funcToAdd, '^\k\+(.\{-\})')
 
   let docFavsFileLines = readfile(s:docFavsFile)
   let ids = index(docFavsFileLines, '*fav-functions*')

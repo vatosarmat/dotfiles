@@ -49,7 +49,7 @@ local function mk_sourcer(path)
   if vim.endswith(path, '.vim') then
     return string.format('vim.cmd(\'source %s\')', path)
   else
-    return string.format('require \'%s\'', path)
+    return string.format('if not pcall(require, \'%s\') then print(\''..path..' config failed\') end ', path)
   end
 end
 

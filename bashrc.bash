@@ -16,7 +16,7 @@ export MANPAGER="$PAGER"
 export SYSTEMD_LESS="-M -R"
 export BAT_PAGER="less -R"
 export BAT_THEME="Visual Studio Dark+"
-export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
+export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden"
 export FZF_DEFAULT_OPTS
 FZF_DEFAULT_OPTS="--reverse --height 55% --extended --bind='"
 FZF_DEFAULT_OPTS+="ctrl-d:half-page-down,ctrl-u:half-page-up,"
