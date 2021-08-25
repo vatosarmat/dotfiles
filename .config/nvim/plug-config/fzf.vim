@@ -4,8 +4,19 @@ function! s:build_quickfix_list(lines)
   copen
 endfunction
 
+let s:files_exclude = ['.git']
+
+if exists('g:project_type') && g:project_type == 'cmake'
+  call extend(s:files_exclude, ['.ccls-cache','Debug', 'bin', 'CMakeFiles', '_deps', 'cmake_install.cmake', 'CMakeCache.txt', 'Makefile'])
+endif
+
+let g:files_source_cmd = 'fd --type file --follow --no-ignore --hidden '.
+  \ join(map(s:files_exclude, {_,value-> '-E '.value}), ' ')
+
 command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--tiebreak=end']}), <bang>0)
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(#{
+  \ source: g:files_source_cmd,
+  \ options: ['--tiebreak=end']}), <bang>0)
 
 nnoremap <silent><C-p> :Files<cr>
 nnoremap <silent><M-m> :Buffers<cr>

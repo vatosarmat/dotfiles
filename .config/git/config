@@ -22,10 +22,12 @@
 
 [alias]
   c = checkout
+  shc = clone --depth=256 --recursive --shallow-submodules
   ba = branch -a
   fap = fetch --all --prune
   lg = log --oneline --decorate --graph --all
   pum = push -u origin/master
   s = status --short
+  si = status --ignored
   smu = submodule update --init --recursive
   ss = status

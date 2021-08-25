@@ -88,6 +88,11 @@ alias tpv='tmux splitw -vI \; copy-mode \; send-keys gg'
 alias tph='tmux splitw -hI \; copy-mode \; send-keys gg'
 alias batc='bat --color=always'
 alias luatp='lua -e '\''local p = require"pl.pretty"; p.dump(p.read(io.read()))'\'
+alias cmg='cmake -BDebug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=YES .'
+alias cmb='cmake --build Debug'
+alias cmr='cmake --build Debug && ./Debug/main'
+alias cmig='mkdir Release && cd Release && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$HOME/.local" .. && ccmake .'
+alias reddit='xsel -ob | sed "s/^/    /" | xsel -ib'
 
 #Not actually aliasses but usefull commands to remember
 alias cevt='cat -evt'
@@ -356,6 +361,11 @@ function lsp_log {
     sed --unbuffered -E -f "$HOME/.config/nvim/misc/lsp_log.sed" |
     bat --color=always --pager=never --style=plain -l lua
   # grep -F -e '"rpc.send.payload"' -e '"decoded"'
+}
+
+function cmake_uninstall {
+  cat install_manifest.txt | xargs rm
+  cat install_manifest.txt | xargs -L1 dirname | xargs rmdir -p
 }
 
 BASH_LIBS="gh/lib.bash tpa/lib.bash"

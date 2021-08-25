@@ -99,7 +99,7 @@ do
   lspconfig.util.default_config = vim.tbl_extend("force",
                                                  lspconfig.util.default_config,
                                                  {
-    flags = { debounce_text_changes = 500 },
+    flags = { debounce_text_changes = 1500 },
     capabilities = capabilities
   })
 end
@@ -131,7 +131,21 @@ do
   lspconfig.tsserver.setup {}
   lspconfig.bashls.setup {}
   lspconfig.pyright.setup {}
-  lspconfig.ccls.setup {}
+  lspconfig.clangd.setup {
+    init_options = {
+      compilationDatabasePath = "Debug",
+      clangdFileStatus = true,
+      semanticHighlighting = true
+    },
+    cmd = {
+      'clangd', '--background-index', '--clang-tidy'
+      -- '--completion-style=detailed'
+    }
+  }
+  -- ccls fails to gd in dependancies headers, while clangd is ok with that
+  -- lspconfig.ccls.setup {
+  --   init_options = { compilationDatabaseDirectory = "Debug" },
+  -- }
   lspconfig.cmake.setup {}
   -- lspconfig.html.setup {}
   -- lspconfig.cssls.setup {}

@@ -249,7 +249,6 @@ nnoremap <expr><silent> <M-p>
   \ ":bp\<cr>"
 function! s:HasQuickFixWindow() abort
   let a = utils#Find(tabpagebuflist(), {v,_ -> getbufvar(v,'&buftype') == 'quickfix'})[1] != -1
-  echom 'quick window '.a
   return a
 endfunction
 

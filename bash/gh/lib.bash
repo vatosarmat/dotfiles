@@ -2,7 +2,7 @@
 function __gh__prompt_repo_action {
   repo=${1##+( )}
   local prompt="${BOLD}${repo}${SGR0} - "
-  prompt+="[${BOLD}w${SGR0}]eb, [${BOLD}v${SGR0}]iew, [${BOLD}c${SGR0}]lone, [${BOLD}r${SGR0}]elease?"
+  prompt+="[${BOLD}w${SGR0}]eb, [${BOLD}v${SGR0}]iew, [${BOLD}c${SGR0}]lone, [${BOLD}s${SGR0}]allow clone, [${BOLD}r${SGR0}]elease?"
   while true; do
     #shellcheck disable=2086
     read -rn 1 -p "$prompt" act
@@ -11,6 +11,10 @@ function __gh__prompt_repo_action {
     case $act in
       c | C)
         git clone "git@github.com:$repo"
+        break
+        ;;
+      s | S)
+        git clone --depth=256 --recursive --shallow-submodules "git@github.com:$repo"
         break
         ;;
       w | W)
@@ -49,15 +53,15 @@ function __gh__assets {
   tag="$2"
   fieldSep=$'\ua0'
 
-  fzfSelected=$(gh api repos/"${repo}"/releases/tags/"${tag}" \
-    | jq --arg F__ "$fieldSep" '.assets | map( .name +
+  fzfSelected=$(gh api repos/"${repo}"/releases/tags/"${tag}" |
+    jq --arg F__ "$fieldSep" '.assets | map( .name +
       $F__ + (.size |
         if .>1000000 then (./1000000)|floor|tostring+" M"
         elif .>1000 then (./1000)|floor|tostring+" K"
         else .|tostring+" B" end) +
-      $F__ + .label)[]' -r \
-        | awk -v FS="$fieldSep" -v OFS="$fieldSep" '{ print sprintf("%-32s", $1), sprintf("%8s  ", $2), $3}' \
-    | fzf --nth=1,2 --delimiter="$fieldSep" -m)
+      $F__ + .label)[]' -r |
+    awk -v FS="$fieldSep" -v OFS="$fieldSep" '{ print sprintf("%-32s", $1), sprintf("%8s  ", $2), $3}' |
+    fzf --nth=1,2 --delimiter="$fieldSep" -m)
   fzfStatus="$?"
 
   if [ "$fzfStatus" = "0" ] && [ -n "$fzfSelected" ]; then
@@ -104,13 +108,13 @@ function gh__search {
   fieldSep=$'\ua0'
   q="$*"
 
-  fzfSelected=$(gh api search/repositories?q="${q// /+}" \
-    | jq --arg F__ "$fieldSep" '.items | sort_by(.stargazers_count) | reverse |
+  fzfSelected=$(gh api search/repositories?q="${q// /+}" |
+    jq --arg F__ "$fieldSep" '.items | sort_by(.stargazers_count) | reverse |
         map(.owner.login + "/" + .name +
             $F__+ "\u2b50" + (.stargazers_count | tostring) +
-            $F__+ .description)[]' -r \
-    | awk -v FS="$fieldSep" -v OFS="$fieldSep" '{ print sprintf("%8s", $2), sprintf("  %s", $1), $3}' \
-    | fzf --with-nth=1,2 --nth=2,3 --delimiter="$fieldSep" \
+            $F__+ .description)[]' -r |
+    awk -v FS="$fieldSep" -v OFS="$fieldSep" '{ print sprintf("%8s", $2), sprintf("  %s", $1), $3}' |
+    fzf --with-nth=1,2 --nth=2,3 --delimiter="$fieldSep" \
       --preview 'echo {3}' --preview-window wrap:nohidden)
   fzfStatus="$?"
 

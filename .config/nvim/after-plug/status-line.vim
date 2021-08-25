@@ -12,7 +12,8 @@ let s:ft_ext = #{
   \ yaml: ['yml', 'yaml'],
   \ rust: ['rs'],
   \ toml: ['toml'],
-  \ go: ['go']
+  \ go: ['go'],
+  \ cpp: ['cpp']
   \ }
 
 function! IsFtUnordinary(ft, ext) abort

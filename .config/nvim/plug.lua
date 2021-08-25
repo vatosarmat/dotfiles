@@ -27,13 +27,16 @@ local plug = require('packer').startup(function()
   use { 'L3MON4D3/LuaSnip', after = 'nvim-compe' }
   use {
     'windwp/nvim-autopairs',
-    after = 'nvim-compe',
+    after = 'LuaSnip',
     config = function()
       require 'plug-config.lsp'
-      local npairs = require 'nvim-autopairs'
-      npairs.setup()
-      require"nvim-autopairs.completion.compe".setup { map_cr = true }
-      npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
+      -- local npairs = require 'nvim-autopairs'
+      -- npairs.setup()
+      local npairs_compe = require "nvim-autopairs.completion.compe"
+      npairs_compe.setup { map_cr = true }
+      npairs_compe.add_rules(require('nvim-autopairs.rules.endwise-lua'))
+      npairs_compe.remove_rule('\'')
+      npairs_compe.remove_rule('"')
     end
   }
 
@@ -59,13 +62,19 @@ local plug = require('packer').startup(function()
   }
   use { 'lewis6991/gitsigns.nvim', config = mk_sourcer 'plug-config.gitsigns' }
 
-  use { '~/.fzf', as = 'fzf' }
+  use {
+    'airblade/vim-rooter',
+    event = 'VimEnter',
+    config = function() require 'plug-config.project_type' end
+  }
+  use { '~/.fzf', as = 'fzf', after = 'vim-rooter' }
   use {
     'junegunn/fzf.vim',
-    config = mk_sourcer '$STD_PATH_CONFIG/plug-config/fzf.vim'
+    after = 'fzf',
+    config = function()
+      vim.cmd('source $STD_PATH_CONFIG/plug-config/fzf.vim')
+    end
   }
-  -- Minor
-  use 'airblade/vim-rooter'
   use 'lambdalisue/suda.vim'
 
   use { 'tpope/vim-surround', config = misc.surround }
