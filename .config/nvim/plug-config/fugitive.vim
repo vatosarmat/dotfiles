@@ -1,7 +1,7 @@
 nnoremap <silent><leader>gs <cmd>G \| execute "resize" string(&lines * 0.3)<cr>
 nnoremap <silent><leader>gdi <cmd>:Gvdiffsplit! :%<cr>
 nnoremap <silent><M-d> :Gvdiffsplit! HEAD<cr>
-nnoremap <silent><leader>gdt <cmd>Gvdiffsplit :% \| Gvdiffsplit! HEAD \| wincmd l<cr>
+nnoremap <silent><leader>gdt <cmd>Gvdiffsplit! HEAD \| Gvdiffsplit! :%<cr>
 
 cnoreabbrev hg h fugitive
 

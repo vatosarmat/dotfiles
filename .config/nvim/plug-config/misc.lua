@@ -40,8 +40,8 @@ function M.surround()
   local map = require'before-plug.vim_utils'.map
   vim.g.surround_indent = 1
   local opts = { noremap = false }
-  map('x', 'gs', '<Plug>VSurround', opts)
-  map('x', 'gS', '<Plug>VgSurround', opts)
+  map('n', ',', '<Plug>Ysurround', opts)
+  map('x', ',', '<Plug>VSurround', opts)
 end
 
 function M.scrollview()

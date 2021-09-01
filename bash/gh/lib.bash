@@ -4,7 +4,6 @@ function __gh__prompt_repo_action {
   local prompt="${BOLD}${repo}${SGR0} - "
   prompt+="[${BOLD}w${SGR0}]eb, [${BOLD}v${SGR0}]iew, [${BOLD}c${SGR0}]lone, [${BOLD}s${SGR0}]allow clone, [${BOLD}r${SGR0}]elease?"
   while true; do
-    #shellcheck disable=2086
     read -rn 1 -p "$prompt" act
     echo -e "\n"
 

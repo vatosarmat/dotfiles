@@ -1,5 +1,5 @@
 #shellcheck shell=bash
-#shellcheck disable=1090,1091
+#shellcheck disable=1090,1091,2155
 stty -ixon
 set -o ignoreeof
 shopt -s histverify
@@ -116,6 +116,7 @@ function bytes {
 }
 
 function cl {
+  #shellcheck disable=2164
   cd "$@"
   ll
 }
@@ -147,7 +148,6 @@ function bindiff {
 }
 
 #add filed or directory to dotfiles
-#shellcheck disable=2164
 function dotfiles__mv {
   test -n "$1" || {
     echo "No file or directory name" >&2
@@ -163,6 +163,7 @@ function dotfiles__mv {
     return 1
   }
 
+  #shellcheck disable=2164
   pushd "$HOME" > /dev/null
   src=$(realpath --relative-to="$HOME" "$expandedArg")
   dirName=$(dirname "$src")
@@ -176,6 +177,7 @@ function dotfiles__mv {
 
   mkdir -p "$dstDirName"
   mv "$src" "$dstDirName" && ln -s -T "$dstDirName/$baseName" "$src"
+  #shellcheck disable=2164
   popd > /dev/null
 }
 complete -fd dotfiles__mv
@@ -333,7 +335,7 @@ function font__ls_chars {
 
 #neovim
 function v {
-  local project_markers="README.md README.rst package.json"
+  local project_markers="README.md README.rst package.json CMakeLists.txt Cargo.toml"
   for f in $project_markers; do
     if [[ -f "$f" ]]; then
       nvim -i '.shada' "$f"
@@ -345,7 +347,7 @@ function v {
 
 function lsp_log {
   local cmd=''
-  declare -ar pass=()
+  # declare -ar pass=()
   declare -ar block=('"textDocument/publishDiagnostics"' '"$/progress"' '"$/status/report"')
   if [[ "$1" == '-f' ]]; then
     cmd="tail -f"
@@ -353,7 +355,7 @@ function lsp_log {
     cmd="cat"
   fi
   declare -a block_args=()
-  for b in ${block[@]}; do
+  for b in "${block[@]}"; do
     block_args+=('-e' "$b")
   done
   $cmd "$HOME/.cache/nvim/lsp.log" |
@@ -364,7 +366,9 @@ function lsp_log {
 }
 
 function cmake_uninstall {
+  #shellcheck disable=2002
   cat install_manifest.txt | xargs rm
+  #shellcheck disable=2002
   cat install_manifest.txt | xargs -L1 dirname | xargs rmdir -p
 }
 

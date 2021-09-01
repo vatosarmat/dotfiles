@@ -22,4 +22,12 @@ function M.pick(tbl, keys)
   return res
 end
 
+function M.key_by(lst, key)
+  local res = {}
+  for _, v in ipairs(lst) do
+    res[v[key]] = v
+  end
+  return res
+end
+
 return M

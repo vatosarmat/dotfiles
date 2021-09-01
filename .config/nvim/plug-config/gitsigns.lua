@@ -3,12 +3,12 @@ local gs = require 'gitsigns'
 local function withIndexBufUpdate(f)
   return function()
     f()
+    local back = vim.fn.win_getid()
     local indexBufname = vim.fn.FugitiveFind(':' .. vim.fn.bufname())
     if vim.fn.bufexists(indexBufname) then
       vim.fn.win_gotoid(vim.fn.bufwinid(indexBufname))
       vim.cmd('e ' .. indexBufname)
-      -- vim.wait(100, function() end)
-      -- vim.fn.win_gotoid(b)
+      vim.fn.win_gotoid(back)
     end
   end
 end

@@ -22,23 +22,29 @@ local plug = require('packer').startup(function()
   use 'wbthomason/packer.nvim'
   use 'nvim-lua/plenary.nvim'
 
-  use { 'neovim/nvim-lspconfig' }
-  use { 'hrsh7th/nvim-compe', after = 'nvim-lspconfig' }
+  use { "folke/lua-dev.nvim", event = 'VimEnter' }
+  use { 'neovim/nvim-lspconfig', after = 'lua-dev.nvim' }
+  use { 'mfussenegger/nvim-lint', after = 'nvim-lspconfig' }
+  use { 'hrsh7th/nvim-compe', after = 'nvim-lint' }
   use { 'L3MON4D3/LuaSnip', after = 'nvim-compe' }
   use {
     'windwp/nvim-autopairs',
     after = 'LuaSnip',
     config = function()
       require 'plug-config.lsp'
-      -- local npairs = require 'nvim-autopairs'
-      -- npairs.setup()
-      local npairs_compe = require "nvim-autopairs.completion.compe"
-      npairs_compe.setup { map_cr = true }
-      npairs_compe.add_rules(require('nvim-autopairs.rules.endwise-lua'))
-      npairs_compe.remove_rule('\'')
-      npairs_compe.remove_rule('"')
+      local npairs = require 'nvim-autopairs'
+      npairs.setup()
+      require"nvim-autopairs.completion.compe".setup { map_cr = true }
+      npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
+      npairs.remove_rule('\'')
+      npairs.remove_rule('"')
+      if vim.g.lsp_autostart then
+        vim.cmd('LspStart')
+        require'lint'.try_lint()
+      end
     end
   }
+  -- use { 'jackguo380/vim-lsp-cxx-highlight', after = 'nvim-autopairs' }
 
   use 'nvim-telescope/telescope.nvim'
 
@@ -65,7 +71,12 @@ local plug = require('packer').startup(function()
   use {
     'airblade/vim-rooter',
     event = 'VimEnter',
-    config = function() require 'plug-config.project_type' end
+    config = function()
+      vim.g.rooter_manual_only = 1
+      vim.g.rooter_patterns = { '.git' }
+      vim.cmd('Rooter')
+      require 'plug-config.project_type'
+    end
   }
   use { '~/.fzf', as = 'fzf', after = 'vim-rooter' }
   use {

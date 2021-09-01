@@ -4,10 +4,14 @@ function! s:build_quickfix_list(lines)
   copen
 endfunction
 
-let s:files_exclude = ['.git']
+let s:files_exclude = ['.git', '.shada']
 
-if exists('g:project_type') && g:project_type == 'cmake'
-  call extend(s:files_exclude, ['.ccls-cache','Debug', 'bin', 'CMakeFiles', '_deps', 'cmake_install.cmake', 'CMakeCache.txt', 'Makefile'])
+if exists('g:project_type')
+  if g:project_type == 'cmake'
+    call extend(s:files_exclude, ['.ccls-cache','Debug', 'Release'])
+  elseif g:project_type == 'rust'
+    call extend(s:files_exclude, ['target'])
+  endif
 endif
 
 let g:files_source_cmd = 'fd --type file --follow --no-ignore --hidden '.

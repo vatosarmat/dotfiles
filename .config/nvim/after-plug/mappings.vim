@@ -198,7 +198,7 @@ cnoremap <M-[> []<left>
 "Emacs keybindings in insert and command modes
 "Line begin-end
 inoremap <expr><C-a> getline('.')[0] == ' ' ? "\<Home>\<C-Right>" : "\<Home>"
-inoremap <expr><C-e> pumvisible() ? "\<C-e>": "\<End>"
+" inoremap <C-e> <End> this mapped in lsp
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 "Word backward-forward
@@ -365,12 +365,22 @@ function! s:WordMotions() abort
     normal! _
   endfunction
 
-  noremap w <cmd>call <sid>move_w()<cr>
-  noremap b <cmd>call <sid>move_b()<cr>
-  noremap e <cmd>call <sid>move_e()<cr>
-  noremap s <cmd>call <sid>move_ge()<cr>
+  nnoremap w <cmd>call <sid>move_w()<cr>
+  nnoremap b <cmd>call <sid>move_b()<cr>
+  nnoremap e <cmd>call <sid>move_e()<cr>
+  nnoremap s <cmd>call <sid>move_ge()<cr>
+  xnoremap w <cmd>call <sid>move_w()<cr>
+  xnoremap b <cmd>call <sid>move_b()<cr>
+  xnoremap e <cmd>call <sid>move_e()<cr>
+  xnoremap s <cmd>call <sid>move_ge()<cr>
+  onoremap w <cmd>call <sid>move_w()<cr>
+  onoremap b <cmd>call <sid>move_b()<cr>
+  onoremap e <cmd>call <sid>move_e()<cr>
+  onoremap s <cmd>call <sid>move_ge()<cr>
 
-  noremap S gE
+  nnoremap S gE
+  xnoremap S gE
+  onoremap S gE
 endfunction
 
 call s:WordMotions()
