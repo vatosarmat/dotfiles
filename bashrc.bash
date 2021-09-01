@@ -372,6 +372,63 @@ function cmake_uninstall {
   cat install_manifest.txt | xargs -L1 dirname | xargs rmdir -p
 }
 
+function pdf_extract_range {
+  local OPTS=$(getopt --option f:l: --long first:last: -n "${FUNCNAME[0]}" -- "$@")
+  eval set -- "$OPTS"
+
+  while (($# > 0)); do
+    case $1 in
+      -f | --first)
+        local -i first=$2
+        shift 2
+        ;;
+      -l | --last)
+        local -i last=$2
+        shift 2
+        ;;
+      --)
+        shift
+        break
+        ;;
+      *)
+        echo "Unexpected argument $1"
+        exit 1
+        ;;
+    esac
+  done
+  #We've shifted to the parameter which is expected to be a pdf file name
+  local source_pdf="$(realpath "$1")"
+  local source_pdf_basename="$(basename --suffix='.pdf' "$source_pdf")"
+  local result_pdf="${source_pdf%/*}/${source_pdf_basename}_${first}-${last}.pdf"
+  # echo "source_pdf: $source_pdf"
+  # echo "result_pdf: $result_pdf"
+
+  if ! { [[ "$first" =~ [[:digit:]]+ ]] && ((first > 0)); }; then
+    echo "-f $first is not a number >0!" >&2
+    return 1
+  fi
+  if ! { [[ "$last" =~ [[:digit:]]+ ]] && ((last >= first)); }; then
+    echo "-l $last is not a number >= $first!" >&2
+    return 1
+  fi
+  if ! [[ "$(file --dereference --brief --mime-type "$source_pdf")" == "application/pdf" ]]; then
+    echo "$source_pdf not a PDF file!" >&2
+    return 1
+  fi
+
+  local temp_dir="$(mktemp -d)"
+  local page_pattern="$temp_dir/$(basename --suffix='.pdf' "$source_pdf")_page_%d.pdf"
+  local page_num_pos=${#page_pattern}
+  ((page_num_pos -= 5))
+
+  if pdfseparate -f "$first" -l "$last" "$source_pdf" "$page_pattern"; then
+    #shellcheck disable=2046
+    #shellcheck disable=2012
+    pdfunite $(echo "$temp_dir"/* | tr ' ' '\n' | sort --numeric-sort --key="1.${page_num_pos}" | tr '\n' ' ') "$result_pdf"
+  fi
+  rm -rf "$temp_dir"
+}
+
 BASH_LIBS="gh/lib.bash tpa/lib.bash"
 for f in $BASH_LIBS; do
   source "$HOME/dotfiles/bash/$f"
