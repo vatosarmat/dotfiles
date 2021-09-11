@@ -34,6 +34,9 @@ local client_info = {
     diagnostic_disable_line = '#shellcheck disable=${code}',
     diagnostic_webpage = 'https://github.com/koalaman/shellcheck/wiki/SC${code}'
   },
+  -- ['clang-tidy'] = { kind = 'linter', short_name = 'CT' },
+  ['cppcheck'] = { kind = 'linter', short_name = 'CC' },
+  ['clangd'] = { short_name = 'CD' },
   ['sumneko_lua'] = { short_name = 'SL' },
   ['rust_analyzer'] = { short_name = 'RA' }
 }
@@ -192,6 +195,7 @@ end
 --
 -- Language servers
 --
+-- Same parameters as vim.lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
 do
   local luadev = require("lua-dev").setup({
     lspconfig = {
@@ -229,7 +233,21 @@ do
     cmd = {
       'clangd', '--background-index', '--clang-tidy',
       '--completion-style=detailed'
-    }
+    },
+    on_new_config = function(new_config, _)
+      local cc_file = 'compile_commands.json'
+
+      for _, dir in ipairs({ '.', 'Debug', 'debugfull', 'Release' }) do
+        if vim.fn.filereadable(dir .. '/' .. cc_file) == 1 then
+          new_config.init_options.compilationDatabasePath = dir
+          return
+        end
+      end
+
+      new_config.init_options.compilationDatabasePath = vim.fn.input(
+                                                          'Where is ' .. cc_file ..
+                                                            '? ', '', 'file')
+    end
   }
   -- ccls fails to gd in dependancies headers, while clangd is ok with that
   -- lspconfig.ccls.setup {
@@ -279,7 +297,11 @@ end
 --
 -- And linters
 --
-lint.linters_by_ft = { sh = { 'shellcheck' } }
+lint.linters_by_ft = {
+  sh = { 'shellcheck' },
+  cpp = { 'cppcheck' },
+  c = { 'cppcheck' }
+}
 
 --
 -- Diagnostics UI

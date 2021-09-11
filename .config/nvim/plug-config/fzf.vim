@@ -7,7 +7,7 @@ endfunction
 let s:files_exclude = ['.git', '.shada']
 
 if exists('g:project_type')
-  if g:project_type == 'cmake'
+  if g:project_type == 'cmake' || g:project_type == 'gnu'
     call extend(s:files_exclude, ['.ccls-cache','Debug', 'Release'])
   elseif g:project_type == 'rust'
     call extend(s:files_exclude, ['target'])
@@ -15,7 +15,7 @@ if exists('g:project_type')
 endif
 
 let g:files_source_cmd = 'fd --type file --follow --no-ignore --hidden '.
-  \ join(map(s:files_exclude, {_,value-> '-E '.value}), ' ')
+  \ join(map(deepcopy(s:files_exclude), {_,value-> '-E '.value}), ' ')
 
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(#{
@@ -55,9 +55,13 @@ cnoreabbrev hf h fzf-vim
 cnoreabbrev rq Rga -F '???'
 
 "Ripgrep taking command line args
-let s:rga_shell_command = "rg --column --line-number --no-heading --color=always --smart-case"
+let g:rga_shell_command = "rg --column --line-number --no-heading --color=always --smart-case ".
+  \ join(map(deepcopy(s:files_exclude), {_,value-> '--glob !'.value}), ' ')
 command! -bang -nargs=* Rga
-  \ call fzf#vim#grep(s:rga_shell_command." ".<q-args>, 1, fzf#vim#with_preview(), <bang>0)
+  \ call fzf#vim#grep(g:rga_shell_command." ".<q-args>, 1, fzf#vim#with_preview(), <bang>0)
+
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(g:rga_shell_command.' -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
 
 "Implementations
 function! s:MarksLocal() abort

@@ -168,8 +168,8 @@
   ; (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
 )
 
-(use-package pdf-tools)
-(pdf-tools-install)
+; (use-package pdf-tools)
+; (pdf-tools-install)
 
 (use-package markdown-mode)
 

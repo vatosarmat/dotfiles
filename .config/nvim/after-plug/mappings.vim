@@ -71,6 +71,13 @@ inoremap <silent> <C-s> <Esc>:w<cr>
 "yy - for string, Y - for rest of string, same with 'c' and 'd'
 nnoremap Y y$
 
+"Yank file name and line num
+nnoremap <leader>zy <cmd>let @+=expand('%').':'.line('.')<cr>
+
+function! s:YankFileLine() abort
+  let @+ = linenr()
+endfunction
+
 "No overwrite paste and change
 nnoremap c "_c
 xnoremap c "_c

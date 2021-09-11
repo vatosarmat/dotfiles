@@ -27,6 +27,9 @@ cnoreabbrev lup Lup
 command! -nargs=0 Lspt lua vim.lsp.set_log_level('trace')
 cnoreabbrev lspt Lspt
 
+command! -nargs=0 Dapt lua require('dap').set_log_level('TRACE')
+cnoreabbrev dapt Dapt
+
 "Implementations
 function! s:Redir(cmd) abort
   "Redirect the output of a Vim or external command into a scratch buffer

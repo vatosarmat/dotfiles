@@ -6,6 +6,23 @@ local widgets = require 'dap.ui.widgets'
 local dutils = require 'dap.utils'
 local shortmap = require 'before-plug.shortmap'
 
+local function debugee_cmd_input(_config, done)
+  local config = vim.deepcopy(_config)
+  local from_clipboard = vim.trim(vim.fn.getreg('+'))
+  local cmd = vim.trim(vim.fn
+                         .input('Cmd to debug: ', from_clipboard, 'shellcmd'))
+  local words = vim.gsplit(cmd, ' ', true)
+
+  config.program = words()
+  config.args = {}
+
+  for w in words do
+    table.insert(config.args, w)
+  end
+
+  done(config)
+end
+
 vim.fn.sign_define('DapBreakpoint', {
   text = '',
   texthl = 'DapBreakpointSign',
@@ -44,24 +61,30 @@ dap.adapters.nlua = function(callback, config)
   callback({ type = 'server', host = config.host, port = config.port })
 end
 
-dap.adapters.lldb = {
+dap.adapters.cppdbg = {
   type = 'executable',
-  command = 'lldb-vscode',
-  name = "lldb"
+  command = '/home/igor/.local/bin/OpenDebugAD7',
+  name = 'gdb',
+  enrich_config = debugee_cmd_input
 }
 
+dap.adapters.lldb = {
+  type = 'executable',
+  command = '/usr/bin/lldb-vscode',
+  name = "lldb",
+  enrich_config = debugee_cmd_input
+}
+
+-- https://microsoft.github.io/debug-adapter-protocol/specification
+-- https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables-examples
+-- https://github.com/llvm/llvm-project/tree/main/lldb/tools/lldb-vscode#configurations
 dap.configurations.cpp = {
   {
-    name = "Launch",
+    name = "LLDB launch",
     type = "lldb",
     request = "launch",
-    program = function()
-      return vim.fn
-               .input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
     cwd = '${workspaceFolder}',
-    stopOnEntry = false,
-    args = {},
+    stopOnEntry = false
 
     -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
     --
@@ -73,7 +96,7 @@ dap.configurations.cpp = {
     --
     -- But you should be aware of the implications:
     -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-    runInTerminal = false
+    -- runInTerminal = true
   }, {
     {
       -- If you get an "Operation not permitted" error using this, try disabling YAMA:
@@ -84,7 +107,26 @@ dap.configurations.cpp = {
       pid = require('dap.utils').pick_process,
       args = {}
     }
+  }, {
+    name = "GDB launch",
+    type = "cppdbg",
+    request = "launch",
+    cwd = '${workspaceFolder}',
+    stopOnEntry = true
   }
+  -- {
+  --   name = 'Attach to gdbserver :1234',
+  --   type = 'cppdbg',
+  --   request = 'launch',
+  --   MIMode = 'gdb',
+  --   miDebuggerServerAddress = 'localhost:1234',
+  --   miDebuggerPath = '/usr/bin/gdb',
+  --   cwd = '${workspaceFolder}',
+  --   program = function()
+  --     return vim.fn
+  --              .input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+  --   end
+  -- }
 }
 
 dap.configurations.c = dap.configurations.cpp
@@ -115,8 +157,11 @@ do
 
   mapn('c', dap.continue)
   mapn('p', dap.pause)
+  mapn('r', dap.run_to_cursor, 'r')
 
-  mapn('i', dap.step_into, '<M-o>')
+  mapn('i', bind1(dap.step_into,
+                  { steppingGranularity = 'statement', askForTargets = true }),
+       '<M-o>')
   mapn('s', dap.step_over, 'o')
   mapn('o', dap.step_out, 'O')
 

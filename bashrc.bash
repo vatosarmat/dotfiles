@@ -1,16 +1,19 @@
 #shellcheck shell=bash
 #shellcheck disable=1090,1091,2155
-stty -ixon
+stty -ixon werase undef
 set -o ignoreeof
 shopt -s histverify
+#shellcheck disable=2016
+bind -x '"\C-w":echo -n "${READLINE_LINE}" | xsel -ib'
 
 source "$HOME/.history.bash"
 history_config
 
-#PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+#PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m]\w\[\033[00m\]\$ '
 PS1='\[\033[01;34m\]\w\[\033[00m\]\$ '
 export EDITOR=nvim
 export PAGER=less
+#squeeze blank lines, long prompt, ANSI colors, quit if one screen, ignore-case, padding 10 lines
 export LESS='-s -M -R -F -i -j10'
 export MANPAGER="$PAGER"
 export SYSTEMD_LESS="-M -R"
@@ -77,14 +80,15 @@ alias vpndown="nmcli con down vpn99"
 alias ffmpeg='ffmpeg -hide_banner'
 alias hd='hexdump'
 alias hdh="hd -v -e '/1 \"%02X \"'"
+alias ll='ls -lah'
 
 alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
 alias tmzs='tmux__zero_session'
 alias tmclr="rm .tmux/resurrect/*"
 alias tso='tmux show -A'
-alias tpv='tmux splitw -vI \; copy-mode \; send-keys gg'
-alias tph='tmux splitw -hI \; copy-mode \; send-keys gg'
+alias tpv='tmux splitw -vdI &'
+alias tph='tmux splitw -hdI &'
 alias batc='bat --color=always'
 alias luatp='lua -e '\''local p = require"pl.pretty"; p.dump(p.read(io.read()))'\'
 alias cmg='cmake -BDebug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=YES .'
@@ -100,6 +104,7 @@ alias binecho="dd of=/dev/stdout count=1 status=none <<< "
 alias fodiff="vim -d  <(fc-match JetBrainsMono --format '%{charset}' | tr ' ' '\n') <(fc-match 'JetBrainsMono NerdFont' --format '%{charset}' | tr ' ' '\n')"
 alias notif="while inotifywait -q -q -e modify pg.lua ; do lua pg.lua; done"
 alias color8='printf "\e[40;37m 0 \e[41;36m 1 \e[42;35m 2 \e[43;34m 3 \e[44;33m 4 \e[45;32m 5 \e[46;31m 6 \e[47;30m 7 \e[m\n"'
+alias file_loop='find "$INFODIR" -type f | while read file ; do'
 
 alias ghus="gh__search"
 alias ghuc="gh__cache"
@@ -334,7 +339,7 @@ function font__ls_chars {
 
 #neovim
 function v {
-  local project_markers="README.md README.rst package.json CMakeLists.txt Cargo.toml"
+  local project_markers="README README.md README.rst package.json CMakeLists.txt Cargo.toml"
   for f in $project_markers; do
     if [[ -f "$f" ]]; then
       nvim -i '.shada' "$f"
@@ -372,6 +377,8 @@ function cmake_uninstall {
 }
 
 function pdf_extract_range {
+  # better method
+  # pdftk infile.pdf cat first-last output outfile.pdf
   local OPTS=$(getopt --option f:l: --long first:last: -n "${FUNCNAME[0]}" -- "$@")
   eval set -- "$OPTS"
 
@@ -426,6 +433,29 @@ function pdf_extract_range {
     pdfunite $(echo "$temp_dir"/* | tr ' ' '\n' | sort --numeric-sort --key="1.${page_num_pos}" | tr '\n' ' ') "$result_pdf"
   fi
   rm -rf "$temp_dir"
+}
+
+function lines {
+  #from-to
+  #point,around
+  local range="$1"
+  local sed_arg
+  if [[ "$range" = *,* ]]; then
+    local point="${range%,*}"
+    local delta="${range#*,}"
+    sed_arg="$((point - delta)),$((point + delta))p;$((point + delta + 1))q"
+  elif [[ "$range" = *-* ]]; then
+    local last="${range#*-}"
+    sed_arg="${range/-/,}p;$((last + 1))q"
+  else
+    echo "lines range required"
+    return 1
+  fi
+  local file="$2"
+  if ! [[ -r "$file" ]]; then
+    file="-"
+  fi
+  sed -n "$sed_arg" "$file"
 }
 
 BASH_LIBS="gh/lib.bash tpa/lib.bash"

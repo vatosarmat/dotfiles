@@ -132,7 +132,8 @@ _G.packer_plugins = {
     path = "/home/igor/.local/share/nvim/site/pack/packer/opt/nvim-compe"
   },
   ["nvim-dap"] = {
-    config = { "if not pcall(require, 'plug-config.dap') then print('plug-config.dap config failed') end " },
+    -- config = { "if not pcall(require, 'plug-config.dap') then print('plug-config.dap config failed') end " },
+    config = { "require'plug-config.dap'" },
     loaded = true,
     path = "/home/igor/.local/share/nvim/site/pack/packer/start/nvim-dap"
   },
@@ -262,7 +263,11 @@ try_loadstring("\27LJ\2\n­\1\0\0\b\0\t\0\0186\0\0\0'\2\1\0B\0\2\0029\0\2\0005\1\
 time([[Config for vim-commentary]], false)
 -- Config for: nvim-dap
 time([[Config for nvim-dap]], true)
-if not pcall(require, 'plug-config.dap') then print('plug-config.dap config failed') end 
+do
+local st, msg = pcall(require, 'plug-config.dap')
+
+if not st then print('plug-config.dap config failed: '..msg) end 
+end
 time([[Config for nvim-dap]], false)
 -- Config for: vim-fugitive
 time([[Config for vim-fugitive]], true)

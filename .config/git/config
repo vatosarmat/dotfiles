@@ -22,12 +22,16 @@
 
 [alias]
   c = checkout
-  shc = clone --depth=256 --recursive --shallow-submodules
+  full-clean = clean -xfd
+  shc = clone --depth=1024 --recursive --shallow-submodules
   ba = branch -a
   fap = fetch --all --prune
   lg = log --oneline --decorate --graph --all
   pum = push -u origin/master
+  pulr = pull --rebase
   s = status --short
   si = status --ignored
   smu = submodule update --init --recursive
   ss = status
+  tl = tag -l
+  w = worktree

@@ -13,6 +13,7 @@ let s:ft_ext = #{
   \ rust: ['rs'],
   \ toml: ['toml'],
   \ go: ['go'],
+  \ c: ['c'],
   \ cpp: ['cpp']
   \ }
 

@@ -1,59 +1,83 @@
 #info
-g       first-node
-G       last-node
-\mb     beginning-of-node
-\me     end-of-node
+#stop
+\mt     top-node
+\md     dir-node
+\mw     up-node
+\mf     first-node
+\ml     last-node
+\mn     global-next-node
+\mp     global-prev-node
+
+x       xref-item
+\       select-reference-this-line
+m       move-to-next-xref
+\mm     move-to-prev-xref
+^xm     menu-item
+1       menu-digit
+0       last-menu-item
+
+^p      goto-node
+P       goto-invocation-node
+o       history-node
+^o      history-node
+\mo     select-visited-node
+
+/       search
+?       search-backward
+n       search-next
+N       search-previous
+\m/     tree-search
+]       tree-search-next
+[       tree-search-previous
+\mu     clear-search
+\mi     toggle-regexp
+I       index-search
+i       virtual-index
+
+g       beginning-of-node
+G       end-of-node
 j       next-line
+\kd     next-line
 k       prev-line
+\ku     prev-line
 
 f       scroll-forward-page-only
 ^f      scroll-forward-page-only
-\m\     scroll-forward-page-only
-z       scroll-forward-page-only-set-window
-
 b       scroll-backward-page-only
 ^b      scroll-backward-page-only
-w       scroll-backward-page-only-set-window
-
-\kd     down-line
-^e      down-line
-^j      down-line
-^m      down-line
-\ku     up-line
-^y      up-line
-^k      up-line
-
 d       scroll-half-screen-down
 ^d      scroll-half-screen-down
 u       scroll-half-screen-up
 ^u      scroll-half-screen-up
+y       up-line
+^y      up-line
+e       down-line
+^e      down-line
 
-^xn     next-node
-^xp     prev-node
-^xu     up-node
-'       last-node
-\mt     top-node
-\md     dir-node
+\e      abort-key
+Q       quit
+h       get-info-help-node
+H       get-help-window
+\mx     execute-command
 
-^xg     goto-node
-I       goto-invocation-node
+^hc     describe-command
+^hk     describe-key
+^hv     describe-variable
 
-n       search-next
-N       search-previous
+^x0     delete-window
+^x1     keep-one-window
+^x2     split-window
+^xo     next-window
+^xi     prev-window
+^xt     tile-windows
+>       grow-window
 
-\mf     xref-item
-^xr     xref-item
 
-\mg     select-reference-this-line
-^x^j    select-reference-this-line
-^x^m    select-reference-this-line
 
-^c      abort-key
 
-\mh     get-info-help-node
+z       scroll-forward-page-only-set-window
+w       scroll-backward-page-only-set-window
 
-:q      quit
-ZZ      quit
 
 #echo-area
 \mh     echo-area-backward
@@ -67,3 +91,6 @@ ZZ      quit
 \mX     echo-area-kill-word
 
 #var
+link-style=cyan,nounderline
+active-link-style=cyan,bold,underline
+scroll-behavior=Page Only
