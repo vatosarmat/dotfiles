@@ -246,17 +246,40 @@ nmap [w [czz
 nmap ]w ]czz
 
 "Comfy buffer switching
-nnoremap <expr><silent> <M-n>
-  \ &diff ? ":keepjumps norm ]c\<cr>" :
-  \ <sid>HasQuickFixWindow() ? ":cnext\<cr>" :
-  \ ":bn\<cr>"
-nnoremap <expr><silent> <M-p>
-  \ &diff ? ":keepjumps norm [c\<cr>" :
-  \ <sid>HasQuickFixWindow() ? ":cprevious\<cr>" :
-  \ ":bp\<cr>"
+nnoremap <silent> <M-n> <cmd>call <sid>Next()<cr>
+nnoremap <silent> <M-p> <cmd>call <sid>Prev()<cr>
+
 function! s:HasQuickFixWindow() abort
-  let a = utils#Find(tabpagebuflist(), {v,_ -> getbufvar(v,'&buftype') == 'quickfix'})[1] != -1
-  return a
+  return
+    \ utils#Find(tabpagebuflist(), {v,_ -> getbufvar(v,'&buftype') == 'quickfix'})[1] != -1
+endfunction
+
+function! s:Next() abort
+  if &diff
+    "Use gitsigns mapping
+    keepjumps normal [c
+  elseif s:HasQuickFixWindow()
+    cnext
+    if g:utils_options.nz
+      normal! zz
+    endif
+  else
+    bnext
+  endif
+endfunction
+
+function! s:Prev() abort
+  if &diff
+    "Use gitsigns mapping
+    keepjumps normal ]c
+  elseif s:HasQuickFixWindow()
+    cprevious
+    if g:utils_options.nz
+      normal! zz
+    endif
+  else
+    bprevious
+  endif
 endfunction
 
 "Replace last search pattern, i.e. '/' register content

@@ -178,6 +178,14 @@ end
 -- Handlers
 --
 do
+  local location_handler = vim.lsp.handlers["textDocument/definition"]
+  vim.lsp.handlers["textDocument/definition"] =
+    function(err, method, result, client_id, bufnr, config)
+      location_handler(err, method, result, client_id, bufnr, config)
+      if vim.o.buftype == 'quickfix' then
+        vim.cmd('wincmd p')
+      end
+    end
   vim.lsp.handlers["textDocument/publishDiagnostics"] =
     vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
       virtual_text = function(_, _)
