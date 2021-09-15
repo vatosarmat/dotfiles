@@ -20,7 +20,7 @@ let g:files_source_cmd = 'fd --type file --follow --no-ignore --hidden '.
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(#{
   \ source: g:files_source_cmd,
-  \ options: ['--tiebreak=end']}), <bang>0)
+  \ options: ['--tiebreak=begin,length']}), <bang>0)
 
 nnoremap <silent><C-p> :Files<cr>
 nnoremap <silent><M-m> :Buffers<cr>

@@ -1,4 +1,5 @@
 #shellcheck shell=bash
+#shellcheck disable=2164
 function __gh__prompt_repo_action {
   repo=${1##+( )}
   local prompt="${BOLD}${repo}${SGR0} - "
@@ -9,11 +10,11 @@ function __gh__prompt_repo_action {
 
     case $act in
       c | C)
-        git clone "git@github.com:$repo"
+        git clone "git@github.com:$repo" && cd "${repo%/*}"
         break
         ;;
       s | S)
-        git clone --depth=256 --recursive --shallow-submodules "git@github.com:$repo"
+        git clone --depth=256 --recursive --shallow-submodules "git@github.com:$repo" && cd "${repo%/*}"
         break
         ;;
       w | W)

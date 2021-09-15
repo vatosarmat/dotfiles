@@ -3,8 +3,11 @@
 stty -ixon werase undef
 set -o ignoreeof
 shopt -s histverify
+shopt -s globstar
 #shellcheck disable=2016
 bind -x '"\C-w":echo -n "${READLINE_LINE}" | xsel -ib'
+#shellcheck disable=2016
+bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  xsel -ib'
 
 source "$HOME/.history.bash"
 history_config
@@ -30,6 +33,7 @@ export FZF_CTRL_R_OPTS
 FZF_CTRL_R_OPTS="--bind='alt-r:execute(source $HOME/.history.bash && history_config && history_read && history -d {1} && history -w)+reload(source $HOME/.history.bash && history_config && history_read && source "$HOME/.fzf.bash" && __fzf_history_source__ )'"
 export RIPGREP_CONFIG_PATH="$HOME/dotfiles/.ripgreprc"
 
+export DEFAULT_IFS=\ $'\t'$'\n'
 BOLD=$(tput bold)
 # RED=$(tput setaf 1)
 BLUE=$(tput setaf 4)
@@ -80,7 +84,7 @@ alias vpndown="nmcli con down vpn99"
 alias ffmpeg='ffmpeg -hide_banner'
 alias hd='hexdump'
 alias hdh="hd -v -e '/1 \"%02X \"'"
-alias ll='ls -lah'
+alias ll='ls -lAh'
 
 alias makel='make PREFIX="$HOME/.local"'
 alias ghw="gh repo view --web"
@@ -115,7 +119,17 @@ source z
 #Functions
 
 function bytes {
-  cat - | hd -v -e '/1 "%02X "' "$@"
+  local -r hd_args=(-v -e '/1 "%02X "')
+  if [[ "$#" = "0" ]]; then
+    #input on stdin
+    hd "${hd_args[@]}"
+  elif [[ -r "$1" ]]; then
+    #filename passed as arg
+    hd "${hd_args[@]}" "$1"
+  else
+    #value passed as arg
+    echo -n "$1" | hd "${hd_args[@]}"
+  fi
   echo
 }
 
@@ -128,6 +142,12 @@ function cl {
 function zl {
   z "$@"
   ll
+}
+
+function mc {
+  mkdir "$1"
+  #shellcheck disable=2164
+  cd "$1"
 }
 
 function __faketty {
@@ -456,6 +476,62 @@ function lines {
     file="-"
   fi
   sed -n "$sed_arg" "$file"
+}
+
+#set lu_path and lua_cpath according to selected dir
+#replace old one
+#none
+function isl {
+  local -r versions_prefix="$HOME/.lua/versions"
+  local dir=""
+  #shellcheck disable=2012
+  if dir="$(
+    {
+      ls "$versions_prefix"
+      echo "none"
+    } | fzf
+  )"; then
+    #remove prev
+    local new_path=":$PATH"
+    new_path="${new_path/":$versions_prefix/"+([!\/])"/bin"/}"
+    new_path="${new_path#:}"
+
+    if [[ "$dir" = "none" ]]; then
+      export PATH="$new_path"
+      unset LUA_PATH
+      unset LUA_CPATH
+    else
+      #append new
+      export PATH="$versions_prefix/$dir/bin:$new_path"
+
+      local lua_path="" lua_cpath=""
+      IFS=\;
+      for path in $(luarocks path --lr-path); do
+        if [[ "$path" = "$versions_prefix/$dir"/* ]]; then
+          lua_path="$lua_path;$path"
+        fi
+      done
+      for path in $(luarocks path --lr-cpath); do
+        if [[ "$path" = "$versions_prefix/$dir"/* ]]; then
+          lua_cpath="$lua_cpath;$path"
+        fi
+      done
+      IFS="$DEFAULT_IFS"
+      export LUA_PATH="${lua_path#;}"
+      export LUA_CPATH="${lua_cpath#;}"
+    fi
+  fi
+}
+
+function path_remove {
+  local dirs=""
+  if dirs="$(fzf --multi <<< "${PATH//:/$'\n'}")"; then
+    local path=":$PATH"
+    while IFS= read -r line; do
+      path="${path/":$line"/}"
+    done <<< "$dirs"
+    export PATH="${path#:}"
+  fi
 }
 
 BASH_LIBS="gh/lib.bash tpa/lib.bash"

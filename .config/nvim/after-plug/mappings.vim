@@ -2,9 +2,9 @@
 noremap X J
 
 "zt and zb are inconvinient
-nnoremap <M-[> zt
-nnoremap <M-i> zz
-nnoremap <M-]> zb
+nnoremap <M-i> zt
+nnoremap <M-o> zz
+nnoremap <M-[> zb
 
 "quickfix list mappings
 nnoremap <M-C-n> <cmd>cnext<cr>
@@ -47,20 +47,17 @@ xnoremap <M-C-e> <C-e>
 nnoremap g_ <C-l>
 
 nnoremap <silent>gg <cmd>keepjumps normal! gg<cr>
-"When writing file from top to bottom it is more comfortable to have
-"new lines appering in the middle of the screen
 nnoremap <silent>G <cmd>keepjumps normal! Gzz<cr>
 
-
 "Paste from vim to system clipboard
-nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:utils_options.yc = 1<cr>
+nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:user_state.yank_clipboard = 1<cr>
 nnoremap <M-q> <cmd>call <sid>ToggleRegtype()<cr>
 function! s:ToggleRegtype() abort
   let urt = getregtype('"')
   if urt ==# 'v'
     call setreg('"', @", 'V')
   elseif urt ==# 'V'
-    call setreg('"', @"[:-2], 'v')
+    call setreg('"', trim(@"), 'v')
   endif
 endfunction
 
@@ -111,11 +108,23 @@ xnoremap p <cmd>call <sid>PasteOver()<cr>
 " endfunction
 
 
-"Line in 'less' utility
-nnoremap <silent> <M-u> :noh<CR>
+nnoremap <silent> <M-u> <cmd>noh<CR>
 
-nnoremap <expr> n g:utils_options.nz ? 'nzz' : 'n'
-nnoremap <expr> N g:utils_options.nz ? 'Nzz' : 'N'
+nnoremap n <cmd>call <sid>NoJump('n')<cr>
+nnoremap N <cmd>call <sid>NoJump('N')<cr>
+
+function s:NoJump(cmd) abort
+  try
+    execute 'keepjumps' 'normal!' a:cmd
+    if g:utils_options.nz
+      normal! zz
+    endif
+  catch /E384/
+    call utils#Print('ErrorMsg', 'TOP ', [@\, 'LspDiagnosticsSignInformation'])
+  catch /E385/
+    call utils#Print('ErrorMsg', 'BOTTOM ', [@\, 'LspDiagnosticsSignInformation'])
+  endtry
+endfunction
 
 "Wipe buffer or close its window - all via 'q'
 nnoremap <silent>Q <cmd>q<cr>
@@ -249,36 +258,79 @@ nmap ]w ]czz
 nnoremap <silent> <M-n> <cmd>call <sid>Next()<cr>
 nnoremap <silent> <M-p> <cmd>call <sid>Prev()<cr>
 
-function! s:HasQuickFixWindow() abort
-  return
-    \ utils#Find(tabpagebuflist(), {v,_ -> getbufvar(v,'&buftype') == 'quickfix'})[1] != -1
+function! s:BufJump(dir) abort
+  let [jumps, pos] = getjumplist()
+  let current_buf = bufnr()
+  let cmd = ''
+
+  function! Oper(a, jmp_item, offset) closure
+    let nr = a:jmp_item.bufnr
+    "If it is there maybe we should jumpt to it instead of exclude?
+    "No, it is <Buf>Jump after all
+    if nr != current_buf && getbufvar(nr, '&buftype') == ''
+      let a:a[nr] = a:offset
+    endif
+    return a:a
+  endfunction
+  ""Max offset of each buffer after current in jumplist
+  let after_bufs = utils#Reduce(jumps[pos+1:], function('Oper'), #{})
+
+  if a:dir == 'NEXT' && len(after_bufs) > 0
+    let count = min(values(after_bufs))
+    let cmd = string(count+1)."\<C-i>"
+  elseif a:dir == 'PREV' && pos > 0
+    let after_bufs[current_buf] = 0
+    echo after_bufs
+    let [_, found] =  utils#FindLast(jumps[:pos-1], {v,_ -> !has_key(after_bufs, v.bufnr)} )
+    if found >= 0
+      let cmd = string(pos-found)."\<C-o>"
+    endif
+  endif
+  if cmd != ''
+    execute 'normal!' cmd
+  else
+    call utils#Print('WarningMsg', 'No ', [a:dir, 'LspDiagnosticsSignInformation'], ' buf to jump')
+  endif
 endfunction
 
+"Use jumps list or record history in user_state instead of dummy bnext bprev
 function! s:Next() abort
   if &diff
     "Use gitsigns mapping
-    keepjumps normal [c
-  elseif s:HasQuickFixWindow()
-    cnext
-    if g:utils_options.nz
-      normal! zz
-    endif
+    keepjumps normal ]c
   else
-    bnext
+    if g:user_state.qf_window != -1
+      try
+        cnext
+      catch
+        call utils#Print('WarningMst', ['LAST', 'LspDiagnosticsSignInformation'], ' item')
+      endtry
+      if g:utils_options.nz
+        normal! zz
+      endif
+    else
+      call s:BufJump('NEXT')
+    endif
   endif
 endfunction
 
 function! s:Prev() abort
   if &diff
     "Use gitsigns mapping
-    keepjumps normal ]c
-  elseif s:HasQuickFixWindow()
-    cprevious
-    if g:utils_options.nz
-      normal! zz
-    endif
+    keepjumps normal [c
   else
-    bprevious
+    if g:user_state.qf_window != -1
+      try
+        cprev
+      catch /E553/
+        call utils#Print('WarningMst', ['FIRST', 'LspDiagnosticsSignInformation'], ' item')
+      endtry
+      if g:utils_options.nz
+        normal! zz
+      endif
+    else
+      call s:BufJump('PREV')
+    endif
   endif
 endfunction
 

@@ -3,8 +3,10 @@ call setenv("LUA_PATH", printf('%s/?.lua', stdpath('config')))
 call setenv("LUA_CPATH", '')
 
 source $STD_PATH_CONFIG/before-plug/options.vim
+source $STD_PATH_CONFIG/before-plug/user_state.vim
 source $STD_PATH_CONFIG/before-plug/utils_options.vim
 lua << END
+_G.pack = function(...) return { ... } end
 if not service then
   _G.service = {}
 end

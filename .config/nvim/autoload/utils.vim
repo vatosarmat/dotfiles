@@ -20,22 +20,55 @@ endfunction
 
 function! utils#Reduce(array, oper, accumInit) abort
   let accum = a:accumInit
-  for item in a:array
-    let accum = a:oper(accum, item)
-  endfor
-
+  let i = 0
+  let l = len(a:array)
+  while i < l
+    let accum = a:oper(accum, a:array[i], i)
+    let i += 1
+  endwhile
   return accum
 endfunction
 
-function! utils#Find(array, cb) abort
-  for i in range(len(a:array))
+function! utils#Find(array, pred) abort
+  let i = 0
+  let l = len(a:array)
+  while i < l
     let v = a:array[i]
-    if a:cb(v, i)
+    if a:pred(v, i)
       return [v, i]
     endif
-  endfor
+    let i += 1
+  endwhile
 
   return [0, -1]
+endfunction
+
+function! utils#FindLast(array, pred) abort
+  let l = len(a:array)
+  let i = l - 1
+  while i >= 0
+    let v = a:array[i]
+    if a:pred(v, i)
+      return [v, i]
+    endif
+    let i -= 1
+  endwhile
+
+  return [0, -1]
+endfunction
+
+function! utils#Min(array, cmp) abort
+  let ret = [a:array[0], 0]
+  let i = 1
+  let l = len(a:array)
+  while i < l
+    let v = a:array[i]
+    if cmp(v, ret)
+      ret = [v,i]
+    endif
+    let i+=1
+  endwhile
+  return ret
 endfunction
 
 function! utils#MatchStrAll(str, pat) abort
@@ -88,5 +121,22 @@ function! utils#Cnoreabbrev(from, to) abort
     return getcmdtype() == ':' && getcmdline() == a:lhs ? a:rhs : a:lhs
   endfunction
   execute 'cnoreabbrev' '<expr>' a:from printf('<sid>ExpandAbbrev(''%s'', ''%s'')',a:from, a:to )
+endfunction
+
+function! utils#Print(dflt, ...) abort
+  for chunk in a:000
+    let tp = type(chunk)
+    if tp == v:t_list
+      let [str,hl] = chunk
+      execute 'echohl' hl
+      echon str
+    elseif tp == v:t_string
+      execute 'echohl' a:dflt
+      echon chunk
+    else
+      echoerr 'Invalid chunk type: '.tp
+    endif
+  endfor
+  echohl None
 endfunction
 

@@ -1,10 +1,12 @@
 let g:utils_options = #{}
 
+"sv
+"cl
 let s:utils_flags = #{
   \ nz: 0,
   \ hl: 1,
-  \ yc: 0,
   \ }
+" fe: 0,
 
 let s:lsp_flags = #{
  \ ldu: 0,

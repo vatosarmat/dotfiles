@@ -20,15 +20,35 @@ augroup BeforePlug
 
   autocmd BufRead,BufNewFile *.json set filetype=jsonc
 
-  autocmd WinClosed * diffupdate!
+  autocmd BufWinEnter * call s:UserStateWinEnter()
+  autocmd WinClosed * diffupdate! | call s:UserStateWinClosed(expand('<afile>'))
 
   "Clear trailing spaces
   autocmd BufWritePre * if g:utils_options.laf | call s:TrimLines() | endif
 augroup END
 
+function! s:UserStateWinClosed(winid) abort
+  if g:user_state.qf_window == a:winid
+    let g:user_state.qf_window = -1
+  elseif has_key(g:user_state.loclist_windows, a:winid)
+    call remove(g:user_state.loclist_windows, a:winid)
+  endif
+endfunction
+
+function! s:UserStateWinEnter() abort
+  if &buftype == 'quickfix'
+    let id = win_getid()
+    if getwininfo(id)[0].loclist == 1
+      let g:user_state.loclist_windows[id] = 1
+    else
+      let g:user_state.qf_window = id
+    endif
+  endif
+endfunction
+
 function! s:TextYankPost() abort
   if v:event.regname != '+'
-    let g:utils_options.yc = 0
+    let g:utils_options.yank_clipboard = 0
   endif
   silent! lua vim.highlight.on_yank {higroup="YankHighlight", timeout=1000}
 endfunction

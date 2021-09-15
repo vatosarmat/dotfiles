@@ -1,5 +1,7 @@
 local func = require 'pl.func'
-vim.lsp.log = require 'vim.lsp.log'
+local log = require 'vim.lsp.log'
+local api = vim.api
+local lsp = vim.lsp
 local lspconfig = require 'lspconfig'
 local lint = require 'lint'
 
@@ -59,14 +61,14 @@ do
   local separator = { clients = '][', diagnostics = ' ', progress = '|' }
 
   local function get_linters()
-    local ft = vim.api.nvim_buf_get_option(0, 'filetype')
+    local ft = api.nvim_buf_get_option(0, 'filetype')
     return lint.linters_by_ft[ft] or {}
   end
 
   local function diagnostic_lines(client_id)
     local diagnostics = {}
     for i, sev in ipairs(severities) do
-      local sev_count = vim.lsp.diagnostic.get_count(0, sev.name, client_id)
+      local sev_count = lsp.diagnostic.get_count(0, sev.name, client_id)
       if sev_count > 0 then
         table.insert(diagnostics,
                      '%' .. i .. '*' .. sev.sign .. ' %*' .. sev_count)
@@ -77,7 +79,7 @@ do
   end
 
   function lsp_service.status_line()
-    local clients = vim.lsp.buf_get_clients(0)
+    local clients = lsp.buf_get_clients(0)
     local client_strings = {}
     for _, client in pairs(clients) do
 
@@ -129,7 +131,7 @@ do
 
   function lsp_service.omnifunc(...)
     -- zzz
-    return vim.lsp.omnifunc(unpack({ ... }))
+    return lsp.omnifunc(unpack({ ... }))
   end
 
   service.lsp = lsp_service
@@ -147,7 +149,7 @@ do
     })
   end
 
-  vim.lsp.protocol.CompletionItemKind = {
+  lsp.protocol.CompletionItemKind = {
     " ", " ", " ", " ", "ﰠ ", " ", " ", " ", " ",
     " ", " ", " ", " ", " ", "﬌ ", " ", " ", " ",
     " ", " ", " ", " ", "⌘ ", " ", " "
@@ -159,7 +161,7 @@ end
 --
 vim.g.lsp_autostart = true
 do
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  local capabilities = lsp.protocol.make_client_capabilities()
   capabilities.textDocument.completion.completionItem.snippetSupport = true
   capabilities.textDocument.completion.completionItem.resolveSupport = {
     properties = { 'documentation', 'detail', 'additionalTextEdits' }
@@ -178,16 +180,49 @@ end
 -- Handlers
 --
 do
-  local location_handler = vim.lsp.handlers["textDocument/definition"]
-  vim.lsp.handlers["textDocument/definition"] =
-    function(err, method, result, client_id, bufnr, config)
-      location_handler(err, method, result, client_id, bufnr, config)
-      if vim.o.buftype == 'quickfix' then
-        vim.cmd('wincmd p')
+  local util = lsp.util
+
+  lsp.handlers['textDocument/documentSymbol'] =
+    function(_, method, result, client_id, bufnr, _)
+      if not result or vim.tbl_isempty(result) then
+        local _ = log.info() and log.info(method, 'No location found')
+        if lsp.get_client_by_id(client_id).name ~= 'efm' then
+          api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
+        end
+        return
+      end
+      local items = util.symbols_to_items(result, bufnr)
+      util.set_qflist(items)
+      api.nvim_command("copen | wincmd p")
+    end
+
+  lsp.handlers["textDocument/definition"] =
+    function(_, method, result, client_id, _, _)
+      if result == nil or vim.tbl_isempty(result) then
+        local _ = log.info() and log.info(method, 'No location found')
+        if lsp.get_client_by_id(client_id).name ~= 'efm' then
+          api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
+        end
+        return nil
+      end
+
+      -- textDocument/definition can return Location or Location[]
+      -- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
+
+      if vim.tbl_islist(result) then
+        util.jump_to_location(result[1])
+
+        if #result > 1 then
+          util.set_qflist(util.locations_to_items(result))
+          api.nvim_command("copen | wincmd p")
+        end
+      else
+        util.jump_to_location(result)
       end
     end
-  vim.lsp.handlers["textDocument/publishDiagnostics"] =
-    vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+
+  lsp.handlers["textDocument/publishDiagnostics"] =
+    lsp.with(lsp.diagnostic.on_publish_diagnostics, {
       virtual_text = function(_, _)
         return vim.g.utils_options.ldv == 1 -- { severity_limit = "Error" }
       end,
@@ -203,7 +238,7 @@ end
 --
 -- Language servers
 --
--- Same parameters as vim.lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
+-- Same parameters as lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
 do
   local luadev = require("lua-dev").setup({
     lspconfig = {
@@ -217,7 +252,7 @@ do
           },
           diagnostics = {
             globals = {
-              'vim', 'service', '_map', '_augroup', '_shortmap', 'use',
+              'vim', 'service', '_map', '_augroup', '_shortmap', 'use', 'pack',
               'use_rocks'
             }
           }
@@ -320,17 +355,18 @@ local map_buf = require'before-plug.vim_utils'.map_buf
 local autocmd = require'before-plug.vim_utils'.autocmd
 
 local function show_line_diagnostics()
-  local bufnr = vim.api.nvim_get_current_buf()
-  local line_nr = vim.api.nvim_win_get_cursor(0)[1] - 1
+  local bufnr = api.nvim_get_current_buf()
+  local line_nr = api.nvim_win_get_cursor(0)[1] - 1
   local opts = {}
 
-  local line_diagnostics = vim.lsp.diagnostic.get_line_diagnostics(bufnr,
-                                                                   line_nr, opts)
+  local line_diagnostics = lsp.diagnostic.get_line_diagnostics(bufnr, line_nr,
+                                                               opts)
   if vim.tbl_isempty(line_diagnostics) then
     return
   end
 
   local text = Text:new()
+  -- local diag_idx_by_text = {}
   for _, diagnostic in ipairs(line_diagnostics) do
     local name = '?'
     local code = diagnostic.code or diagnostic.severity
@@ -340,29 +376,28 @@ local function show_line_diagnostics()
     local hiname = severities[diagnostic.severity].hl_float
     assert(hiname, 'unknown severity: ' .. tostring(diagnostic.severity))
     text:append(name .. '_' .. code .. ': ', hiname)
-    -- Maybe I should split it to lines somehow?
-    text:append(diagnostic.message)
+    text:append(pack(string.gsub(diagnostic.message, '\n', ' '))[1])
     text:newline()
   end
 
   opts.focus_id = "line_diagnostics"
+  opts.max_width = math.floor(vim.fn.winwidth(0) * 0.8)
   local float_bufnr, float_winnr = text:render_in_float(opts)
 
   local function disable()
     -- Current window is diagnostic float
-    local idx = vim.api.nvim_win_get_cursor(0)[1]
+    local idx = api.nvim_win_get_cursor(0)[1]
     local source = line_diagnostics[idx].source
     local dl_pattern = client_info[source].diagnostic_disable_line
     if dl_pattern then
-      vim.api.nvim_buf_delete(float_bufnr, {})
-      local line = vim.api
-                     .nvim_buf_get_lines(bufnr, line_nr, line_nr + 1, false)[1]
+      api.nvim_buf_delete(float_bufnr, {})
+      local line = api.nvim_buf_get_lines(bufnr, line_nr, line_nr + 1, false)[1]
       print(vim.inspect(line))
       local indent_spaces = string.sub(line, string.find(line, '%s*'))
       local dl = indent_spaces ..
                    string.gsub(dl_pattern, "%${code}",
                                line_diagnostics[idx].code)
-      vim.api.nvim_buf_set_lines(bufnr, line_nr, line_nr, false, { dl })
+      api.nvim_buf_set_lines(bufnr, line_nr, line_nr, false, { dl })
       -- if client_info[source].kind == 'linter' then
       --   lint.try_lint()
       -- else
@@ -372,11 +407,11 @@ local function show_line_diagnostics()
   end
 
   local function webpage()
-    local idx = vim.api.nvim_win_get_cursor(0)[1]
+    local idx = api.nvim_win_get_cursor(0)[1]
     local source = line_diagnostics[idx].source
     local webpage_pattern = client_info[source].diagnostic_webpage
     if webpage_pattern then
-      vim.api.nvim_buf_delete(float_bufnr, {})
+      api.nvim_buf_delete(float_bufnr, {})
       local uri = string.gsub(webpage_pattern, "%${code}",
                               line_diagnostics[idx].code)
       os.execute('$BROWSER ' .. uri)
@@ -400,7 +435,7 @@ local function compe_setup()
     preselect = 'always'
   })
 
-  local t = func.bind(vim.api.nvim_replace_termcodes, func._1, true, true, true)
+  local t = func.bind(api.nvim_replace_termcodes, func._1, true, true, true)
   local luasnip = require 'luasnip'
 
   local function is_space_before()
@@ -458,22 +493,22 @@ do
         virtual_text = vim.g.utils_options.ldv == 1,
         underline = vim.g.utils_options.ldu == 1
       }
-      for _, client in ipairs(vim.lsp.get_active_clients()) do
-        vim.lsp.diagnostic.display(vim.lsp.diagnostic.get(0, client.id), 0,
-                                   client.id, config)
+      for _, client in ipairs(lsp.get_active_clients()) do
+        lsp.diagnostic.display(lsp.diagnostic.get(0, client.id), 0, client.id,
+                               config)
       end
     end
   end
 
   local function auto_format()
     if vim.g.utils_options.laf == 1 then
-      vim.lsp.buf.formatting_sync(nil, 1500)
+      lsp.buf.formatting_sync(nil, 1500)
     end
   end
 
   -- Commands
   -- In use
-  map('n', '<C-j>', vim.lsp.buf.hover)
+  map('n', '<C-j>', lsp.buf.hover)
   map('i', '<C-i>', on_tab, { expr = true, noremap = false })
   map('i', '<C-n>', on_cn, { expr = true, noremap = false })
   map('i', '<C-p>', on_cp, { expr = true, noremap = false })
@@ -482,23 +517,23 @@ do
   map('i', '<C-f>', 'compe#scroll(#{delta: +2})', { expr = true })
   map('i', '<C-b>', 'compe#scroll(#{delta: -2})', { expr = true })
 
-  vim.lsp.diagnostic.show_line_diagnostics = show_line_diagnostics
-  map('n', '<C-k>', vim.lsp.diagnostic.show_line_diagnostics)
+  lsp.diagnostic.show_line_diagnostics = show_line_diagnostics
+  map('n', '<C-k>', lsp.diagnostic.show_line_diagnostics)
 
   -- Goto's
-  map('n', 'gd', vim.lsp.buf.definition)
-  map('n', 'gt', vim.lsp.buf.type_definition)
-  map('n', 'gr', vim.lsp.buf.references)
-  map('n', 'g[', vim.lsp.diagnostic.goto_prev)
-  map('n', 'g]', vim.lsp.diagnostic.goto_next)
-  map('n', '<leader>ld', vim.lsp.buf.document_symbol)
-  map('n', '<leader>lw', vim.lsp.buf.workspace_symbol)
+  map('n', 'gd', lsp.buf.definition)
+  map('n', 'gt', lsp.buf.type_definition)
+  map('n', 'gr', lsp.buf.references)
+  map('n', 'g[', lsp.diagnostic.goto_prev)
+  map('n', 'g]', lsp.diagnostic.goto_next)
+  map('n', '<leader>ld', lsp.buf.document_symbol)
+  map('n', '<leader>lw', lsp.buf.workspace_symbol)
 
   -- Less in use
-  map('n', 'gi', vim.lsp.buf.implementation)
-  map('n', '<leader>ls', vim.lsp.buf.signature_help)
-  map('n', 'gD', vim.lsp.buf.declaration)
-  map('n', 'ga', vim.lsp.buf.code_action)
+  map('n', 'gi', lsp.buf.implementation)
+  map('n', '<leader>ls', lsp.buf.signature_help)
+  map('n', 'gD', lsp.buf.declaration)
+  map('n', 'ga', lsp.buf.code_action)
 
   -- Options
   map('n', '<leader>l<M-v>', func.bind1(toggle_option, 'ldv'))
