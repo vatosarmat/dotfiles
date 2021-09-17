@@ -161,7 +161,7 @@ do
 
   mapn('i', bind1(dap.step_into,
                   { steppingGranularity = 'statement', askForTargets = true }),
-       '<M-o>')
+       'i')
   mapn('s', dap.step_over, 'o')
   mapn('o', dap.step_out, 'O')
 

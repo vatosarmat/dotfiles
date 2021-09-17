@@ -28,7 +28,8 @@ local allowed_key_modes = {
   o = true,
   i = true,
   t = true,
-  c = true
+  c = true,
+  s = true,
 }
 
 local function assert_key_mode(mode)

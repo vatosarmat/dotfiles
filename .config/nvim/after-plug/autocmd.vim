@@ -17,6 +17,7 @@ augroup BeforePlug
   autocmd VimEnter * call s:HighlightDiffConflictMarker()
   "C-x C-e
   autocmd VimEnter /tmp/bash-* exe "normal!" "ggO#shellcheck shell=bash\<cr>" | startinsert
+  autocmd VimEnter * call s:OnVimEnter()
 
   autocmd BufRead,BufNewFile *.json set filetype=jsonc
 
@@ -26,6 +27,11 @@ augroup BeforePlug
   "Clear trailing spaces
   autocmd BufWritePre * if g:utils_options.laf | call s:TrimLines() | endif
 augroup END
+
+function! s:OnVimEnter() abort
+  "M-n M-p navigate through jump-list
+  clearjumps
+endfunction
 
 function! s:UserStateWinClosed(winid) abort
   if g:user_state.qf_window == a:winid
@@ -66,6 +72,9 @@ function! s:OnBufWinEnterTxt() abort
 endfunction
 
 function! s:OnWinNew() abort
+  "M-n M-p navigate through jump-list
+  clearjumps
+
   let g:autocmd#last_win_new = win_getid()
 endfunction
 

@@ -4,7 +4,7 @@ cnoreabbrev ht Helptags
 cnoreabbrev hq h quickref
 cnoreabbrev he h eval.txt
 cnoreabbrev hd h dap.txt
-" cnoreabbrev hl h lsp.txt
+cnoreabbrev hl h lsp.txt
 
 "Other abbrevs
 " noreabbrev hit tabe \| so $VIMRUNTIME/syntax/hitest.vim

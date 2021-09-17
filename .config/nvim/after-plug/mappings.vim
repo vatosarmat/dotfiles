@@ -131,13 +131,13 @@ nnoremap <silent>Q <cmd>q<cr>
 nnoremap <silent><C-q> <cmd>call <SID>Wipe()<cr>
 
 function! s:Wipe()
+  let cnr = bufnr()
   if empty(expand('#'))
     q
   else
     if &ft == 'help'
       "Try to locate prev help buffer. If no, just wipe this help and close
       "the window
-      let cnr = bufnr()
       let prevNr = cnr
       let bufInfos = getbufinfo()
       for i in range(len(bufInfos))
@@ -159,8 +159,10 @@ function! s:Wipe()
         bw #
       endif
     else
-      bp
-      bw #
+      if !s:BufJump('NEXT', 1)
+        call s:BufJump('PREV', 1)
+      endif
+      execute 'bwipe' cnr
     endif
   endif
 endfunction
@@ -258,7 +260,7 @@ nmap ]w ]czz
 nnoremap <silent> <M-n> <cmd>call <sid>Next()<cr>
 nnoremap <silent> <M-p> <cmd>call <sid>Prev()<cr>
 
-function! s:BufJump(dir) abort
+function! s:BufJump(dir, quiet = 0) abort
   let [jumps, pos] = getjumplist()
   let current_buf = bufnr()
   let cmd = ''
@@ -267,7 +269,7 @@ function! s:BufJump(dir) abort
     let nr = a:jmp_item.bufnr
     "If it is there maybe we should jumpt to it instead of exclude?
     "No, it is <Buf>Jump after all
-    if nr != current_buf && getbufvar(nr, '&buftype') == ''
+    if nr != current_buf && bufexists(nr) && getbufvar(nr, '&buftype') == ''
       let a:a[nr] = a:offset
     endif
     return a:a
@@ -280,16 +282,24 @@ function! s:BufJump(dir) abort
     let cmd = string(count+1)."\<C-i>"
   elseif a:dir == 'PREV' && pos > 0
     let after_bufs[current_buf] = 0
-    echo after_bufs
-    let [_, found] =  utils#FindLast(jumps[:pos-1], {v,_ -> !has_key(after_bufs, v.bufnr)} )
+    " echo after_bufs
+    let [_, found] =  utils#FindLast(jumps[:pos-1], {v,_ -> bufexists(v.bufnr) && !has_key(after_bufs, v.bufnr)} )
     if found >= 0
       let cmd = string(pos-found)."\<C-o>"
     endif
   endif
   if cmd != ''
+    "Clear 'No buf to jump' message
+    if !a:quiet
+      echo
+    endif
     execute 'normal!' cmd
+    return 1
   else
-    call utils#Print('WarningMsg', 'No ', [a:dir, 'LspDiagnosticsSignInformation'], ' buf to jump')
+    if !a:quiet
+      call utils#Print('WarningMsg', 'No ', [a:dir, 'LspDiagnosticsSignInformation'], ' buf to jump')
+    endif
+    return 0
   endif
 endfunction
 
