@@ -35,13 +35,24 @@ local client_info = {
     short_name = 'SC',
     diagnostic_disable_line = '#shellcheck disable=${code}',
     diagnostic_webpage = 'https://github.com/koalaman/shellcheck/wiki/SC${code}'
+  }, -- ['clang-tidy'] = { kind = 'linter', short_name = 'CT' },
+  ['cppcheck'] = {
+    kind = 'linter',
+    short_name = 'CC'
   },
-  -- ['clang-tidy'] = { kind = 'linter', short_name = 'CT' },
-  ['cppcheck'] = { kind = 'linter', short_name = 'CC' },
-  ['clangd'] = { short_name = 'CD' },
-  ['sumneko_lua'] = { short_name = 'SL' },
-  ['rust_analyzer'] = { short_name = 'RA' }
+  ['clangd'] = {
+    short_name = 'CD'
+  },
+  ['sumneko_lua'] = {
+    short_name = 'SL',
+    diagnostic_disable_line = '---@diagnostic disable-next-line: ${code}'
+  },
+  ['rust_analyzer'] = {
+    short_name = 'RA'
+  }
 }
+
+client_info['Lua Diagnostics.'] = client_info['sumneko_lua']
 
 setmetatable(client_info, {
   __index = function(tbl, key)
@@ -58,7 +69,11 @@ setmetatable(client_info, {
 --
 do
   local lsp_service = {}
-  local separator = { clients = '][', diagnostics = ' ', progress = '|' }
+  local separator = {
+    clients = '][',
+    diagnostics = ' ',
+    progress = '|'
+  }
 
   local function get_linters()
     local ft = api.nvim_buf_get_option(0, 'filetype')
@@ -70,8 +85,7 @@ do
     for i, sev in ipairs(severities) do
       local sev_count = lsp.diagnostic.get_count(0, sev.name, client_id)
       if sev_count > 0 then
-        table.insert(diagnostics,
-                     '%' .. i .. '*' .. sev.sign .. ' %*' .. sev_count)
+        table.insert(diagnostics, '%' .. i .. '*' .. sev.sign .. ' %*' .. sev_count)
       end
     end
 
@@ -101,8 +115,7 @@ do
 
       -- If at least one present, separate it from the client name
       if next(diagnostics) or next(progress) then
-        client_str = client_str .. ':' ..
-                       table.concat(diagnostics, separator.diagnostics)
+        client_str = client_str .. ':' .. table.concat(diagnostics, separator.diagnostics)
       end
       if next(diagnostics) and next(progress) then
         -- If both present, separate them
@@ -119,8 +132,7 @@ do
       local linter_str = client_info[name].short_name or name
 
       if next(diagnostics) then
-        linter_str = linter_str .. ':' ..
-                       table.concat(diagnostics, separator.diagnostics)
+        linter_str = linter_str .. ':' .. table.concat(diagnostics, separator.diagnostics)
       end
 
       table.insert(client_strings, linter_str)
@@ -150,10 +162,27 @@ do
   end
 
   lsp.protocol.CompletionItemKind = {
-    " ", " ", " ", " ", "ﰠ ", " ", " ", " ", " ",
-    " ", " ", " ", " ", " ", "﬌ ", " ", " ", " ",
-    " ", " ", " ", " ", "⌘ ", " ", " "
+    ' ', ' ', ' ', ' ', 'ﰠ ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', '﬌ ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '⌘ ', ' ',
+    ' '
   }
+end
+
+--
+-- Store symbols here for navigation and displaying in various ways
+--
+local SymbolStore = {}
+
+function SymbolStore.set(bufnr, client, symbols)
+  symbols = symbols or {}
+  local _lsp = vim.fn.getbufvar(bufnr, '_lsp', {})
+  _lsp[tostring(client)] = symbols
+  vim.fn.setbufvar(bufnr, '_lsp', _lsp)
+end
+
+function SymbolStore.get(bufnr, client)
+  local _lsp = vim.fn.getbufvar(bufnr, '_lsp', {})
+  return _lsp[tostring(client)]
 end
 
 --
@@ -167,12 +196,15 @@ do
     properties = { 'documentation', 'detail', 'additionalTextEdits' }
   }
 
-  lspconfig.util.default_config = vim.tbl_extend("force",
-                                                 lspconfig.util.default_config,
-                                                 {
+  lspconfig.util.default_config = vim.tbl_extend('force', lspconfig.util.default_config, {
     autostart = vim.g.lsp_autostart,
-    flags = { debounce_text_changes = 1500 },
-    capabilities = capabilities
+    flags = {
+      debounce_text_changes = 500
+    },
+    capabilities = capabilities,
+    on_attach = function(client, bufnr)
+      SymbolStore.set(bufnr, client)
+    end
   })
 end
 
@@ -182,46 +214,86 @@ end
 do
   local util = lsp.util
 
-  lsp.handlers['textDocument/documentSymbol'] =
-    function(_, method, result, client_id, bufnr, _)
-      if not result or vim.tbl_isempty(result) then
-        local _ = log.info() and log.info(method, 'No location found')
-        if lsp.get_client_by_id(client_id).name ~= 'efm' then
-          api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
+  local function symbols_to_items(symbols, bufnr)
+    local function _symbols_to_items(_symbols, _items, _bufnr)
+      for _, symbol in ipairs(_symbols) do
+        if symbol.location then -- SymbolInformation type
+          local range = symbol.location.range
+          local kind = util._get_symbol_kind_name(symbol.kind)
+          table.insert(_items, {
+            filename = vim.uri_to_fname(symbol.location.uri),
+            lnum = range.start.line + 1,
+            col = range.start.character + 1,
+            kind = kind,
+            text = '[' .. kind .. '] ' .. symbol.name
+          })
+        elseif symbol.selectionRange then -- DocumentSymbole type
+          local kind = util._get_symbol_kind_name(symbol.kind)
+          table.insert(_items, { -- bufnr = _bufnr,
+            filename = vim.api.nvim_buf_get_name(_bufnr),
+            lnum = symbol.selectionRange.start.line + 1,
+            col = symbol.selectionRange.start.character + 1,
+            kind = kind,
+            text = '[' .. kind .. '] ' .. symbol.name
+          })
+
+          -- Don't go for children
+          -- if symbol.children then
+          --   for _, v in ipairs(
+          --                 _symbols_to_items(symbol.children, _items, _bufnr)) do
+          --     vim.list_extend(_items, v)
+          --   end
+          -- end
         end
-        return
       end
-      local items = util.symbols_to_items(result, bufnr)
-      util.set_qflist(items)
-      api.nvim_command("copen | wincmd p")
+      table.sort(_items, function(a, b)
+        return a.lnum < b.lnum
+      end)
+      return _items
+    end
+    return _symbols_to_items(symbols, {}, bufnr)
+  end
+
+  lsp.handlers['textDocument/documentSymbol'] = function(_, method, result, client_id, bufnr, _)
+    if not result or vim.tbl_isempty(result) then
+      local _ = log.info() and log.info(method, 'No location found')
+      if lsp.get_client_by_id(client_id).name ~= 'efm' then
+        api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
+      end
+      return
     end
 
-  lsp.handlers["textDocument/definition"] =
-    function(_, method, result, client_id, _, _)
-      if result == nil or vim.tbl_isempty(result) then
-        local _ = log.info() and log.info(method, 'No location found')
-        if lsp.get_client_by_id(client_id).name ~= 'efm' then
-          api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
-        end
-        return nil
+    SymbolStore.set(bufnr, client_id, result)
+    local items = symbols_to_items(result, bufnr)
+    util.set_qflist(items)
+    api.nvim_command('copen | wincmd p')
+  end
+
+  lsp.handlers['textDocument/definition'] = function(_, method, result, client_id, _, _)
+    if result == nil or vim.tbl_isempty(result) then
+      local _ = log.info() and log.info(method, 'No location found')
+      if lsp.get_client_by_id(client_id).name ~= 'efm' then
+        api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
       end
-
-      -- textDocument/definition can return Location or Location[]
-      -- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
-
-      if vim.tbl_islist(result) then
-        util.jump_to_location(result[1])
-
-        if #result > 1 then
-          util.set_qflist(util.locations_to_items(result))
-          api.nvim_command("copen | wincmd p")
-        end
-      else
-        util.jump_to_location(result)
-      end
+      return nil
     end
 
-  lsp.handlers["textDocument/publishDiagnostics"] =
+    -- textDocument/definition can return Location or Location[]
+    -- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
+
+    if vim.tbl_islist(result) then
+      util.jump_to_location(result[1])
+
+      if #result > 1 then
+        util.set_qflist(util.locations_to_items(result))
+        api.nvim_command('copen | wincmd p')
+      end
+    else
+      util.jump_to_location(result)
+    end
+  end
+
+  lsp.handlers['textDocument/publishDiagnostics'] =
     lsp.with(lsp.diagnostic.on_publish_diagnostics, {
       virtual_text = function(_, _)
         return vim.g.utils_options.ldv == 1 -- { severity_limit = "Error" }
@@ -240,7 +312,7 @@ end
 --
 -- Same parameters as lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
 do
-  local luadev = require("lua-dev").setup({
+  local luadev = require('lua-dev').setup({
     lspconfig = {
       cmd = { 'sumneko', '2>', vim.fn.stdpath('cache') .. '/sumneko.log' },
       settings = {
@@ -252,8 +324,7 @@ do
           },
           diagnostics = {
             globals = {
-              'vim', 'service', '_map', '_augroup', '_shortmap', 'use', 'pack',
-              'use_rocks'
+              'vim', 'service', '_map', '_augroup', '_shortmap', 'use', 'pack', 'use_rocks'
             }
           }
         }
@@ -269,14 +340,11 @@ do
   lspconfig.pyright.setup {}
   lspconfig.clangd.setup {
     init_options = {
-      compilationDatabasePath = "Debug",
+      compilationDatabasePath = 'Debug',
       clangdFileStatus = true,
       semanticHighlighting = true
     },
-    cmd = {
-      'clangd', '--background-index', '--clang-tidy',
-      '--completion-style=detailed'
-    },
+    cmd = { 'clangd', '--background-index', '--clang-tidy', '--completion-style=detailed' },
     on_new_config = function(new_config, _)
       local cc_file = 'compile_commands.json'
 
@@ -287,9 +355,8 @@ do
         end
       end
 
-      new_config.init_options.compilationDatabasePath = vim.fn.input(
-                                                          'Where is ' .. cc_file ..
-                                                            '? ', '', 'file')
+      new_config.init_options.compilationDatabasePath =
+        vim.fn.input('Where is ' .. cc_file .. '? ', '', 'file')
     end
   }
   -- ccls fails to gd in dependancies headers, while clangd is ok with that
@@ -301,34 +368,55 @@ do
   -- lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {
     filetypes = { 'jsonc' },
-    init_options = { provideFormatter = false },
-    settings = { json = { schemas = require 'plug-config.json_schemas' } }
+    init_options = {
+      provideFormatter = false
+    },
+    settings = {
+      json = {
+        schemas = require 'plug-config.json_schemas'
+      }
+    }
   }
 
-  lspconfig.efm.setup {
-    -- on_attach = on_attach,
-    init_options = { documentFormatting = true },
+  lspconfig.efm.setup { -- on_attach = on_attach,
+    init_options = {
+      documentFormatting = true
+    },
     filetypes = { 'lua', 'json', 'jsonc', 'html', 'css', 'sh', 'python' },
     settings = {
       rootMarkers = { '.git/' },
       languages = {
-        lua = { { formatCommand = 'lua-format -i', formatStdin = true } },
+        lua = {
+          {
+            formatCommand = 'lua-format -i',
+            formatStdin = true
+          }
+        },
         json = {
-          { formatCommand = 'prettier --parser json', formatStdin = true }
+          {
+            formatCommand = 'prettier --parser json',
+            formatStdin = true
+          }
         },
         jsonc = {
-          { formatCommand = 'prettier --parser json', formatStdin = true }
+          {
+            formatCommand = 'prettier --parser json',
+            formatStdin = true
+          }
         },
         sh = {
           {
             formatCommand = 'shfmt -i 2 -ci -sr',
             -- lintCommand = 'shellcheck --format=gcc --severity=style -',
-            formatStdin = true
-            -- lintStdin = true
+            formatStdin = true -- lintStdin = true
           }
         },
-        python = { { formatCommand = 'yapf', formatStdin = true } }
-        -- html = { { formatCommand = 'prettier' } },
+        python = {
+          {
+            formatCommand = 'yapf',
+            formatStdin = true
+          }
+        } -- html = { { formatCommand = 'prettier' } },
         -- css = { { formatCommand = 'prettier' } }
       },
       logFile = vim.fn.stdpath('cache') .. '/efm.log',
@@ -359,8 +447,7 @@ local function show_line_diagnostics()
   local line_nr = api.nvim_win_get_cursor(0)[1] - 1
   local opts = {}
 
-  local line_diagnostics = lsp.diagnostic.get_line_diagnostics(bufnr, line_nr,
-                                                               opts)
+  local line_diagnostics = lsp.diagnostic.get_line_diagnostics(bufnr, line_nr, opts)
   if vim.tbl_isempty(line_diagnostics) then
     return
   end
@@ -380,7 +467,7 @@ local function show_line_diagnostics()
     text:newline()
   end
 
-  opts.focus_id = "line_diagnostics"
+  opts.focus_id = 'line_diagnostics'
   opts.max_width = math.floor(vim.fn.winwidth(0) * 0.8)
   local float_bufnr, float_winnr = text:render_in_float(opts)
 
@@ -394,14 +481,12 @@ local function show_line_diagnostics()
       local line = api.nvim_buf_get_lines(bufnr, line_nr, line_nr + 1, false)[1]
       print(vim.inspect(line))
       local indent_spaces = string.sub(line, string.find(line, '%s*'))
-      local dl = indent_spaces ..
-                   string.gsub(dl_pattern, "%${code}",
-                               line_diagnostics[idx].code)
+      local dl = indent_spaces .. string.gsub(dl_pattern, '%${code}', line_diagnostics[idx].code)
       api.nvim_buf_set_lines(bufnr, line_nr, line_nr, false, { dl })
       -- if client_info[source].kind == 'linter' then
       --   lint.try_lint()
       -- else
-      vim.cmd("write " .. tostring(vim.fn.bufname(bufnr)))
+      vim.cmd('write ' .. tostring(vim.fn.bufname(bufnr)))
       -- end
     end
   end
@@ -412,15 +497,20 @@ local function show_line_diagnostics()
     local webpage_pattern = client_info[source].diagnostic_webpage
     if webpage_pattern then
       api.nvim_buf_delete(float_bufnr, {})
-      local uri = string.gsub(webpage_pattern, "%${code}",
-                              line_diagnostics[idx].code)
+      local uri = string.gsub(webpage_pattern, '%${code}', line_diagnostics[idx].code)
       os.execute('$BROWSER ' .. uri)
     end
 
   end
 
-  map_buf(float_bufnr, 'n', 'd', disable, { silent = true, nowait = true })
-  map_buf(float_bufnr, 'n', 'p', webpage, { silent = true, nowait = true })
+  map_buf(float_bufnr, 'n', 'd', disable, {
+    silent = true,
+    nowait = true
+  })
+  map_buf(float_bufnr, 'n', 'p', webpage, {
+    silent = true,
+    nowait = true
+  })
   return float_bufnr, float_winnr
 end
 
@@ -431,12 +521,16 @@ local function compe_setup()
   require'compe'.setup({
     enabled = true,
     autocomplete = false,
-    source = { nvim_lsp = true },
+    source = {
+      nvim_lsp = true
+    },
     preselect = 'always'
   })
 
   local t = func.bind(api.nvim_replace_termcodes, func._1, true, true, true)
   local luasnip = require 'luasnip'
+  -- luasnip.config.setup({ history = true })
+  luasnip.config.setup({})
 
   local function is_space_before()
     local col = vim.fn.col('.') - 1
@@ -449,11 +543,11 @@ local function compe_setup()
 
   local function on_tab()
     if vim.fn.pumvisible() == 1 then
-      return t "<C-n>"
+      return t '<C-n>'
     elseif luasnip.expandable() then
-      return t "<Plug>luasnip-expand-snippet"
+      return t '<Plug>luasnip-expand-snippet'
     elseif is_space_before() then
-      return t "<Tab>"
+      return t '<Tab>'
     else
       return vim.fn['compe#complete']()
     end
@@ -461,17 +555,17 @@ local function compe_setup()
 
   local function on_cp()
     if luasnip.jumpable(-1) then
-      return t "<Plug>luasnip-jump-prev"
+      return t '<Plug>luasnip-jump-prev'
     else
-      return t "<C-p>"
+      return t '<C-p>'
     end
   end
 
   local function on_cn()
     if luasnip.jumpable(1) then
-      return t "<Plug>luasnip-jump-next"
+      return t '<Plug>luasnip-jump-next'
     else
-      return t "<C-n>"
+      return t '<C-n>'
     end
   end
 
@@ -494,8 +588,7 @@ do
         underline = vim.g.utils_options.ldu == 1
       }
       for _, client in ipairs(lsp.get_active_clients()) do
-        lsp.diagnostic.display(lsp.diagnostic.get(0, client.id), 0, client.id,
-                               config)
+        lsp.diagnostic.display(lsp.diagnostic.get(0, client.id), 0, client.id, config)
       end
     end
   end
@@ -509,13 +602,31 @@ do
   -- Commands
   -- In use
   map('n', '<C-j>', lsp.buf.hover)
-  map('i', '<C-i>', on_tab, { expr = true, noremap = false })
-  map('i', '<C-n>', on_cn, { expr = true, noremap = false })
-  map('i', '<C-p>', on_cp, { expr = true, noremap = false })
-  map('i', '<C-y>', 'compe#confirm(\'<C-y>\')', { expr = true, noremap = false })
-  map('i', '<C-e>', 'compe#close(\'<End>\')', { expr = true })
-  map('i', '<C-f>', 'compe#scroll(#{delta: +2})', { expr = true })
-  map('i', '<C-b>', 'compe#scroll(#{delta: -2})', { expr = true })
+  map('i', '<C-i>', on_tab, {
+    expr = true,
+    noremap = false
+  })
+  map('is', '<C-n>', on_cn, {
+    expr = true,
+    noremap = false
+  })
+  map('is', '<C-p>', on_cp, {
+    expr = true,
+    noremap = false
+  })
+  map('i', '<C-y>', 'compe#confirm(\'<C-y>\')', {
+    expr = true,
+    noremap = false
+  })
+  map('i', '<C-e>', 'compe#close(\'<End>\')', {
+    expr = true
+  })
+  map('i', '<C-f>', 'compe#scroll(#{delta: +2})', {
+    expr = true
+  })
+  map('i', '<C-b>', 'compe#scroll(#{delta: -2})', {
+    expr = true
+  })
 
   lsp.diagnostic.show_line_diagnostics = show_line_diagnostics
   map('n', '<C-k>', lsp.diagnostic.show_line_diagnostics)
@@ -542,8 +653,8 @@ do
 
   autocmd('LSP', {
     { 'BufWritePre *', auto_format }, [[ User LspProgressUpdate redraws! ]],
-    { 'BufWritePost *', require('lint').try_lint },
-    { 'FileType *', require('lint').try_lint },
+    { 'BufWritePost *', require('lint').try_lint }, ----------------------
+    { 'FileType *', require('lint').try_lint }, --------------------------
     [[ User LspDiagnosticsChanged redraws! ]]
   })
 end

@@ -110,12 +110,14 @@ xnoremap p <cmd>call <sid>PasteOver()<cr>
 
 nnoremap <silent> <M-u> <cmd>noh<CR>
 
-nnoremap n <cmd>call <sid>NoJump('n')<cr>
-nnoremap N <cmd>call <sid>NoJump('N')<cr>
+nnoremap n <cmd>call <sid>Jump('n')<cr>
+nnoremap N <cmd>call <sid>Jump('N')<cr>
 
-function s:NoJump(cmd) abort
+" function s:NoJump(cmd) abort
+function s:Jump(cmd) abort
   try
-    execute 'keepjumps' 'normal!' a:cmd
+    " execute 'keepjumps' 'normal!' a:cmd
+    execute 'normal!' a:cmd
     if g:utils_options.nz
       normal! zz
     endif
@@ -316,6 +318,8 @@ function! s:Next() abort
         call utils#Print('WarningMst', ['LAST', 'LspDiagnosticsSignInformation'], ' item')
       endtry
       if g:utils_options.nz
+        call win_gotoid(g:user_state.qf_window) | normal! zz
+        wincmd p
         normal! zz
       endif
     else
@@ -336,6 +340,8 @@ function! s:Prev() abort
         call utils#Print('WarningMst', ['FIRST', 'LspDiagnosticsSignInformation'], ' item')
       endtry
       if g:utils_options.nz
+        call win_gotoid(g:user_state.qf_window) | normal! zz
+        wincmd p
         normal! zz
       endif
     else
