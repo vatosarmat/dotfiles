@@ -5,3 +5,5 @@ continuation_indent_width: 2
 keep_simple_control_block_one_line: false
 keep_simple_function_one_line: true
 spaces_inside_table_braces: true
+line_breaks_after_function_body: 1
+column-limit: 100

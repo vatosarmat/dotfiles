@@ -22,11 +22,26 @@ local plug = require('packer').startup(function()
   use 'wbthomason/packer.nvim'
   use 'nvim-lua/plenary.nvim'
 
-  use { "folke/lua-dev.nvim", event = 'VimEnter' }
-  use { 'neovim/nvim-lspconfig', after = 'lua-dev.nvim' }
-  use { 'mfussenegger/nvim-lint', after = 'nvim-lspconfig' }
-  use { 'hrsh7th/nvim-compe', after = 'nvim-lint' }
-  use { 'L3MON4D3/LuaSnip', after = 'nvim-compe' }
+  use {
+    "folke/lua-dev.nvim",
+    event = 'VimEnter'
+  }
+  use {
+    'neovim/nvim-lspconfig',
+    after = 'lua-dev.nvim'
+  }
+  use {
+    'mfussenegger/nvim-lint',
+    after = 'nvim-lspconfig'
+  }
+  use {
+    'hrsh7th/nvim-compe',
+    after = 'nvim-lint'
+  }
+  use {
+    'L3MON4D3/LuaSnip',
+    after = 'nvim-compe'
+  }
   use {
     'windwp/nvim-autopairs',
     after = 'LuaSnip',
@@ -34,7 +49,9 @@ local plug = require('packer').startup(function()
       require 'plug-config.lsp'
       local npairs = require 'nvim-autopairs'
       npairs.setup()
-      require"nvim-autopairs.completion.compe".setup { map_cr = true }
+      require"nvim-autopairs.completion.compe".setup {
+        map_cr = true
+      }
       npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
       npairs.remove_rule('\'')
       npairs.remove_rule('"')
@@ -49,9 +66,15 @@ local plug = require('packer').startup(function()
   use 'nvim-telescope/telescope.nvim'
 
   use 'kyazdani42/nvim-web-devicons'
-  use { 'kyazdani42/nvim-tree.lua', config = mk_sourcer 'plug-config.nvimtree' }
+  use {
+    'kyazdani42/nvim-tree.lua',
+    config = mk_sourcer 'plug-config.nvimtree'
+  }
 
-  use { 'mfussenegger/nvim-dap', config = mk_sourcer 'plug-config.dap' }
+  use {
+    'mfussenegger/nvim-dap',
+    config = mk_sourcer 'plug-config.dap'
+  }
   use 'jbyuki/one-small-step-for-vimkind'
 
   use {
@@ -66,7 +89,10 @@ local plug = require('packer').startup(function()
     'tpope/vim-fugitive',
     config = mk_sourcer '$STD_PATH_CONFIG/plug-config/fugitive.vim'
   }
-  use { 'lewis6991/gitsigns.nvim', config = mk_sourcer 'plug-config.gitsigns' }
+  use {
+    'lewis6991/gitsigns.nvim',
+    config = mk_sourcer 'plug-config.gitsigns'
+  }
 
   use {
     'airblade/vim-rooter',
@@ -78,7 +104,11 @@ local plug = require('packer').startup(function()
       require 'plug-config.project_type'
     end
   }
-  use { '~/.fzf', as = 'fzf', after = 'vim-rooter' }
+  use {
+    '~/.fzf',
+    as = 'fzf',
+    after = 'vim-rooter'
+  }
   use {
     'junegunn/fzf.vim',
     after = 'fzf',
@@ -88,16 +118,35 @@ local plug = require('packer').startup(function()
   }
   use 'lambdalisue/suda.vim'
 
-  use { 'tpope/vim-surround', config = misc.surround }
+  use {
+    'tpope/vim-surround',
+    config = misc.surround
+  }
   use 'tpope/vim-repeat'
-  use { 'tpope/vim-commentary', config = misc.commentary }
+  use {
+    'tpope/vim-commentary',
+    config = misc.commentary
+  }
   use 'JoosepAlviste/nvim-ts-context-commentstring'
 
-  use { 'chaoren/vim-wordmotion', config = misc.wordmotion }
-  use { 'haya14busa/vim-asterisk', config = misc.asterisk }
+  use {
+    'chaoren/vim-wordmotion',
+    config = misc.wordmotion
+  }
 
-  use { 'rrethy/vim-hexokinase', run = 'make hexokinase' }
-  use { 'dstein64/nvim-scrollview', config = misc.scrollview }
+  use {
+    'haya14busa/vim-asterisk',
+    config = misc.asterisk
+  }
+
+  use {
+    'rrethy/vim-hexokinase',
+    run = 'make hexokinase'
+  }
+  use {
+    'dstein64/nvim-scrollview',
+    config = misc.scrollview
+  }
 
   use {
     'christianchiarulli/nvcode-color-schemes.vim',

@@ -58,7 +58,11 @@ dap.configurations.lua = {
 }
 
 dap.adapters.nlua = function(callback, config)
-  callback({ type = 'server', host = config.host, port = config.port })
+  callback({
+    type = 'server',
+    host = config.host,
+    port = config.port
+  })
 end
 
 dap.adapters.cppdbg = {
@@ -159,9 +163,10 @@ do
   mapn('p', dap.pause)
   mapn('r', dap.run_to_cursor, 'r')
 
-  mapn('i', bind1(dap.step_into,
-                  { steppingGranularity = 'statement', askForTargets = true }),
-       'i')
+  mapn('i', bind1(dap.step_into, {
+    steppingGranularity = 'statement',
+    askForTargets = true
+  }), 'i')
   mapn('s', dap.step_over, 'o')
   mapn('o', dap.step_out, 'O')
 
