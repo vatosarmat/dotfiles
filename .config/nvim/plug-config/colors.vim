@@ -67,3 +67,7 @@ hi DapStoppedSign guifg=#9e1cf4
 execute 'highlight!' 'User8'
   \ 'guifg='.utils#GetHlAttr('DapStoppedSign', 'fg')
   \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+
+"Symbol_list
+hi SymbolIconFunction guifg=#c0c000
+hi SymbolIconVariable guifg=#0080c0

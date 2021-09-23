@@ -308,11 +308,15 @@ endfunction
 "Use jumps list or record history in user_state instead of dummy bnext bprev
 function! s:Next() abort
   if &diff
-    "Use gitsigns mapping
-    keepjumps normal ]c
+    keepjumps normal! ]c
+    if g:utils_options.nz
+      normal! zz
+    endif
   else
     if g:user_state.qf_window != -1
       try
+        "Clear first/last item warning
+        echo
         cnext
       catch
         call utils#Print('WarningMst', ['LAST', 'LspDiagnosticsSignInformation'], ' item')
@@ -330,11 +334,15 @@ endfunction
 
 function! s:Prev() abort
   if &diff
-    "Use gitsigns mapping
-    keepjumps normal [c
+    keepjumps normal! [c
+    if g:utils_options.nz
+      normal! zz
+    endif
   else
     if g:user_state.qf_window != -1
       try
+        "Clear first/last item warning
+        echo
         cprev
       catch /E553/
         call utils#Print('WarningMst', ['FIRST', 'LspDiagnosticsSignInformation'], ' item')

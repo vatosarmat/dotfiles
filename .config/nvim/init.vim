@@ -21,6 +21,11 @@ end
 if not _shortmap then
   _G._shortmap = {}
 end
+
+function _G.noop(...)
+  return ...
+end
+
 function _G.pprint(value)
   print(vim.inspect(value))
 end

@@ -13,11 +13,21 @@ local function withIndexBufUpdate(f)
   end
 end
 
+local function with_nz(hunk)
+  return function()
+    hunk()
+    if vim.g.user_options.nz then
+      vim.cmd('normal! zz')
+    end
+  end
+end
+
 local _gitsigns = {}
 
 _gitsigns.stage_hunk = withIndexBufUpdate(gs.stage_hunk)
 _gitsigns.undo_stage_hunk = withIndexBufUpdate(gs.undo_stage_hunk)
-
+_gitsigns.next_hunk = with_nz(gs.next_hunk)
+_gitsigns.prev_hunk = with_nz(gs.prev_hunk)
 _G._gitsigns = _gitsigns
 
 gs.setup {
@@ -87,11 +97,11 @@ gs.setup {
 
     ['n ]h'] = {
       expr = true,
-      "&diff ? ']c' : '<cmd>lua require\"gitsigns\".next_hunk()<CR>'"
+      '&diff ? \']c\' : \'<cmd>lua _gitsigns.next_hunk()<CR>\''
     },
     ['n [h'] = {
       expr = true,
-      "&diff ? '[c' : '<cmd>lua require\"gitsigns\".prev_hunk()<CR>'"
+      '&diff ? \'[c\' : \'<cmd>lua _gitsigns.prev_hunk()<CR>\''
     },
 
     ['n <leader>hs'] = '<cmd>lua _gitsigns.stage_hunk()<CR>',

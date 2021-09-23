@@ -5,6 +5,11 @@ local lsp = vim.lsp
 local lspconfig = require 'lspconfig'
 local lint = require 'lint'
 
+local symbol_icons = {
+  Function = '',
+  Variable = '✗'
+}
+
 local severities = {
   {
     name = 'Error',
@@ -162,27 +167,10 @@ do
   end
 
   lsp.protocol.CompletionItemKind = {
-    ' ', ' ', ' ', ' ', 'ﰠ ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', '﬌ ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '⌘ ', ' ',
-    ' '
+    ' ', ' ', symbol_icons.Function, ' ', 'ﰠ ', symbol_icons.Variable, ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', '﬌ ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', '⌘ ', ' ', ' '
   }
-end
-
---
--- Store symbols here for navigation and displaying in various ways
---
-local SymbolStore = {}
-
-function SymbolStore.set(bufnr, client, symbols)
-  symbols = symbols or {}
-  local _lsp = vim.fn.getbufvar(bufnr, '_lsp', {})
-  _lsp[tostring(client)] = symbols
-  vim.fn.setbufvar(bufnr, '_lsp', _lsp)
-end
-
-function SymbolStore.get(bufnr, client)
-  local _lsp = vim.fn.getbufvar(bufnr, '_lsp', {})
-  return _lsp[tostring(client)]
 end
 
 --
@@ -202,8 +190,8 @@ do
       debounce_text_changes = 500
     },
     capabilities = capabilities,
+    ---@diagnostic disable-next-line: unused-local
     on_attach = function(client, bufnr)
-      SymbolStore.set(bufnr, client)
     end
   })
 end
@@ -211,30 +199,50 @@ end
 --
 -- Handlers
 --
-do
+--
+local function setup_handlers()
   local util = lsp.util
 
+  local function symbol_lnum(symbol)
+    if symbol.location then
+      return symbol.location.range.start.line + 1
+    else
+      return symbol.selectionRange.start.line + 1
+    end
+  end
+
+  local function sort_symbols_by_lnum(list)
+    table.sort(list, function(a, b)
+      return symbol_lnum(a) < symbol_lnum(b)
+    end)
+    return list
+  end
+
+  -- Convert symbols to quickfix list
   local function symbols_to_items(symbols, bufnr)
     local function _symbols_to_items(_symbols, _items, _bufnr)
       for _, symbol in ipairs(_symbols) do
+        local lnum = symbol_lnum(symbol)
         if symbol.location then -- SymbolInformation type
           local range = symbol.location.range
           local kind = util._get_symbol_kind_name(symbol.kind)
           table.insert(_items, {
             filename = vim.uri_to_fname(symbol.location.uri),
-            lnum = range.start.line + 1,
+            lnum = lnum,
             col = range.start.character + 1,
             kind = kind,
-            text = '[' .. kind .. '] ' .. symbol.name
+            -- text = '[' .. kind .. '] ' .. symbol.name
+            text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name
           })
         elseif symbol.selectionRange then -- DocumentSymbole type
           local kind = util._get_symbol_kind_name(symbol.kind)
           table.insert(_items, { -- bufnr = _bufnr,
             filename = vim.api.nvim_buf_get_name(_bufnr),
-            lnum = symbol.selectionRange.start.line + 1,
+            lnum = lnum,
             col = symbol.selectionRange.start.character + 1,
             kind = kind,
-            text = '[' .. kind .. '] ' .. symbol.name
+            -- text = '[' .. kind .. '] ' .. symbol.name
+            text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name
           })
 
           -- Don't go for children
@@ -246,27 +254,92 @@ do
           -- end
         end
       end
-      table.sort(_items, function(a, b)
-        return a.lnum < b.lnum
-      end)
       return _items
     end
     return _symbols_to_items(symbols, {}, bufnr)
   end
 
-  lsp.handlers['textDocument/documentSymbol'] = function(_, method, result, client_id, bufnr, _)
-    if not result or vim.tbl_isempty(result) then
-      local _ = log.info() and log.info(method, 'No location found')
-      if lsp.get_client_by_id(client_id).name ~= 'efm' then
-        api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
+  -- Render only line num and text in the list, don't show file names
+  local function qflist_set(items)
+    local what = {
+      title = vim.fn.bufname() .. ' symbols',
+      items = items
+    }
+
+    function what.quickfixtextfunc(info)
+      return vim.tbl_map(function(item)
+        return string.format('|%-5d| %s', item.lnum, item.text)
+      end, vim.list_slice(items, info.start_idx, info.end_idx))
+    end
+
+    vim.fn.setqflist({}, ' ', what)
+  end
+
+  -- handler with filter_sort and on_done
+  local function make_symbol_handler(filter_sort, on_done)
+    ---@diagnostic disable-next-line: unused-local
+    return function(err, method, result, client_id, bufnr, config)
+      if not result or vim.tbl_isempty(result) then
+        local _ = log.info() and log.info(method, 'No location found')
+        if lsp.get_client_by_id(client_id).name ~= 'efm' then
+          api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
+        end
+        return
       end
+
+      local a = filter_sort(result)
+      local items = symbols_to_items(a, bufnr)
+      qflist_set(items)
+      api.nvim_command('copen | set syntax=symbol_list | wincmd p')
+      on_done()
+    end
+  end
+
+  local function symbol_qflist_sync()
+    local qf = vim.fn.getqflist({
+      items = 0,
+      winid = 0
+    })
+
+    if qf.winid == 0 then
       return
     end
 
-    SymbolStore.set(bufnr, client_id, result)
-    local items = symbols_to_items(result, bufnr)
-    util.set_qflist(items)
-    api.nvim_command('copen | wincmd p')
+    local cl = api.nvim_win_get_cursor(0)[1]
+    if cl > qf.items[1].lnum then
+      local i = 2
+      while i < #(qf.items) do
+        if qf.items[i - 1].lnum <= cl and cl < qf.items[i].lnum then
+          vim.cmd('cc ' .. i)
+        end
+        i = i + 1
+      end
+    else
+      vim.cmd('cfirst')
+    end
+  end
+
+  local function document_list_symbols(filter_sort, on_done)
+    filter_sort = filter_sort or sort_symbols_by_lnum
+    on_done = on_done or symbol_qflist_sync
+    local params = {
+      textDocument = util.make_text_document_params()
+    }
+    vim.lsp.buf_request(0, 'textDocument/documentSymbol', params,
+                        make_symbol_handler(filter_sort, on_done))
+  end
+
+  local function document_list_functions()
+    local function filter_sort(items)
+      local ret = {}
+      for _, item in ipairs(items) do
+        if vim.lsp.util._get_symbol_kind_name(item.kind) == 'Function' then
+          table.insert(ret, item)
+        end
+      end
+      return sort_symbols_by_lnum(ret)
+    end
+    document_list_symbols(filter_sort, symbol_qflist_sync)
   end
 
   lsp.handlers['textDocument/definition'] = function(_, method, result, client_id, _, _)
@@ -305,6 +378,8 @@ do
       update_in_insert = false,
       severity_sort = true
     })
+
+  return symbol_qflist_sync, document_list_symbols, document_list_functions
 end
 
 --
@@ -324,7 +399,7 @@ do
           },
           diagnostics = {
             globals = {
-              'vim', 'service', '_map', '_augroup', '_shortmap', 'use', 'pack', 'use_rocks'
+              'vim', 'service', '_map', '_augroup', '_shortmap', 'use', 'pack', 'use_rocks', 'noop'
             }
           }
         }
@@ -575,6 +650,7 @@ local function compe_setup()
 end
 
 local on_tab, on_cn, on_cp = compe_setup()
+local symbol_qflist_sync, document_list_symbols, document_list_functions = setup_handlers()
 
 --
 -- Mappings and (auto)commands
@@ -635,16 +711,26 @@ do
   map('n', 'gd', lsp.buf.definition)
   map('n', 'gt', lsp.buf.type_definition)
   map('n', 'gr', lsp.buf.references)
-  map('n', 'g[', lsp.diagnostic.goto_prev)
-  map('n', 'g]', lsp.diagnostic.goto_next)
-  map('n', '<leader>ld', lsp.buf.document_symbol)
-  map('n', '<leader>lw', lsp.buf.workspace_symbol)
+  map('n', 'g[', func.bind1(lsp.diagnostic.goto_prev, {
+    wrap = false,
+    enable_popup = false
+  }))
+  map('n', 'g]', func.bind1(lsp.diagnostic.goto_next, {
+    wrap = false,
+    enable_popup = false
+  }))
 
   -- Less in use
   map('n', 'gi', lsp.buf.implementation)
-  map('n', '<leader>ls', lsp.buf.signature_help)
+  map('n', '<leader>lh', lsp.buf.signature_help)
   map('n', 'gD', lsp.buf.declaration)
   map('n', 'ga', lsp.buf.code_action)
+
+  -- Symbol lists
+  map('n', '<leader>ls', document_list_symbols)
+  map('n', '<leader>lf', document_list_functions)
+  map('n', '<leader>lw', lsp.buf.workspace_symbol)
+  map('n', '<leader>l<C-s>', symbol_qflist_sync)
 
   -- Options
   map('n', '<leader>l<M-v>', func.bind1(toggle_option, 'ldv'))
