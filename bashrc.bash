@@ -27,6 +27,7 @@ export FZF_DEFAULT_OPTS
 FZF_DEFAULT_OPTS="--reverse --height 55% --extended --bind='"
 FZF_DEFAULT_OPTS+="ctrl-d:half-page-down,ctrl-u:half-page-up,"
 FZF_DEFAULT_OPTS+="ctrl-alt-j:preview-down,ctrl-alt-k:preview-up,"
+FZF_DEFAULT_OPTS+="ctrl-alt-i:select-all,"
 FZF_DEFAULT_OPTS+="f2:toggle-preview,f3:toggle-preview-wrap,"
 FZF_DEFAULT_OPTS+="alt-y:execute(echo -n '{}' | xsel -ib)'"
 export FZF_CTRL_R_OPTS

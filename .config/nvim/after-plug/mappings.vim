@@ -10,6 +10,21 @@ nnoremap <M-[> zb
 nnoremap <M-C-n> <cmd>cnext<cr>
 nnoremap <M-C-p> <cmd>cprevious<cr>
 
+function! s:QuickFixRemoveCurrentItem()
+  let qf_info = getqflist(#{items: 0, idx: 0})
+  let rm_idx = line('.')
+  call remove(qf_info.items, rm_idx - 1)
+  let new_idx = qf_info.idx
+  if rm_idx <= qf_info.idx
+    let new_idx -= 1
+  endif
+  call setqflist([],  'r', #{items: qf_info.items, idx: new_idx})
+endfunction
+
+function! mappings#FtQf() abort
+  noremap <buffer> dd <cmd>call <sid>QuickFixRemoveCurrentItem()<cr>
+endfunction
+
 nnoremap ]t gt
 nnoremap [t gT
 

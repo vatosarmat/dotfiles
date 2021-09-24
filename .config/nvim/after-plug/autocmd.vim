@@ -6,7 +6,7 @@ augroup BeforePlug
 
   autocmd BufAdd * if !empty(&buftype) | call mappings#NopDiff() | endif
 
-  autocmd FileType qf setlocal norelativenumber
+  autocmd FileType qf setlocal norelativenumber | call mappings#FtQf()
   autocmd FileType help call docfavs#Init()
 
   "Move help window right

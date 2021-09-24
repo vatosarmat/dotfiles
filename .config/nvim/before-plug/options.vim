@@ -6,6 +6,8 @@ set nobackup nowritebackup
 set noswapfile
 set cpoptions-=_
 
+set switchbuf=usetab
+
 set scrolloff=5
 
 set mouse=a
