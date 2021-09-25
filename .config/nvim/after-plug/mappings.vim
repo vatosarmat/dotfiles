@@ -10,19 +10,69 @@ nnoremap <M-[> zb
 nnoremap <M-C-n> <cmd>cnext<cr>
 nnoremap <M-C-p> <cmd>cprevious<cr>
 
-function! s:QuickFixRemoveCurrentItem()
-  let qf_info = getqflist(#{items: 0, idx: 0})
-  let rm_idx = line('.')
-  call remove(qf_info.items, rm_idx - 1)
-  let new_idx = qf_info.idx
-  if rm_idx <= qf_info.idx
-    let new_idx -= 1
+function! s:QflistRemoveCurrentItem() abort
+  let qf_info = getqflist(#{items: 0, idx: 0, context: 0})
+  let prev_pos = getpos('.')
+  if type(qf_info.context) == 4
+    let context = qf_info.context
+  else
+    let context = #{ change_list: [] }
   endif
-  call setqflist([],  'r', #{items: qf_info.items, idx: new_idx})
+
+  if mode() == 'V'
+    let start_idx = line('v')
+    let end_idx = line('.')
+    if start_idx > end_idx
+      let [start_idx, end_idx] = [end_idx, start_idx]
+    else
+      let prev_pos[1] -= (end_idx - start_idx)
+    endif
+  else
+    let start_idx = line('.')
+    let end_idx = start_idx + v:count1 - 1
+  endif
+
+  let new_change = #{
+    \ items: remove(qf_info.items, start_idx - 1, end_idx - 1),
+    \ start_idx: start_idx,
+    \ end_idx: end_idx}
+
+  echom context
+  let context.change_list = add(context.change_list, new_change)
+
+  let list_cursor = qf_info.idx
+  if start_idx <= list_cursor
+    "Keep list cursor on the some entry
+    let removed_before_cursor = (min(end_idx, list_cursor) - start_idx)
+    let list_cursor -= removed_before_cursor
+  endif
+
+  call setqflist([],  'r', #{items: qf_info.items, idx: list_cursor, context: context})
+  "Clear visual
+  call feedkeys("\<ESC>")
+  call setpos('.', prev_pos)
+endfunction
+
+function! s:QflistRestore() abort
+  let qf_info = getqflist(#{items: 0, idx: 0, context: 0})
+  let prev_pos = getpos('.')
+  let context = qf_info.context
+  if empty(context) || !has_key(context, 'change_list') || len(context.change_list) < 1
+    call utils#Print('WarningMsg', 'No removed items to restore')
+    return
+  endif
+
+  let last_change = remove(context.change_list, -1)
+  call extend(qf_info.items, last_change.items, last_change.start_idx - 1 )
+
+  call setqflist([],  'r', #{items: qf_info.items, idx: qf_info.idx, context: context})
+  call setpos('.', prev_pos)
 endfunction
 
 function! mappings#FtQf() abort
-  noremap <buffer> dd <cmd>call <sid>QuickFixRemoveCurrentItem()<cr>
+  nnoremap <buffer> dd <cmd>call <sid>QflistRemoveCurrentItem()<cr>
+  xnoremap <buffer> d <cmd>call <sid>QflistRemoveCurrentItem()<cr>
+  nnoremap <buffer> u <cmd>call <sid>QflistRestore()<cr>
 endfunction
 
 nnoremap ]t gt
@@ -334,7 +384,7 @@ function! s:Next() abort
         echo
         cnext
       catch
-        call utils#Print('WarningMst', ['LAST', 'LspDiagnosticsSignInformation'], ' item')
+        call utils#Print('WarningMsg', ['LAST', 'LspDiagnosticsSignInformation'], ' item')
       endtry
       if g:utils_options.nz
         call win_gotoid(g:user_state.qf_window) | normal! zz
@@ -360,7 +410,7 @@ function! s:Prev() abort
         echo
         cprev
       catch /E553/
-        call utils#Print('WarningMst', ['FIRST', 'LspDiagnosticsSignInformation'], ' item')
+        call utils#Print('WarningMsg', ['FIRST', 'LspDiagnosticsSignInformation'], ' item')
       endtry
       if g:utils_options.nz
         call win_gotoid(g:user_state.qf_window) | normal! zz
