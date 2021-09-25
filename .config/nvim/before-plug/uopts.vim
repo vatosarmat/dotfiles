@@ -1,4 +1,6 @@
-let g:uopts = #{}
+let g:uopts = #{
+  \ print_duration: 2000,
+  \ }
 
 "sv
 "cl

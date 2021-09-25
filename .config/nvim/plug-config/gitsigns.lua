@@ -3,13 +3,14 @@ local gs = require 'gitsigns'
 local function withIndexBufUpdate(f)
   return function()
     f()
-    local back = vim.fn.win_getid()
-    local indexBufname = vim.fn.FugitiveFind(':' .. vim.fn.bufname())
-    if vim.fn.bufexists(indexBufname) then
-      vim.fn.win_gotoid(vim.fn.bufwinid(indexBufname))
-      vim.cmd('e ' .. indexBufname)
-      vim.fn.win_gotoid(back)
-    end
+    -- was intended for 3-diff view upate, but seems to be broken
+    -- local back = vim.fn.win_getid()
+    -- local indexBufname = vim.fn.FugitiveFind(':' .. vim.fn.bufname())
+    -- if vim.fn.bufexists(indexBufname) then
+    --   vim.fn.win_gotoid(vim.fn.bufwinid(indexBufname))
+    --   vim.cmd('e ' .. indexBufname)
+    --   vim.fn.win_gotoid(back)
+    -- end
   end
 end
 

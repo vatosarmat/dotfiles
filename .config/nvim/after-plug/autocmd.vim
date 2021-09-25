@@ -35,7 +35,7 @@ endfunction
 
 function! s:UserStateWinClosed(winid) abort
   if g:ustate.qf_window == a:winid
-    let g:ustate.qf_window = -1
+    let g:ustate.qf_window = 0
   elseif has_key(g:ustate.loclist_windows, a:winid)
     call remove(g:ustate.loclist_windows, a:winid)
   endif

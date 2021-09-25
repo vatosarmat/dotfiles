@@ -138,5 +138,12 @@ function! utils#Print(dflt, ...) abort
     endif
   endfor
   echohl None
+
+  function! Clear(tid) closure
+    echo
+  endfunction
+
+  call timer_stop(g:ustate.print_clear_timer)
+  let g:ustate.print_clear_timer = timer_start(g:uopts.print_duration, function('Clear'))
 endfunction
 
