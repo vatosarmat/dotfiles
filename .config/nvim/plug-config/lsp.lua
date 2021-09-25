@@ -369,10 +369,10 @@ local function setup_handlers()
   lsp.handlers['textDocument/publishDiagnostics'] =
     lsp.with(lsp.diagnostic.on_publish_diagnostics, {
       virtual_text = function(_, _)
-        return vim.g.utils_options.ldv == 1 -- { severity_limit = "Error" }
+        return vim.g.uopts.ldv == 1 -- { severity_limit = "Error" }
       end,
       underline = function(_, _)
-        return vim.g.utils_options.ldu == 1 -- { severity_limit = "Error" }
+        return vim.g.uopts.ldu == 1 -- { severity_limit = "Error" }
       end,
       signs = true,
       update_in_insert = false,
@@ -657,11 +657,11 @@ local symbol_qflist_sync, document_list_symbols, document_list_functions = setup
 --
 do
   local function toggle_option(option)
-    vim.fn['utils_options#toggle'](option)
+    vim.fn['uopts#toggle'](option)
     if vim.tbl_contains({ 'ldu', 'ldv' }, option) then
       local config = {
-        virtual_text = vim.g.utils_options.ldv == 1,
-        underline = vim.g.utils_options.ldu == 1
+        virtual_text = vim.g.uopts.ldv == 1,
+        underline = vim.g.uopts.ldu == 1
       }
       for _, client in ipairs(lsp.get_active_clients()) do
         lsp.diagnostic.display(lsp.diagnostic.get(0, client.id), 0, client.id, config)
@@ -670,7 +670,7 @@ do
   end
 
   local function auto_format()
-    if vim.g.utils_options.laf == 1 then
+    if vim.g.uopts.laf == 1 then
       lsp.buf.formatting_sync(nil, 1500)
     end
   end

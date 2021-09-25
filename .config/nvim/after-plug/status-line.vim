@@ -79,7 +79,7 @@ function! StatusShortmap() abort
   elseif urt ==# 'V'
     let content .= ' '
   endif
-  if g:user_state.yank_clipboard == 1
+  if g:ustate.yank_clipboard == 1
     let content .= ' '
   endif
   if content != ''

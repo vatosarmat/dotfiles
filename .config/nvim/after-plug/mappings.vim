@@ -43,7 +43,7 @@ function! s:QflistRemoveCurrentItem() abort
   let list_cursor = qf_info.idx
   if start_idx <= list_cursor
     "Keep list cursor on the some entry
-    let removed_before_cursor = (min(end_idx, list_cursor) - start_idx)
+    let removed_before_cursor = (min([end_idx, list_cursor]) - start_idx)
     let list_cursor -= removed_before_cursor
   endif
 
@@ -115,7 +115,7 @@ nnoremap <silent>gg <cmd>keepjumps normal! gg<cr>
 nnoremap <silent>G <cmd>keepjumps normal! Gzz<cr>
 
 "Paste from vim to system clipboard
-nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:user_state.yank_clipboard = 1<cr>
+nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:ustate.yank_clipboard = 1<cr>
 nnoremap <M-q> <cmd>call <sid>ToggleRegtype()<cr>
 function! s:ToggleRegtype() abort
   let urt = getregtype('"')
@@ -183,7 +183,7 @@ function s:Jump(cmd) abort
   try
     " execute 'keepjumps' 'normal!' a:cmd
     execute 'normal!' a:cmd
-    if g:utils_options.nz
+    if g:uopts.nz
       normal! zz
     endif
   catch /E384/
@@ -370,11 +370,11 @@ function! s:BufJump(dir, quiet = 0) abort
   endif
 endfunction
 
-"Use jumps list or record history in user_state instead of dummy bnext bprev
+"Use jumps list or record history in ustate instead of dummy bnext bprev
 function! s:Next() abort
   if &diff
     keepjumps normal! ]c
-    if g:utils_options.nz
+    if g:uopts.nz
       normal! zz
     endif
   else
@@ -386,7 +386,7 @@ function! s:Next() abort
       catch
         call utils#Print('WarningMsg', ['LAST', 'LspDiagnosticsSignInformation'], ' item')
       endtry
-      if g:utils_options.nz
+      if g:uopts.nz
         call win_gotoid(g:user_state.qf_window) | normal! zz
         wincmd p
         normal! zz
@@ -400,7 +400,7 @@ endfunction
 function! s:Prev() abort
   if &diff
     keepjumps normal! [c
-    if g:utils_options.nz
+    if g:uopts.nz
       normal! zz
     endif
   else
@@ -412,7 +412,7 @@ function! s:Prev() abort
       catch /E553/
         call utils#Print('WarningMsg', ['FIRST', 'LspDiagnosticsSignInformation'], ' item')
       endtry
-      if g:utils_options.nz
+      if g:uopts.nz
         call win_gotoid(g:user_state.qf_window) | normal! zz
         wincmd p
         normal! zz
