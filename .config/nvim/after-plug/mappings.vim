@@ -7,13 +7,48 @@ nnoremap <M-o> zz
 nnoremap <M-[> zb
 
 "quickfix list mappings
-nnoremap <M-C-n> <cmd>cnext<cr>
-nnoremap <M-C-p> <cmd>cprevious<cr>
+nnoremap <M-N> <cmd>call <sid>QflistStep(1)<cr>
+nnoremap <M-P> <cmd>call <sid>QflistStep(0)<cr>
+
+"loclist mappings
+nnoremap <M-C-n> <cmd>call <sid>QflistStep(1, 1)<cr>
+nnoremap <M-C-p> <cmd>call <sid>QflistStep(0, 1)<cr>
+
+function! s:QflistStep(next, loc = 0) abort
+  if a:next
+    let edge = 'LAST'
+    " let cmd = a:loc ? 'lnext' : 'cnext'
+    let cmd = a:loc ? 'lafter' : 'cafter'
+  else
+    let edge = 'FIRST'
+    " let cmd = a:loc ? 'lprev' : 'cprev'
+    let cmd = a:loc ? 'lbefore' : 'cbefore'
+  endif
+  try
+    "Clear first/last item warning
+    execute cmd
+  catch /E42/
+    call utils#Print('WarningMsg', 'No qflist available')
+  catch /E776/
+    call utils#Print('WarningMsg', 'No loclist available')
+  catch /E553/
+    call utils#Print('WarningMsg', [edge, 'LspDiagnosticsSignInformation'], ' item')
+  endtry
+  if g:uopts.nz
+    if a:loc
+      call win_gotoid(getloclist(0, #{winid: 0 }).winid) | normal! zz
+    else
+      call win_gotoid(g:ustate.qf_window) | normal! zz
+    endif
+    wincmd p
+    normal! zz
+  endif
+endfunction
 
 function! s:QflistRemoveCurrentItem() abort
   let qf_info = getqflist(#{items: 0, idx: 0, context: 0})
   let prev_pos = getpos('.')
-  if type(qf_info.context) == 4
+  if type(qf_info.context) == v:t_dict
     let context = qf_info.context
   else
     let context = #{ change_list: [] }
@@ -187,9 +222,9 @@ function s:Jump(cmd) abort
       normal! zz
     endif
   catch /E384/
-    call utils#Print('ErrorMsg', 'TOP ', [@\, 'LspDiagnosticsSignInformation'])
+    call utils#Print('ErrorMsg', 'TOP ', [@/, 'LspDiagnosticsSignInformation'])
   catch /E385/
-    call utils#Print('ErrorMsg', 'BOTTOM ', [@\, 'LspDiagnosticsSignInformation'])
+    call utils#Print('ErrorMsg', 'BOTTOM ', [@/, 'LspDiagnosticsSignInformation'])
   endtry
 endfunction
 
@@ -357,9 +392,6 @@ function! s:BufJump(dir, quiet = 0) abort
   endif
   if cmd != ''
     "Clear 'No buf to jump' message
-    if !a:quiet
-      echo
-    endif
     execute 'normal!' cmd
     return 1
   else
@@ -378,22 +410,7 @@ function! s:Next() abort
       normal! zz
     endif
   else
-    if g:user_state.qf_window != -1
-      try
-        "Clear first/last item warning
-        echo
-        cnext
-      catch
-        call utils#Print('WarningMsg', ['LAST', 'LspDiagnosticsSignInformation'], ' item')
-      endtry
-      if g:uopts.nz
-        call win_gotoid(g:user_state.qf_window) | normal! zz
-        wincmd p
-        normal! zz
-      endif
-    else
-      call s:BufJump('NEXT')
-    endif
+    call s:BufJump('NEXT')
   endif
 endfunction
 
@@ -404,22 +421,7 @@ function! s:Prev() abort
       normal! zz
     endif
   else
-    if g:user_state.qf_window != -1
-      try
-        "Clear first/last item warning
-        echo
-        cprev
-      catch /E553/
-        call utils#Print('WarningMsg', ['FIRST', 'LspDiagnosticsSignInformation'], ' item')
-      endtry
-      if g:uopts.nz
-        call win_gotoid(g:user_state.qf_window) | normal! zz
-        wincmd p
-        normal! zz
-      endif
-    else
-      call s:BufJump('PREV')
-    endif
+    call s:BufJump('PREV')
   endif
 endfunction
 
