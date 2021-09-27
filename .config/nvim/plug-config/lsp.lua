@@ -295,34 +295,14 @@ local function setup_handlers()
     end
   end
 
-  local function symbol_loclist_sync()
-    local qf = vim.fn.getloclist(0, {
-      items = 0,
-      winid = 0
-    })
-
-    if qf.winid == 0 then
-      return
-    end
-
-    local cl = api.nvim_win_get_cursor(0)[1]
-    if cl > qf.items[1].lnum then
-      local i = 2
-      while i < #(qf.items) do
-        if qf.items[i - 1].lnum <= cl and cl < qf.items[i].lnum then
-          vim.cmd('ll ' .. i)
-        end
-        i = i + 1
-      end
-    else
-      vim.cmd('lfirst')
-    end
+  local function loclist_sync()
+    vim.cmd('lbefore | normal! \015')
   end
 
   local function document_list_symbols(title, filter_sort, on_done)
     title = title or 'symbols'
     filter_sort = filter_sort or sort_symbols_by_lnum
-    on_done = on_done or symbol_loclist_sync
+    on_done = on_done or loclist_sync
     local params = {
       textDocument = util.make_text_document_params()
     }
@@ -340,7 +320,7 @@ local function setup_handlers()
       end
       return sort_symbols_by_lnum(ret)
     end
-    document_list_symbols('functions', filter_sort, symbol_loclist_sync)
+    document_list_symbols('functions', filter_sort)
   end
 
   lsp.handlers['textDocument/definition'] = function(_, method, result, client_id, _, _)
@@ -380,7 +360,7 @@ local function setup_handlers()
       severity_sort = true
     })
 
-  return symbol_loclist_sync, document_list_symbols, document_list_functions
+  return document_list_symbols, document_list_functions
 end
 
 --
@@ -651,7 +631,7 @@ local function compe_setup()
 end
 
 local on_tab, on_cn, on_cp = compe_setup()
-local symbol_qflist_sync, document_list_symbols, document_list_functions = setup_handlers()
+local document_list_symbols, document_list_functions = setup_handlers()
 
 --
 -- Mappings and (auto)commands
@@ -731,7 +711,6 @@ do
   map('n', '<leader>ls', document_list_symbols)
   map('n', '<leader>lf', document_list_functions)
   map('n', '<leader>lw', lsp.buf.workspace_symbol)
-  map('n', '<leader>l<C-s>', symbol_qflist_sync)
 
   -- Options
   map('n', '<leader>l<M-v>', func.bind1(toggle_option, 'ldv'))
