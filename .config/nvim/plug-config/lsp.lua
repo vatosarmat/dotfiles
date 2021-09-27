@@ -484,6 +484,23 @@ end
 --
 -- And linters
 --
+do
+  local shellcheck = require 'lint.linters.shellcheck'
+  table.insert(shellcheck.args, 1, '-x') -- allow source
+  table.insert(shellcheck.args, 1, function()
+    if vim.b.is_bash then
+      return '--shell=bash'
+    end
+    return '--shell=sh'
+  end)
+  local vanila_parser = shellcheck.parser
+  shellcheck.parser = function(output) -- add source field to diagnostic data
+    return vim.tbl_map(function(diag)
+      diag.source = 'shellcheck'
+      return diag
+    end, vanila_parser(output))
+  end
+end
 lint.linters_by_ft = {
   sh = { 'shellcheck' },
   cpp = { 'cppcheck' },
@@ -539,11 +556,7 @@ local function show_line_diagnostics()
       local indent_spaces = string.sub(line, string.find(line, '%s*'))
       local dl = indent_spaces .. string.gsub(dl_pattern, '%${code}', line_diagnostics[idx].code)
       api.nvim_buf_set_lines(bufnr, line_nr, line_nr, false, { dl })
-      -- if client_info[source].kind == 'linter' then
-      --   lint.try_lint()
-      -- else
       vim.cmd('write ' .. tostring(vim.fn.bufname(bufnr)))
-      -- end
     end
   end
 
