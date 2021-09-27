@@ -1,6 +1,5 @@
-if exists("b:current_syntax")
-  finish
-endif
+syn clear qfSeparator
+syn match	qfSeparator	"|"
 
 syn match functionIcon "" contained
 syn region functionItem start="" end="\n" oneline contains=functionIcon
@@ -12,5 +11,4 @@ hi def link functionIcon SymbolIconFunction
 hi def link variableItem TSVariable
 hi def link variableIcon SymbolIconVariable
 
-let b:current_syntax = "symbol_list"
-
+hi! def link qfSeparator LineNr

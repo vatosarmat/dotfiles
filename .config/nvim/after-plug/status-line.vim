@@ -56,11 +56,34 @@ function! StatusLineNofile() abort
     \." %L | %l %c%V%  %P"
 endfunction
 
+function! StatusLineQf() abort
+  return "%<"
+    \."%{%StatusQfTitle()%}"
+    \."%="
+    \." %m"
+    \."%r"
+    \." %L | %l %c%V%  %P"
+endfunction
+
 function! StatusLineExplorer() abort
   return "%<"
     \."%<%Y"
     \."%="
     \." %P"
+endfunction
+
+function! StatusQfTitle() abort
+  let ret = ''
+  if getwininfo(win_getid())[0].loclist
+    let ret = 'LOC: '
+    if exists('w:quickfix_title')
+      let ret .= '%2*'.w:quickfix_title.'%*'
+    endif
+    let ret .= ' %<'. bufname(winbufnr(getloclist(0, #{filewinid: 0}).filewinid))
+  else
+    let ret = 'QF'
+  endif
+  return ret
 endfunction
 
 function! StatusTreesitter() abort
@@ -69,8 +92,6 @@ function! StatusTreesitter() abort
   return nvim_treesitter#statusline(#{separator: '->', indicator_size: w/2})
 endfunction
 
-let s:LIST = type([])
-let s:DICT = type({})
 function! StatusShortmap() abort
   let content = ''
   let urt = getregtype('"')
@@ -85,7 +106,7 @@ function! StatusShortmap() abort
   if content != ''
     let content = '%3*'.content.'%*'
   endif
-  if type(get(b:,'shortmap',0)) == s:LIST
+  if type(get(b:,'shortmap',0)) == v:t_list
     if content != ''
       let content .= '|'
     endif
@@ -145,6 +166,8 @@ function! s:SetStatusLine(file) abort
   else
     if &filetype == 'coc-explorer'
       setl statusline=%!StatusLineExplorer()
+    elseif &filetype == 'qf'
+      setl statusline=%!StatusLineQf()
     else
       setl statusline=%!StatusLineNofile()
     endif
@@ -156,8 +179,8 @@ command! SetStatusLine silent call<sid>SetStatusLine(bufnr())
 augroup StatusLine
   autocmd!
   " autocmd BufEnter,BufNewFile,BufReadPost,ShellCmdPost,BufWritePost * call SetStatusLine()
-  autocmd FileType * call s:SetStatusLine(bufname())
-  autocmd FileChangedShellPost * call s:SetStatusLine(bufname())
+  autocmd FileType * call s:SetStatusLine('<abuf>')
+  autocmd FileChangedShellPost * call s:SetStatusLine('<abuf>')
 augroup end
 
 "Sometimes FileType is missing

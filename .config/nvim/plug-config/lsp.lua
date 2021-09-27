@@ -260,9 +260,9 @@ local function setup_handlers()
   end
 
   -- Render only line num and text in the list, don't show file names
-  local function qflist_set(items)
+  local function loclist_set(title, items)
     local what = {
-      title = vim.fn.bufname() .. ' symbols',
+      title = title,
       items = items
     }
 
@@ -272,11 +272,11 @@ local function setup_handlers()
       end, vim.list_slice(items, info.start_idx, info.end_idx))
     end
 
-    vim.fn.setqflist({}, ' ', what)
+    vim.fn.setloclist(0, {}, ' ', what)
   end
 
   -- handler with filter_sort and on_done
-  local function make_symbol_handler(filter_sort, on_done)
+  local function make_symbol_handler(title, filter_sort, on_done)
     ---@diagnostic disable-next-line: unused-local
     return function(err, method, result, client_id, bufnr, config)
       if not result or vim.tbl_isempty(result) then
@@ -289,14 +289,14 @@ local function setup_handlers()
 
       local a = filter_sort(result)
       local items = symbols_to_items(a, bufnr)
-      qflist_set(items)
-      api.nvim_command('copen | set syntax=symbol_list | wincmd p')
+      loclist_set(title, items)
+      api.nvim_command('lopen | wincmd p')
       on_done()
     end
   end
 
-  local function symbol_qflist_sync()
-    local qf = vim.fn.getqflist({
+  local function symbol_loclist_sync()
+    local qf = vim.fn.getloclist(0, {
       items = 0,
       winid = 0
     })
@@ -310,23 +310,24 @@ local function setup_handlers()
       local i = 2
       while i < #(qf.items) do
         if qf.items[i - 1].lnum <= cl and cl < qf.items[i].lnum then
-          vim.cmd('cc ' .. i)
+          vim.cmd('ll ' .. i)
         end
         i = i + 1
       end
     else
-      vim.cmd('cfirst')
+      vim.cmd('lfirst')
     end
   end
 
-  local function document_list_symbols(filter_sort, on_done)
+  local function document_list_symbols(title, filter_sort, on_done)
+    title = title or 'symbols'
     filter_sort = filter_sort or sort_symbols_by_lnum
-    on_done = on_done or symbol_qflist_sync
+    on_done = on_done or symbol_loclist_sync
     local params = {
       textDocument = util.make_text_document_params()
     }
     vim.lsp.buf_request(0, 'textDocument/documentSymbol', params,
-                        make_symbol_handler(filter_sort, on_done))
+                        make_symbol_handler(title, filter_sort, on_done))
   end
 
   local function document_list_functions()
@@ -339,7 +340,7 @@ local function setup_handlers()
       end
       return sort_symbols_by_lnum(ret)
     end
-    document_list_symbols(filter_sort, symbol_qflist_sync)
+    document_list_symbols('functions', filter_sort, symbol_loclist_sync)
   end
 
   lsp.handlers['textDocument/definition'] = function(_, method, result, client_id, _, _)
@@ -379,7 +380,7 @@ local function setup_handlers()
       severity_sort = true
     })
 
-  return symbol_qflist_sync, document_list_symbols, document_list_functions
+  return symbol_loclist_sync, document_list_symbols, document_list_functions
 end
 
 --
