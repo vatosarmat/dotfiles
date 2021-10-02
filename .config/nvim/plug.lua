@@ -6,9 +6,7 @@ local fn = vim.fn
 local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
 
 if fn.empty(fn.glob(install_path)) > 0 then
-  fn.system({
-    'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path
-  })
+  fn.system({ 'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path })
   execute 'packadd packer.nvim'
 end
 
@@ -23,7 +21,7 @@ local plug = require('packer').startup(function()
   use 'nvim-lua/plenary.nvim'
 
   use {
-    "folke/lua-dev.nvim",
+    'folke/lua-dev.nvim',
     event = 'VimEnter'
   }
   use {
@@ -49,7 +47,7 @@ local plug = require('packer').startup(function()
       require 'plug-config.lsp'
       local npairs = require 'nvim-autopairs'
       npairs.setup()
-      require"nvim-autopairs.completion.compe".setup {
+      require'nvim-autopairs.completion.compe'.setup {
         map_cr = true
       }
       npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
@@ -95,19 +93,9 @@ local plug = require('packer').startup(function()
   }
 
   use {
-    'airblade/vim-rooter',
-    event = 'VimEnter',
-    config = function()
-      vim.g.rooter_manual_only = 1
-      vim.g.rooter_patterns = { '.git' }
-      vim.cmd('Rooter')
-      require 'plug-config.project_type'
-    end
-  }
-  use {
     '~/.fzf',
-    as = 'fzf',
-    after = 'vim-rooter'
+    event = 'VimEnter',
+    as = 'fzf'
   }
   use {
     'junegunn/fzf.vim',

@@ -138,8 +138,7 @@ endfunction
 function! StatusRootDir() abort
   if winwidth(0) < 90 | return '' | endif
 
-  let maybeRoot = FindRootDirectory()
-  let root = fnamemodify(maybeRoot ? maybeRoot : getcwd(), ':t')
+  let root = fnamemodify(getcwd(), ':t')
   let gitStatus = get(b:, 'gitsigns_status_dict', '')
   if empty(gitStatus)
     return '['.root.'/No GIT] '

@@ -14,7 +14,7 @@ augroup BeforePlug
   autocmd BufWinEnter *.txt call s:OnBufWinEnterTxt()
 
   autocmd DiffUpdated * call s:HighlightDiffConflictMarker()
-  autocmd VimEnter * call s:HighlightDiffConflictMarker()
+  autocmd DirChanged * call s:OnDirChanged()
   "C-x C-e
   autocmd VimEnter /tmp/bash-* exe "normal!" "ggO#shellcheck shell=bash\<cr>" | startinsert
   autocmd VimEnter * call s:OnVimEnter()
@@ -29,8 +29,18 @@ augroup BeforePlug
 augroup END
 
 function! s:OnVimEnter() abort
+  call s:HighlightDiffConflictMarker()
+  call project_type#Guess()
+  call fzf#ProjectType()
   "M-n M-p navigate through jump-list
   clearjumps
+endfunction
+
+function! s:OnDirChanged() abort
+  if v:event.scope == 'global'
+    call project_type#Guess()
+    call fzf#ProjectType()
+  endif
 endfunction
 
 function! s:UserStateWinClosed(winid) abort
