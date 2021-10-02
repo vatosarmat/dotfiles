@@ -17,12 +17,11 @@ nnoremap <M-C-p> <cmd>call <sid>QflistStep(0, 1)<cr>
 function! s:QflistStep(next, loc = 0) abort
   if a:next
     let edge = 'LAST'
-    " let cmd = a:loc ? 'lnext' : 'cnext'
-    let cmd = a:loc ? 'lafter' : 'cafter'
+    let cmd = a:loc ? 'lafter' : 'cnext' "'cafter'
   else
     let edge = 'FIRST'
-    " let cmd = a:loc ? 'lprev' : 'cprev'
-    let cmd = a:loc ? 'lbefore' : 'cbefore'
+    " let cmd = a:loc ? 'lprev' :
+    let cmd = a:loc ? 'lbefore' : 'cprev' "'cbefore'
   endif
   try
     "Clear first/last item warning

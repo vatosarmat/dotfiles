@@ -1,6 +1,22 @@
 ;Required for evil
 (use-package undo-fu)
 
+(defun +org-cycle-only-current-subtree-h (&optional arg)
+  (interactive "P")
+  (unless (eq this-command 'org-shifttab)
+    (save-excursion
+      (org-beginning-of-line)
+      (let (invisible-p)
+        (when (and (org-at-heading-p)
+                   (or org-cycle-open-archived-trees
+                       (not (member org-archive-tag (org-get-tags))))
+                   (or (not arg)
+                       (setq invisible-p (outline-invisible-p (line-end-position)))))
+          (unless invisible-p
+            (setq org-cycle-subtree-status 'subtree))
+          (org-cycle-internal-local)
+          t)))))
+
 (use-package evil
   :init
   ;Looks like this is essential for evil functionality. It is t by default
@@ -15,6 +31,10 @@
   (setq evil-respect-visual-line-mode t)
   :config
   ;Required for undo-fu functionality
+  (add-hook 'org-tab-first-hook
+           ;; Only fold the current tree, rather than recursively
+           #'+org-cycle-only-current-subtree-h)
+
   (define-key evil-normal-state-map "u" 'undo-fu-only-undo)
   (define-key evil-normal-state-map "\C-r" 'undo-fu-only-redo)
   ;(define-key evil-insert-state-map (kbd "<tab>") 'evil-normal-state)
