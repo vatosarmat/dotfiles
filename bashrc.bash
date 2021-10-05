@@ -12,8 +12,22 @@ bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  xsel -ib'
 source "$HOME/.history.bash"
 history_config
 
-#PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m]\w\[\033[00m\]\$ '
-PS1='\[\033[01;34m\]\w\[\033[00m\]\$ '
+#LS_COLORS
+eval "$(dircolors -b)"
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+#prompt
+# PS1='\[\033[01;38;2;162;151;216m\]\w\[\033[00m\]\$ '
+PS1='\[\033[01;38;2;159;151;216m\]\w\[\033[00m\]\$ '
+# PS1='\[\033[01;38;2;122;122;218m\]\w\[\033[00m\]\$ '
+
 export EDITOR=nvim
 export PAGER=less
 #squeeze blank lines, long prompt, ANSI colors, quit if one screen, ignore-case, padding 10 lines
@@ -533,6 +547,32 @@ function path_remove {
     done <<< "$dirs"
     export PATH="${path#:}"
   fi
+}
+
+function node__fd_modules_with_submodules {
+  fd -p -g "$PWD/*/node_modules/*" -x dirname '{//}' | sort -u
+}
+
+function node__fd_symlinks {
+  fd -t l -H
+}
+
+function node__fd_multihard {
+  find . -links +2 -not -type d
+}
+
+function node__fd_count_dups {
+  if [[ "$1" = [12] ]]; then
+    local sort_key="${1}"
+  else
+    local sort_key="1"
+  fi
+  fd -t f '^package.json$' -x jq -rj 'if .name and .version  then .name+":"+.version+"\n" else empty end' {} | sort | uniq -c | grep -v '^\s\+1\s' | sort --key="${sort_key}"
+}
+
+function node__fd_dup_users {
+  #shellcheck disable=2016
+  fd --min-depth 4 -t f '^package.json$' -x sh -c 'jq -erj '"'"'if .name then .name+":"+.version else empty end'"'"' {} && dirname "  $(dirname {//})"' | sort
 }
 
 BASH_LIBS="gh/lib.bash tpa/lib.bash"
