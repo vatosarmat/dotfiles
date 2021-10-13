@@ -1,4 +1,5 @@
 local func = require 'pl.func'
+local tablex = require 'pl.tablex'
 local log = require 'vim.lsp.log'
 local api = vim.api
 local lsp = vim.lsp
@@ -6,8 +7,12 @@ local lspconfig = require 'lspconfig'
 local lint = require 'lint'
 
 local symbol_icons = {
-  Function = '',
-  Variable = '✗'
+  Function = 'F',
+  Variable = 'V',
+  Constant = 'C',
+  Property = 'P',
+  Interface = 'I',
+  Class = ''
 }
 
 local severities = {
@@ -167,11 +172,17 @@ do
   end
 
   lsp.protocol.CompletionItemKind = {
-    ' ', ' ', symbol_icons.Function, ' ', 'ﰠ ', symbol_icons.Variable, ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', '﬌ ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', '⌘ ', ' ', ' '
+    ' ', ' ', symbol_icons.Function, ' ', 'ﰠ ', symbol_icons.Variable,
+    symbol_icons.Class, symbol_icons.Interface, ' ', symbol_icons.Property, ' ', ' ',
+    ' ', ' ', '﬌ ', ' ', ' ', ' ', ' ', ' ', symbol_icons.Constant, ' ',
+    '⌘ ', ' ', ' '
   }
 end
+
+local Text = require'before-plug.vim_utils'.Text
+local map = require'before-plug.vim_utils'.map
+local map_buf = require'before-plug.vim_utils'.map_buf
+local autocmd = require'before-plug.vim_utils'.autocmd
 
 --
 -- Default config
@@ -192,6 +203,15 @@ do
     capabilities = capabilities,
     ---@diagnostic disable-next-line: unused-local
     on_attach = function(client, bufnr)
+      if client.resolved_capabilities.document_highlight then
+        autocmd('LSP_buffer', -------------------------------------------------------
+        {
+          { 'CursorHold', lsp.buf.document_highlight }, -----------------------
+          { 'CursorMoved', lsp.buf.clear_references }
+        }, {
+          buffer = true
+        })
+      end
     end
   })
 end
@@ -200,13 +220,61 @@ end
 -- Handlers
 --
 --
-local function setup_handlers()
+
+do
   local util = lsp.util
+  lsp.handlers['textDocument/definition'] = function(_, method, result, client_id, _, _)
+    if result == nil or vim.tbl_isempty(result) then
+      local _ = log.info() and log.info(method, 'No location found')
+      if lsp.get_client_by_id(client_id).name ~= 'efm' then
+        api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
+      end
+      return nil
+    end
+
+    -- textDocument/definition can return Location or Location[]
+    -- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
+
+    if vim.tbl_islist(result) then
+      util.jump_to_location(result[1])
+
+      if #result > 1 then
+        util.set_qflist(util.locations_to_items(result))
+        api.nvim_command('copen | wincmd p')
+      end
+    else
+      util.jump_to_location(result)
+    end
+  end
+
+  lsp.handlers['textDocument/publishDiagnostics'] =
+    lsp.with(lsp.diagnostic.on_publish_diagnostics, {
+      virtual_text = function(_, _)
+        return vim.g.uopts.ldv == 1 -- { severity_limit = "Error" }
+      end,
+      underline = function(_, _)
+        return vim.g.uopts.ldu == 1 -- { severity_limit = "Error" }
+      end,
+      signs = true,
+      update_in_insert = false,
+      severity_sort = true
+    })
+end
+
+--
+-- Symbol selectors
+--
+-- vim.g.igor = ''
+local function SymbolSelectors()
+  local util = lsp.util
+  local pub = {}
 
   local function symbol_lnum(symbol)
     if symbol.location then
+      -- SymbolInformation type
       return symbol.location.range.start.line + 1
     else
+      -- DocumentSymbol type
       return symbol.selectionRange.start.line + 1
     end
   end
@@ -226,15 +294,16 @@ local function setup_handlers()
         if symbol.location then -- SymbolInformation type
           local range = symbol.location.range
           local kind = util._get_symbol_kind_name(symbol.kind)
+          local maybe_detail = symbol.detail and '  ' .. symbol.detail or ''
           table.insert(_items, {
             filename = vim.uri_to_fname(symbol.location.uri),
             lnum = lnum,
             col = range.start.character + 1,
             kind = kind,
             -- text = '[' .. kind .. '] ' .. symbol.name
-            text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name
+            text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name .. maybe_detail
           })
-        elseif symbol.selectionRange then -- DocumentSymbole type
+        elseif symbol.selectionRange then -- DocumentSymbol type
           local kind = util._get_symbol_kind_name(symbol.kind)
           table.insert(_items, { -- bufnr = _bufnr,
             filename = vim.api.nvim_buf_get_name(_bufnr),
@@ -275,11 +344,38 @@ local function setup_handlers()
     vim.fn.setloclist(0, {}, ' ', what)
   end
 
+  local function parent_symbol_under_cursor(items)
+    local pos = api.nvim_win_get_cursor(0)
+    local cursor_line = pos[1] - 1
+    local cursor_character = pos[2]
+    local function _find_psuc(_items)
+      -- Find if items have symbol under cursor
+      local uc_idx = tablex.find_if(_items, function(item)
+        local sr = item.location and item.location.range or item.range
+        -- vim.g.igor = vim.g.igor ..
+        --                string.format('%d %d %d %d', sr.start.line, sr.start.character,
+        --                              sr['end'].line, sr['end'].character) .. '\n'
+        return (cursor_line > sr.start.line and cursor_line < sr['end'].line) or
+                 ((cursor_line == sr.start.line or cursor_line == sr['end'].line) and
+                   (cursor_character >= sr.start.character and cursor_character <=
+                     sr['end'].character))
+      end)
+      -- If have and it has children, remember it and check its children
+      -- if uc_idx then
+      --   vim.g.igor = vim.g.igor .. _items[uc_idx].name .. '\n'
+      -- end
+      if uc_idx and _items[uc_idx].children then
+        return _find_psuc(items[uc_idx].children) or _items[uc_idx]
+      end
+    end
+    return _find_psuc(items)
+  end
+
   -- handler with filter_sort and on_done
   local function make_symbol_handler(title, filter_sort, on_done)
     ---@diagnostic disable-next-line: unused-local
-    return function(err, method, result, client_id, bufnr, config)
-      if not result or vim.tbl_isempty(result) then
+    return function(err, method, request_result, client_id, bufnr, config)
+      if not request_result or vim.tbl_isempty(request_result) then
         local _ = log.info() and log.info(method, 'No location found')
         if lsp.get_client_by_id(client_id).name ~= 'efm' then
           api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
@@ -287,9 +383,10 @@ local function setup_handlers()
         return
       end
 
-      local a = filter_sort(result)
+      local psuc = parent_symbol_under_cursor(request_result)
+      local a = filter_sort(psuc and psuc.children or request_result)
       local items = symbols_to_items(a, bufnr)
-      loclist_set(title, items)
+      loclist_set(psuc and psuc.name .. ': ' .. title or title, items)
       api.nvim_command('lopen | wincmd p')
       on_done()
     end
@@ -299,8 +396,10 @@ local function setup_handlers()
     vim.cmd('lbefore | normal! \015')
   end
 
-  local function document_list_symbols(title, filter_sort, on_done)
-    title = title or 'symbols'
+  -- Pub selectors
+
+  function pub.document_list_symbols(title, filter_sort, on_done)
+    title = title or 'all symbols'
     filter_sort = filter_sort or sort_symbols_by_lnum
     on_done = on_done or loclist_sync
     local params = {
@@ -310,7 +409,7 @@ local function setup_handlers()
                         make_symbol_handler(title, filter_sort, on_done))
   end
 
-  local function document_list_functions()
+  function pub.document_list_functions()
     local function filter_sort(items)
       local ret = {}
       for _, item in ipairs(items) do
@@ -320,47 +419,23 @@ local function setup_handlers()
       end
       return sort_symbols_by_lnum(ret)
     end
-    document_list_symbols('functions', filter_sort)
+    pub.document_list_symbols('functions', filter_sort)
   end
 
-  lsp.handlers['textDocument/definition'] = function(_, method, result, client_id, _, _)
-    if result == nil or vim.tbl_isempty(result) then
-      local _ = log.info() and log.info(method, 'No location found')
-      if lsp.get_client_by_id(client_id).name ~= 'efm' then
-        api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
+  function pub.document_list_non_props()
+    local function filter_sort(items)
+      local ret = {}
+      for _, item in ipairs(items) do
+        if vim.lsp.util._get_symbol_kind_name(item.kind) ~= 'Property' then
+          table.insert(ret, item)
+        end
       end
-      return nil
+      return sort_symbols_by_lnum(ret)
     end
-
-    -- textDocument/definition can return Location or Location[]
-    -- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
-
-    if vim.tbl_islist(result) then
-      util.jump_to_location(result[1])
-
-      if #result > 1 then
-        util.set_qflist(util.locations_to_items(result))
-        api.nvim_command('copen | wincmd p')
-      end
-    else
-      util.jump_to_location(result)
-    end
+    pub.document_list_symbols('symbols', filter_sort)
   end
 
-  lsp.handlers['textDocument/publishDiagnostics'] =
-    lsp.with(lsp.diagnostic.on_publish_diagnostics, {
-      virtual_text = function(_, _)
-        return vim.g.uopts.ldv == 1 -- { severity_limit = "Error" }
-      end,
-      underline = function(_, _)
-        return vim.g.uopts.ldu == 1 -- { severity_limit = "Error" }
-      end,
-      signs = true,
-      update_in_insert = false,
-      severity_sort = true
-    })
-
-  return document_list_symbols, document_list_functions
+  return pub
 end
 
 --
@@ -391,7 +466,29 @@ do
 
   lspconfig.rust_analyzer.setup {}
   lspconfig.vimls.setup {}
-  lspconfig.tsserver.setup {}
+  -- Setup javascript
+  do
+    local flow = lspconfig.flow
+    flow.setup {}
+    local flow_add = flow.manager.add
+    flow.manager.add = function(...)
+      local res = flow_add(...)
+      if res then
+        vim.b.flow_active = 1
+      end
+      return res
+    end
+
+    local tsserver = lspconfig.tsserver
+    tsserver.setup {}
+    local tsserver_add = tsserver.manager.add
+    tsserver.manager.add = function(...)
+      if not vim.b.flow_active then
+        return tsserver_add(...)
+      end
+    end
+  end
+
   lspconfig.bashls.setup {}
   lspconfig.pyright.setup {}
   lspconfig.clangd.setup {
@@ -485,7 +582,7 @@ end
 -- And linters
 --
 do
-  local shellcheck = require 'lint.linters.shellcheck'
+  local shellcheck = lint.linters.shellcheck
   table.insert(shellcheck.args, 1, '-x') -- allow source
   table.insert(shellcheck.args, 1, function()
     if vim.b.is_bash then
@@ -500,20 +597,24 @@ do
       return diag
     end, vanila_parser(output))
   end
+
+  lint.linters.eslint.cmd = 'eslint_d'
+
+  lint.linters_by_ft = {
+    sh = { 'shellcheck' },
+    cpp = { 'cppcheck' },
+    javascript = { 'eslint' },
+    typescript = { 'eslint' },
+    javascriptreact = { 'eslint' },
+    typescriptreact = { 'eslint' },
+    ['javascript.jsx'] = { 'eslint' },
+    ['typescript.jsx'] = { 'eslint' }
+  }
 end
-lint.linters_by_ft = {
-  sh = { 'shellcheck' },
-  cpp = { 'cppcheck' },
-  c = { 'cppcheck' }
-}
 
 --
 -- Diagnostics UI
 --
-local Text = require'before-plug.vim_utils'.Text
-local map = require'before-plug.vim_utils'.map
-local map_buf = require'before-plug.vim_utils'.map_buf
-local autocmd = require'before-plug.vim_utils'.autocmd
 
 local function show_line_diagnostics()
   local bufnr = api.nvim_get_current_buf()
@@ -643,13 +744,13 @@ local function compe_setup()
   return on_tab, on_cn, on_cp -- , on_ce
 end
 
-local on_tab, on_cn, on_cp = compe_setup()
-local document_list_symbols, document_list_functions = setup_handlers()
-
 --
 -- Mappings and (auto)commands
 --
 do
+  local on_tab, on_cn, on_cp = compe_setup()
+  local ss = SymbolSelectors()
+
   local function toggle_option(option)
     vim.fn['uopts#toggle'](option)
     if vim.tbl_contains({ 'ldu', 'ldv' }, option) then
@@ -714,6 +815,9 @@ do
     enable_popup = false
   }))
 
+  -- Refactor
+  map('n', '<leader>ln', lsp.buf.rename)
+
   -- Less in use
   map('n', 'gi', lsp.buf.implementation)
   map('n', '<leader>lh', lsp.buf.signature_help)
@@ -721,8 +825,9 @@ do
   map('n', 'ga', lsp.buf.code_action)
 
   -- Symbol lists
-  map('n', '<leader>ls', document_list_symbols)
-  map('n', '<leader>lf', document_list_functions)
+  map('n', '<leader>ls', ss.document_list_non_props)
+  map('n', '<leader>lS', ss.document_list_symbols)
+  map('n', '<leader>lf', ss.document_list_functions)
   map('n', '<leader>lw', lsp.buf.workspace_symbol)
 
   -- Options
@@ -731,9 +836,9 @@ do
   map('n', '<leader>l<M-f>', func.bind1(toggle_option, 'laf'))
 
   autocmd('LSP', {
-    { 'BufWritePre *', auto_format }, [[ User LspProgressUpdate redraws! ]],
+    { 'BufWritePre *', auto_format }, ------------------------------------
     { 'BufWritePost *', require('lint').try_lint }, ----------------------
     { 'FileType *', require('lint').try_lint }, --------------------------
-    [[ User LspDiagnosticsChanged redraws! ]]
+    [[ User LspDiagnosticsChanged redraws! ]], [[ User LspProgressUpdate redraws! ]]
   })
 end

@@ -148,6 +148,16 @@ function bytes {
   echo
 }
 
+function cod {
+  if [[ "$#" = "0" ]]; then
+    local a="$(xsel -ob)"
+    printf "%s    %x" "$a" "'$a"
+  else
+    printf %x "'$1"
+  fi
+  echo
+}
+
 function cl {
   #shellcheck disable=2164
   cd "$@"
@@ -573,6 +583,16 @@ function node__fd_count_dups {
 function node__fd_dup_users {
   #shellcheck disable=2016
   fd --min-depth 4 -t f '^package.json$' -x sh -c 'jq -erj '"'"'if .name then .name+":"+.version else empty end'"'"' {} && dirname "  $(dirname {//})"' | sort
+}
+
+function tsgrep {
+  (
+    IFS=$'\n'
+    #shellcheck disable=2066
+    for d in "$(pgrep -fa tsserver.js | sed -E 's%^.+\s+(.+typescript)/lib/tsserver\.js.+$%\1%')"; do
+      jq -r '.version' "$d/package.json"
+    done
+  )
 }
 
 BASH_LIBS="gh/lib.bash tpa/lib.bash"

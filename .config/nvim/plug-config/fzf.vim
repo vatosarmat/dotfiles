@@ -12,6 +12,8 @@ function! fzf#ProjectType() abort
       call extend(s:files_exclude, ['.ccls-cache','Debug', 'Release'])
     elseif g:project_type == 'rust'
       call extend(s:files_exclude, ['target'])
+    elseif g:project_type == 'node'
+      call extend(s:files_exclude, ['node_modules', 'yarn.lock', 'package.lock'])
     endif
   endif
 

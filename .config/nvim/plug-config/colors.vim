@@ -10,6 +10,7 @@ hi! link LspDiagnosticsFloatingError LspDiagnosticsVirtualTextError
 hi! LspDiagnosticsSignError guifg=#f41d1d
 hi! link NvimTreeLspDiagnosticsError LspDiagnosticsSignError
 "Warning
+hi! link LspDiagnosticsFloatingWarning LspDiagnosticsVirtualTextWarning
 hi! link NvimTreeLspDiagnosticsWarning LspDiagnosticsSignWarning
 "Information
 hi! LspDiagnosticsVirtualTextInformation guifg=#4fc1ff
@@ -34,6 +35,10 @@ execute 'highlight!' 'User3'
 execute 'highlight!' 'User4'
   \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignHint', 'fg')
   \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+
+hi LspReferenceText guibg=#3a3a3a
+hi LspReferenceRead guibg=#304030
+hi LspReferenceWrite guibg=#502842
 
 hi! link TSTypeBuiltin TSType
 hi! link CocErrorSign LspDiagnosticsSignError
@@ -71,3 +76,9 @@ execute 'highlight!' 'User8'
 "Symbol_list
 hi SymbolIconFunction guifg=#c0c000
 hi SymbolIconVariable guifg=#0080c0
+hi SymbolIconConstant guifg=#0080c0
+hi SymbolIconProperty guifg=#0080c0
+hi SymbolIconClass guifg=#008064
+hi SymbolIconInterface guifg=#008064
+
+hi! link NvimTreeIndentMarker Normal

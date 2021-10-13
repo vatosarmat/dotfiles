@@ -8,6 +8,7 @@ let s:ft_ext = #{
   \ python: ['py'],
   \ typescriptreact: ['tsx'],
   \ typescript: ['ts'],
+  \ javascript: ['js'],
   \ text: ['txt'],
   \ yaml: ['yml', 'yaml'],
   \ rust: ['rs'],

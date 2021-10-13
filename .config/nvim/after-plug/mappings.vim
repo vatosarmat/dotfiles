@@ -145,8 +145,9 @@ xnoremap <M-C-e> <C-e>
 "Redraw
 nnoremap g_ <C-l>
 
-nnoremap <silent>gg <cmd>keepjumps normal! gg<cr>
-nnoremap <silent>G <cmd>keepjumps normal! Gzz<cr>
+" nnoremap <silent>gg <cmd>keepjumps normal! gg<cr>
+" nnoremap <silent>G <cmd>keepjumps normal! Gzz<cr>
+nnoremap <silent>G Gzz
 
 "Paste from vim to system clipboard
 nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:ustate.yank_clipboard = 1<cr>
@@ -169,6 +170,7 @@ nnoremap Y y$
 
 "Yank file name and line num
 nnoremap <leader>zy <cmd>let @+=expand('%').':'.line('.')<cr>
+nnoremap <leader>z<M-y> <cmd>let @+=getcwd()<cr>
 
 function! s:YankFileLine() abort
   let @+ = linenr()

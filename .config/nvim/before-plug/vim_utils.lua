@@ -1,8 +1,7 @@
 local tablex = require 'pl.tablex'
 local func = require 'pl.func'
 
-local function buf_append_line(buf_or_line, maybe_line_or_hl_ranges,
-                               maybe_hl_ranges)
+local function buf_append_line(buf_or_line, maybe_line_or_hl_ranges, maybe_hl_ranges)
   local buf, line, hl_ranges
   if type(buf_or_line) == 'number' then
     buf = buf_or_line
@@ -29,7 +28,7 @@ local allowed_key_modes = {
   i = true,
   t = true,
   c = true,
-  s = true,
+  s = true
 }
 
 local function assert_key_mode(mode)
@@ -60,12 +59,11 @@ local function map_buf(bufnr, modes, lhs, rhs, opts)
       _map[store_key][mode][lhs] = rhs
       local rhs_str
       if opts.expr then
-        rhs_str = string.format(
-                    'luaeval(\'_map[\'\'%s\'\'][\'\'%s\'\'][\'\'%s\'\']()\')',
-                    store_key, mode, string.gsub(lhs, '<', '<lt>'))
-      else
-        rhs_str = string.format('<cmd>lua _map[\'%s\'][\'%s\'][\'%s\']()<cr>',
+        rhs_str = string.format('luaeval(\'_map[\'\'%s\'\'][\'\'%s\'\'][\'\'%s\'\']()\')',
                                 store_key, mode, string.gsub(lhs, '<', '<lt>'))
+      else
+        rhs_str = string.format('<cmd>lua _map[\'%s\'][\'%s\'][\'%s\']()<cr>', store_key, mode,
+                                string.gsub(lhs, '<', '<lt>'))
       end
       set_keymap(mode, lhs, rhs_str, opts)
     end
@@ -76,7 +74,7 @@ local function map_buf(bufnr, modes, lhs, rhs, opts)
     end
   end
 
-  modes:gsub(".", setter)
+  modes:gsub('.', setter)
 end
 
 local map = func.bind1(map_buf, nil)
@@ -85,23 +83,25 @@ local function mk_sourcer(path)
   if vim.endswith(path, '.vim') then
     return string.format('vim.cmd(\'source %s\')', path)
   else
-    return string.format(
-             'if not pcall(require, \'%s\') then print(\'' .. path ..
-               ' config failed\') end ', path)
+    return string.format('if not pcall(require, \'%s\') then print(\'' .. path ..
+                           ' config failed\') end ', path)
   end
 end
 
 -- cmd is either string or tuple
 -- cmds is either array of string-cmd's and tuple-cmd's or single string-cmd
-local function autocmd(group, cmds, clear)
-  clear = clear == nil and true or clear
+local function autocmd(group, cmds, opts)
+  opts = opts or {}
+  opts.clear = opts.clear == nil and true or opts.clear
   if type(cmds) == 'string' then
     cmds = { cmds }
   end
   vim.cmd('augroup ' .. group)
   if clear then
-    vim.cmd [[au!]]
+    local maybe_buffer = opts.buffer and ' * <buffer>' or ''
+    vim.cmd('au!' .. maybe_buffer)
   end
+  local maybe_buffer = opts.buffer and ' <buffer> ' or ''
   for _, cmd in ipairs(cmds) do
     if type(cmd) == 'table' then
       local event_pat = cmd[1]
@@ -114,7 +114,7 @@ local function autocmd(group, cmds, clear)
         _augroup[group][event] = handler
         handler = string.format('lua _augroup[\'%s\'][\'%s\']()', group, event)
       end
-      cmd = event_pat .. ' ' .. handler
+      cmd = event_pat .. maybe_buffer .. ' ' .. handler
     end
     vim.cmd('autocmd ' .. cmd)
   end
@@ -129,13 +129,22 @@ Text.__index = Text
 -- type line = {text:string, hl_ranges:hl_range[]}
 -- string?, string?
 function Text:new(initial_text, maybe_hl)
-  local initial_line = { text = initial_text or '', hl_ranges = {} }
+  local initial_line = {
+    text = initial_text or '',
+    hl_ranges = {}
+  }
   if maybe_hl then
     initial_line.hl_ranges = {
-      { group = maybe_hl, from = 0, to = string.len(initial_line.text) }
+      {
+        group = maybe_hl,
+        from = 0,
+        to = string.len(initial_line.text)
+      }
     }
   end
-  return setmetatable({ lines = { initial_line } }, self)
+  return setmetatable({
+    lines = { initial_line }
+  }, self)
 end
 
 -- string, string?
@@ -144,21 +153,30 @@ function Text:append(text, maybe_hl)
   if maybe_hl then
     local from = #last_line.text
     local to = from + #text
-    table.insert(last_line.hl_ranges, { group = maybe_hl, from = from, to = to })
+    table.insert(last_line.hl_ranges, {
+      group = maybe_hl,
+      from = from,
+      to = to
+    })
   end
   last_line.text = last_line.text .. text
 end
 
-function Text:newline() table.insert(self.lines, { text = '', hl_ranges = {} }) end
+function Text:newline()
+  table.insert(self.lines, {
+    text = '',
+    hl_ranges = {}
+  })
+end
 
 function Text:render_in_float(opts)
-  local lines = tablex.imap(function(line) return line.text end, self.lines)
-  local bufnr, winnr = vim.lsp.util.open_floating_preview(lines, 'plaintext',
-                                                          opts)
+  local lines = tablex.imap(function(line)
+    return line.text
+  end, self.lines)
+  local bufnr, winnr = vim.lsp.util.open_floating_preview(lines, 'plaintext', opts)
   for i, line in ipairs(self.lines) do
     for _, hl_range in ipairs(line.hl_ranges) do
-      vim.api.nvim_buf_add_highlight(bufnr, -1, hl_range.group, i - 1,
-                                     hl_range.from, hl_range.to)
+      vim.api.nvim_buf_add_highlight(bufnr, -1, hl_range.group, i - 1, hl_range.from, hl_range.to)
     end
   end
   return bufnr, winnr
