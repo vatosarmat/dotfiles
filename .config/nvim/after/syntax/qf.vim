@@ -1,30 +1,42 @@
 syn clear qfSeparator
 syn match	qfSeparator	"|"
 
-syn match functionIcon "\(| \)\@<=F" containedin=functionItem
-syn region functionItem start="\(| \)\@<=F" end="$" oneline contains=functionIcon keepend
-syn match variableIcon "\(| \)\@<=V" containedin=variableItem
-syn region variableItem start="\(| \)\@<=V" end="$" oneline contains=variableIcon keepend
-syn match constantIcon "\(| \)\@<=C" containedin=constantItem
-syn region constantItem start="\(| \)\@<=C" end="$" oneline contains=constantIcon keepend
-syn match propertyIcon "\(| \)\@<=P" containedin=propertyItem
-syn region propertyItem start="\(| \)\@<=P" end="$" oneline contains=propertyIcon keepend
-syn match classIcon "\(| \)\@<=" containedin=classItem
-syn region classItem start="\(| \)\@<=" end="$" oneline contains=classIcon keepend
-syn match interfaceIcon "\(| \)\@<=I" containedin=interfaceItem
-syn region interfaceItem start="\(| \)\@<=I" end="$" oneline contains=interfaceIcon keepend
+let s:symbol_icons = luaeval('service.lsp.symbol_icons')
 
-hi def link functionItem TSFunction
-hi def link functionIcon SymbolIconFunction
-hi def link variableItem TSVariable
-hi def link variableIcon SymbolIconVariable
-hi def link constantItem TSVariable
-hi def link constantIcon SymbolIconConstant
-hi def link propertyItem TSProperty
-hi def link propertyIcon SymbolIconProperty
-hi def link classItem TSType
-hi def link classIcon SymbolIconClass
-hi def link interfaceItem TSType
-hi def link interfaceIcon SymbolIconInterface
+function! s:SymbolItem(kind, iconHl, nameHl, detailHl = 'Normal') abort
+  let icon = s:symbol_icons[toupper(a:kind[0]).a:kind[1:]]
+  let iconPat = printf('"\(| \)\@<=%s"', icon)
+  let namePat = printf('"\(| %s\)\@<=\s\+\S\+"', icon)
+  let nameSyn = a:kind.'Name'
+  let detailSyn = a:kind.'Detail'
+
+  execute
+    \ 'syn' 'region' detailSyn
+    \ 'matchgroup='.a:iconHl 'start='.iconPat 'end="$"'
+    \ 'oneline' 'contains='.nameSyn 'keepend'
+
+  execute 'syn' 'match' nameSyn namePat
+  execute 'hi' 'def' 'link' nameSyn a:nameHl
+  execute 'hi' 'def' 'link' detailSyn a:detailHl
+endfunction
+
+" syn match functionIcon "\(| \)\@<=F"
+" syn region functionDetail matchgroup=SymbolIconFunction start="\(| \)\@<=F" end="$" oneline contains=functionName keepend
+" syn match functionName "\(| F\)\@<=\s\+\S\+"
+" hi def link functionName TSFunction
+" hi def link functionDetail Normal
+
+call s:SymbolItem('function', 'SymbolIconFunction', 'TSFunction', 'TSType')
+
+call s:SymbolItem('variable', 'SymbolIconVariable', 'TSVariable', 'TSType')
+call s:SymbolItem('constant', 'SymbolIconVariable', 'TSVariable', 'TSType')
+call s:SymbolItem('property', 'SymbolIconVariable', 'TSProperty', 'TSType')
+call s:SymbolItem('enumMember', 'SymbolIconVariable', 'TSProperty')
+
+call s:SymbolItem('namespace', 'SymbolIconClass', 'TSNamespace')
+call s:SymbolItem('interface', 'SymbolIconClass', 'TSType')
+call s:SymbolItem('class', 'SymbolIconClass', 'TSType', 'TSKeyword')
+call s:SymbolItem('struct', 'SymbolIconClass', 'TSType', 'TSKeyword')
+call s:SymbolItem('enum', 'SymbolIconClass', 'TSType', 'TSKeyword')
 
 hi! def link qfSeparator LineNr

@@ -7,12 +7,12 @@ nnoremap <M-o> zz
 nnoremap <M-[> zb
 
 "quickfix list mappings
-nnoremap <M-N> <cmd>call <sid>QflistStep(1)<cr>
-nnoremap <M-P> <cmd>call <sid>QflistStep(0)<cr>
+nnoremap <C-M-N> <cmd>call <sid>QflistStep(1)<cr>
+nnoremap <C-M-P> <cmd>call <sid>QflistStep(0)<cr>
 
 "loclist mappings
-nnoremap <M-C-n> <cmd>call <sid>QflistStep(1, 1)<cr>
-nnoremap <M-C-p> <cmd>call <sid>QflistStep(0, 1)<cr>
+nnoremap <C-M-j> <cmd>call <sid>QflistStep(1, 1)<cr>
+nnoremap <C-M-k> <cmd>call <sid>QflistStep(0, 1)<cr>
 
 function! s:QflistStep(next, loc = 0) abort
   if a:next
@@ -300,10 +300,10 @@ nnoremap <Down>  <C-w>j
 nnoremap <Up>    <C-w>k
 nnoremap <Right> <C-w>l
 
-nnoremap <silent><M-C-h>  <cmd>vertical resize -5<cr>
-nnoremap <silent><M-C-j>  <cmd>         resize -5<cr>
-nnoremap <silent><M-C-k>  <cmd>         resize +5<cr>
-nnoremap <silent><M-C-l>  <cmd>vertical resize +5<cr>
+nnoremap <silent><M-H>  <cmd>vertical resize -5<cr>
+nnoremap <silent><M-J>  <cmd>         resize -5<cr>
+nnoremap <silent><M-K>  <cmd>         resize +5<cr>
+nnoremap <silent><M-L>  <cmd>vertical resize +5<cr>
 
 "Jump forward/back in split
 nnoremap <C-w><C-o> <C-w>v<C-o>
@@ -344,10 +344,10 @@ nnoremap <silent>} :<C-u>execute "keepjumps norm! " . v:count1 . "}"<CR>
 nnoremap <silent>{ :<C-u>execute "keepjumps norm! " . v:count1 . "{"<CR>
 
 "Diff buffer with last saved state
-nnoremap <silent><M-f> :DiffOrig<cr>
+" nnoremap <silent><M-f> :DiffOrig<cr>
 
 function! mappings#NopDiff() abort
-  nnoremap <buffer><M-f> <nop>
+  " nnoremap <buffer><M-f> <nop>
   nnoremap <buffer><M-d> <nop>
 endfunction
 
@@ -558,3 +558,6 @@ function! s:WordMotions() abort
 endfunction
 
 call s:WordMotions()
+
+"Folds
+nnoremap <M-f> za

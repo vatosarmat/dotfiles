@@ -76,9 +76,6 @@ execute 'highlight!' 'User8'
 "Symbol_list
 hi SymbolIconFunction guifg=#c0c000
 hi SymbolIconVariable guifg=#0080c0
-hi SymbolIconConstant guifg=#0080c0
-hi SymbolIconProperty guifg=#0080c0
 hi SymbolIconClass guifg=#008064
-hi SymbolIconInterface guifg=#008064
 
 hi! link NvimTreeIndentMarker Normal

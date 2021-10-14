@@ -6,15 +6,6 @@ local lsp = vim.lsp
 local lspconfig = require 'lspconfig'
 local lint = require 'lint'
 
-local symbol_icons = {
-  Function = 'F',
-  Variable = 'V',
-  Constant = 'C',
-  Property = 'P',
-  Interface = 'I',
-  Class = ''
-}
-
 local severities = {
   {
     name = 'Error',
@@ -77,8 +68,25 @@ setmetatable(client_info, {
 --
 -- Service
 --
+
+local symbol_icons = {
+  Function = 'F',
+  Variable = 'V',
+  Constant = 'C',
+  Property = 'P',
+  Namespace = '',
+  Interface = '',
+  Class = '',
+  Struct = '',
+  Enum = 'ﴰ',
+  EnumMember = '喝'
+}
+
 do
-  local lsp_service = {}
+  local lsp_service = {
+    symbol_icons = symbol_icons
+  }
+
   local separator = {
     clients = '][',
     diagnostics = ' ',
@@ -174,8 +182,9 @@ do
   lsp.protocol.CompletionItemKind = {
     ' ', ' ', symbol_icons.Function, ' ', 'ﰠ ', symbol_icons.Variable,
     symbol_icons.Class, symbol_icons.Interface, ' ', symbol_icons.Property, ' ', ' ',
-    ' ', ' ', '﬌ ', ' ', ' ', ' ', ' ', ' ', symbol_icons.Constant, ' ',
-    '⌘ ', ' ', ' '
+    symbol_icons.Enum, ' ', '﬌ ', ' ', ' ', ' ', ' ', symbol_icons.EnumMember,
+    symbol_icons.Constant, symbol_icons.Struct, '⌘ ', ' ', ' '
+
   }
 end
 
@@ -294,24 +303,24 @@ local function SymbolSelectors()
         if symbol.location then -- SymbolInformation type
           local range = symbol.location.range
           local kind = util._get_symbol_kind_name(symbol.kind)
-          local maybe_detail = symbol.detail and '  ' .. symbol.detail or ''
           table.insert(_items, {
             filename = vim.uri_to_fname(symbol.location.uri),
             lnum = lnum,
             col = range.start.character + 1,
             kind = kind,
             -- text = '[' .. kind .. '] ' .. symbol.name
-            text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name .. maybe_detail
+            text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name
           })
         elseif symbol.selectionRange then -- DocumentSymbol type
           local kind = util._get_symbol_kind_name(symbol.kind)
+          local maybe_detail = symbol.detail and '  ' .. symbol.detail or ''
           table.insert(_items, { -- bufnr = _bufnr,
             filename = vim.api.nvim_buf_get_name(_bufnr),
             lnum = lnum,
             col = symbol.selectionRange.start.character + 1,
             kind = kind,
             -- text = '[' .. kind .. '] ' .. symbol.name
-            text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name
+            text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name .. maybe_detail
           })
 
           -- Don't go for children
@@ -393,7 +402,8 @@ local function SymbolSelectors()
   end
 
   local function loclist_sync()
-    vim.cmd('lbefore | normal! \015')
+    -- vim.cmd('lbefore | normal! \015')
+    vim.cmd('try | lbefore | catch /E553/ | lafter | endtry')
   end
 
   -- Pub selectors
