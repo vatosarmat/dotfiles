@@ -26,11 +26,14 @@ endfunction
 " hi def link functionName TSFunction
 " hi def link functionDetail Normal
 
-call s:SymbolItem('function', 'SymbolIconFunction', 'TSFunction', 'TSType')
+call s:SymbolItem('function', 'SymbolIconFunction', 'TSMethod', 'TSType')
+call s:SymbolItem('method', 'SymbolIconFunction', 'TSFunction', 'TSType')
+call s:SymbolItem('constructor', 'SymbolIconFunction', 'TSConstructor', 'TSType')
 
 call s:SymbolItem('variable', 'SymbolIconVariable', 'TSVariable', 'TSType')
 call s:SymbolItem('constant', 'SymbolIconVariable', 'TSVariable', 'TSType')
 call s:SymbolItem('property', 'SymbolIconVariable', 'TSProperty', 'TSType')
+call s:SymbolItem('field', 'SymbolIconVariable', 'TSField', 'TSType')
 call s:SymbolItem('enumMember', 'SymbolIconVariable', 'TSProperty')
 
 call s:SymbolItem('namespace', 'SymbolIconClass', 'TSNamespace')

@@ -71,11 +71,14 @@ setmetatable(client_info, {
 
 local symbol_icons = {
   Function = 'F',
+  Method = 'M',
   Variable = 'V',
   Constant = 'C',
   Property = 'P',
+  Field = '',
   Namespace = '',
-  Interface = '',
+  Interface = '',
+  Constructor = '',
   Class = '',
   Struct = '',
   Enum = 'ﴰ',
@@ -204,6 +207,15 @@ do
     properties = { 'documentation', 'detail', 'additionalTextEdits' }
   }
 
+  local function document_highlight()
+    local col = vim.fn.col('.')
+    local cursor_char = vim.fn.getline('.'):sub(col, col)
+    -- Send request to LSP only if keyword char is under cursor
+    if vim.api.nvim_eval(string.format('"%s" =~ \'\\k\'', cursor_char)) == 1 then
+      lsp.buf.document_highlight()
+    end
+  end
+
   lspconfig.util.default_config = vim.tbl_extend('force', lspconfig.util.default_config, {
     autostart = vim.g.lsp_autostart,
     flags = {
@@ -215,7 +227,7 @@ do
       if client.resolved_capabilities.document_highlight then
         autocmd('LSP_buffer', -------------------------------------------------------
         {
-          { 'CursorHold', lsp.buf.document_highlight }, -----------------------
+          { 'CursorHold', document_highlight }, -----------------------
           { 'CursorMoved', lsp.buf.clear_references }
         }, {
           buffer = true
@@ -353,6 +365,7 @@ local function SymbolSelectors()
     vim.fn.setloclist(0, {}, ' ', what)
   end
 
+  -- vim.g.igor = ''
   local function parent_symbol_under_cursor(items)
     local pos = api.nvim_win_get_cursor(0)
     local cursor_line = pos[1] - 1
@@ -362,8 +375,9 @@ local function SymbolSelectors()
       local uc_idx = tablex.find_if(_items, function(item)
         local sr = item.location and item.location.range or item.range
         -- vim.g.igor = vim.g.igor ..
-        --                string.format('%d %d %d %d', sr.start.line, sr.start.character,
-        --                              sr['end'].line, sr['end'].character) .. '\n'
+        --                string.format('%s: %d %d %d %d', item.name, sr.start.line,
+        --                              sr.start.character, sr['end'].line, sr['end'].character) ..
+        --                '\n'
         return (cursor_line > sr.start.line and cursor_line < sr['end'].line) or
                  ((cursor_line == sr.start.line or cursor_line == sr['end'].line) and
                    (cursor_character >= sr.start.character and cursor_character <=
@@ -374,7 +388,7 @@ local function SymbolSelectors()
       --   vim.g.igor = vim.g.igor .. _items[uc_idx].name .. '\n'
       -- end
       if uc_idx and _items[uc_idx].children then
-        return _find_psuc(items[uc_idx].children) or _items[uc_idx]
+        return _find_psuc(_items[uc_idx].children) or _items[uc_idx]
       end
     end
     return _find_psuc(items)
@@ -504,7 +518,7 @@ do
   lspconfig.clangd.setup {
     init_options = {
       compilationDatabasePath = 'Debug',
-      clangdFileStatus = true,
+      clangdFileStatus = false,
       semanticHighlighting = true
     },
     cmd = { 'clangd', '--background-index', '--clang-tidy', '--completion-style=detailed' },
@@ -799,6 +813,7 @@ do
     expr = true,
     noremap = false
   })
+  map('i', '<M-C-y>', '<C-y><Esc>')
   map('i', '<C-e>', 'compe#close(\'<End>\')', {
     expr = true
   })
@@ -830,7 +845,7 @@ do
 
   -- Less in use
   map('n', 'gi', lsp.buf.implementation)
-  map('n', '<leader>lh', lsp.buf.signature_help)
+  map('nx', '<M-j>', lsp.buf.signature_help) -- C-;
   map('n', 'gD', lsp.buf.declaration)
   map('n', 'ga', lsp.buf.code_action)
 

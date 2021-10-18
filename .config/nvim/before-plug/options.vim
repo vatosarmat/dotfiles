@@ -38,6 +38,8 @@ set grepformat=%f:%l:%m
 
 set tgc
 
+set formatoptions-=o
+set cinkeys-=:
 
 "Disable folds in diffview
 set diffopt+=vertical,context:10000,foldcolumn:0,indent-heuristic,algorithm:patience,hiddenoff
