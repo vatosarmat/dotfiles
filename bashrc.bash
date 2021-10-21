@@ -257,11 +257,6 @@ function dpkg__lsf {
   printf "%-${w}s   %s\n" "$p" "$(file -bi "$p")"
 }
 
-#Sort dependencies in package.json
-function yarn__sortdeps {
-  jq '.dependencies=(.dependencies | to_entries | sort | from_entries)' package.json | sponge package.json
-}
-
 #Check if string may be used as alias
 function apt__search {
   test -n "$1" || {
@@ -623,6 +618,34 @@ function tsgrep {
       jq -r '.version' "$d/package.json"
     done
   )
+}
+
+function node__sortdeps {
+  jq '.dependencies=(.dependencies | to_entries | sort | from_entries)' package.json | sponge package.json
+}
+
+function node__updeps {
+  # Take dir as param or use current dir
+  local pacjson="$(realpath "${1:-.}/package.json")"
+  if ! [[ -f "$pacjson" ]]; then
+    echo 'Expected to get path as parameter or to be run in a directory with package.json' >&2
+    return 1
+  fi
+  local pacdir="$(dirname "$pacjson")"
+  if [[ -f "$pacdir/yarn.lock" ]]; then
+    # declare -ar cmd_remove=("yarn" "remove")
+    declare -ar cmd_install=("yarn" "add")
+  else
+    # declare -ar cmd_remove=("npm" "uninstall" "--save")
+    declare -ar cmd_install=("npm" "install" "--save-prod")
+  fi
+  # readarray -t deps_prod < <(jq --raw-output '.dependencies | keys | .[]' < "$pacjson")
+  # "${cmd_remove[@]}" "${deps[@]}"
+  # "${cmd_install[@]}" "${deps_prod[@]}"
+
+  jq --raw-output '.dependencies | keys | map(.+"@latest") | .[]' < "$pacjson" |
+    tr '\n' ' ' |
+    xargs "${cmd_install[@]}"
 }
 
 BASH_LIBS="gh/lib.bash tpa/lib.bash"
