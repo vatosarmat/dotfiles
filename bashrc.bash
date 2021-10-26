@@ -128,6 +128,7 @@ alias file_loop='find "$INFODIR" -type f | while read file ; do'
 alias ghus="gh__search"
 alias ghuc="gh__cache"
 alias x='xsel -ob'
+alias tmpl='mktemp /tmp/XXXXXX.log | tr -d '"'"'\n'"'"' | xsel -ib'
 
 source z
 
@@ -611,13 +612,9 @@ function node__fd_dup_users {
 }
 
 function tsgrep {
-  (
-    IFS=$'\n'
-    #shellcheck disable=2066
-    for d in "$(pgrep -fa tsserver.js | sed -E 's%^.+\s+(.+typescript)/lib/tsserver\.js.+$%\1%')"; do
-      jq -r '.version' "$d/package.json"
-    done
-  )
+  pgrep -fa tsserver.js | sed -E 's%^.+\s+(.+typescript)/lib/tsserver\.js.+$%\1%' | while IFS= read -r d; do
+    jq -r '.version' "$d/package.json"
+  done
 }
 
 function node__sortdeps {

@@ -33,6 +33,14 @@ local plug = require('packer').startup(function()
     after = 'nvim-lspconfig'
   }
   use {
+    'jose-elias-alvarez/null-ls.nvim',
+    after = 'nvim-lspconfig'
+  }
+  use {
+    'jose-elias-alvarez/nvim-lsp-ts-utils',
+    after = 'null-ls.nvim'
+  }
+  use {
     'hrsh7th/nvim-compe',
     after = 'nvim-lint'
   }

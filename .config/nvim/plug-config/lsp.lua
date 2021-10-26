@@ -12,17 +12,20 @@ local severities = {
     sign = '',
     hl_sign = 'LspDiagnosticsSignError',
     hl_float = 'LspDiagnosticsFloatingError'
-  }, {
+  },
+  {
     name = 'Warning',
     sign = '',
     hl_sign = 'LspDiagnosticsSignWarning',
     hl_float = 'LspDiagnosticsFloatingWarning'
-  }, {
+  },
+  {
     name = 'Information',
     sign = '',
     hl_sign = 'LspDiagnosticsSignInformation',
     hl_float = 'LspDiagnosticsFloatingInformation'
-  }, {
+  },
+  {
     name = 'Hint',
     sign = '',
     hl_sign = 'LspDiagnosticsSignHint',
@@ -50,6 +53,12 @@ local client_info = {
   },
   ['rust_analyzer'] = {
     short_name = 'RA'
+  },
+  ['tsserver'] = {
+    short_name = 'TS'
+  },
+  ['eslint'] = {
+    short_name = 'ES'
   }
 }
 
@@ -117,7 +126,6 @@ do
     local clients = lsp.buf_get_clients(0)
     local client_strings = {}
     for _, client in pairs(clients) do
-
       local diagnostics = diagnostic_lines(client.id)
 
       local progress = {}
@@ -144,7 +152,6 @@ do
       end
       client_str = client_str .. table.concat(progress, separator.progress)
       table.insert(client_strings, client_str)
-
     end
 
     local linters = get_linters()
@@ -164,7 +171,7 @@ do
 
   function lsp_service.omnifunc(...)
     -- zzz
-    return lsp.omnifunc(unpack({ ... }))
+    return lsp.omnifunc(unpack { ... })
   end
 
   service.lsp = lsp_service
@@ -183,23 +190,65 @@ do
   end
 
   lsp.protocol.CompletionItemKind = {
-    ' ', ' ', symbol_icons.Function, ' ', 'ﰠ ', symbol_icons.Variable,
-    symbol_icons.Class, symbol_icons.Interface, ' ', symbol_icons.Property, ' ', ' ',
-    symbol_icons.Enum, ' ', '﬌ ', ' ', ' ', ' ', ' ', symbol_icons.EnumMember,
-    symbol_icons.Constant, symbol_icons.Struct, '⌘ ', ' ', ' '
-
+    ' ',
+    ' ',
+    symbol_icons.Function,
+    ' ',
+    'ﰠ ',
+    symbol_icons.Variable,
+    symbol_icons.Class,
+    symbol_icons.Interface,
+    ' ',
+    symbol_icons.Property,
+    ' ',
+    ' ',
+    symbol_icons.Enum,
+    ' ',
+    '﬌ ',
+    ' ',
+    ' ',
+    ' ',
+    ' ',
+    symbol_icons.EnumMember,
+    symbol_icons.Constant,
+    symbol_icons.Struct,
+    '⌘ ',
+    ' ',
+    ' '
   }
 end
 
-local Text = require'before-plug.vim_utils'.Text
-local map = require'before-plug.vim_utils'.map
-local map_buf = require'before-plug.vim_utils'.map_buf
-local autocmd = require'before-plug.vim_utils'.autocmd
+local Text = require('before-plug.vim_utils').Text
+local map = require('before-plug.vim_utils').map
+local map_buf = require('before-plug.vim_utils').map_buf
+local autocmd = require('before-plug.vim_utils').autocmd
 
 --
 -- Default config
 --
 vim.g.lsp_autostart = true
+
+local function document_highlight()
+  local col = vim.fn.col '.'
+  local cursor_char = vim.fn.getline('.'):sub(col, col)
+  -- Send request to LSP only if keyword char is under cursor
+  if vim.api.nvim_eval(string.format('"%s" =~ \'\\k\'', cursor_char)) == 1 then
+    lsp.buf.document_highlight()
+  end
+end
+
+---@diagnostic disable-next-line: unused-local
+local function default_on_attach(client, _bufnr)
+  if client.resolved_capabilities.document_highlight then
+    autocmd('LSP_buffer', -------------------------------------------------------
+    {
+      { 'CursorHold', document_highlight }, -----------------------
+      { 'CursorMoved', lsp.buf.clear_references }
+    }, {
+      buffer = true
+    })
+  end
+end
 do
   local capabilities = lsp.protocol.make_client_capabilities()
   capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -207,33 +256,13 @@ do
     properties = { 'documentation', 'detail', 'additionalTextEdits' }
   }
 
-  local function document_highlight()
-    local col = vim.fn.col('.')
-    local cursor_char = vim.fn.getline('.'):sub(col, col)
-    -- Send request to LSP only if keyword char is under cursor
-    if vim.api.nvim_eval(string.format('"%s" =~ \'\\k\'', cursor_char)) == 1 then
-      lsp.buf.document_highlight()
-    end
-  end
-
   lspconfig.util.default_config = vim.tbl_extend('force', lspconfig.util.default_config, {
     autostart = vim.g.lsp_autostart,
     flags = {
       debounce_text_changes = 500
     },
     capabilities = capabilities,
-    ---@diagnostic disable-next-line: unused-local
-    on_attach = function(client, bufnr)
-      if client.resolved_capabilities.document_highlight then
-        autocmd('LSP_buffer', -------------------------------------------------------
-        {
-          { 'CursorHold', document_highlight }, -----------------------
-          { 'CursorMoved', lsp.buf.clear_references }
-        }, {
-          buffer = true
-        })
-      end
-    end
+    on_attach = default_on_attach
   })
 end
 
@@ -261,7 +290,7 @@ do
 
       if #result > 1 then
         util.set_qflist(util.locations_to_items(result))
-        api.nvim_command('copen | wincmd p')
+        api.nvim_command 'copen | wincmd p'
       end
     else
       util.jump_to_location(result)
@@ -410,14 +439,14 @@ local function SymbolSelectors()
       local a = filter_sort(psuc and psuc.children or request_result)
       local items = symbols_to_items(a, bufnr)
       loclist_set(psuc and psuc.name .. ': ' .. title or title, items)
-      api.nvim_command('lopen | wincmd p')
+      api.nvim_command 'lopen | wincmd p'
       on_done()
     end
   end
 
   local function loclist_sync()
     -- vim.cmd('lbefore | normal! \015')
-    vim.cmd('try | lbefore | catch /E553/ | lafter | endtry')
+    vim.cmd 'try | lbefore | catch /E553/ | lafter | endtry'
   end
 
   -- Pub selectors
@@ -466,31 +495,57 @@ end
 -- Language servers
 --
 -- Same parameters as lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
+local jsts_filetype = {
+  'javascript',
+  'javascriptreact',
+  'javascript.jsx',
+  'typescript',
+  'typescriptreact',
+  'typescript.jsx'
+}
+local prettier_filetype = vim.list_extend({ 'html', 'css', 'json', 'jsonc' }, jsts_filetype)
+local eslint_filetype = jsts_filetype
+
 do
-  local luadev = require('lua-dev').setup({
-    lspconfig = {
-      cmd = { 'sumneko', '2>', vim.fn.stdpath('cache') .. '/sumneko.log' },
-      settings = {
-        Lua = {
-          completion = {
-            workspaceWord = false,
-            showWord = 'Disable',
-            callSnipper = 'Replace'
-          },
-          diagnostics = {
-            globals = {
-              'vim', 'service', '_map', '_augroup', '_shortmap', 'use', 'pack', 'use_rocks', 'noop'
+  do
+    --
+    -- Sumneko lua
+    --
+    local luadev = require('lua-dev').setup {
+      lspconfig = {
+        cmd = { 'sumneko', '2>', vim.fn.stdpath 'cache' .. '/sumneko.log' },
+        settings = {
+          Lua = {
+            completion = {
+              workspaceWord = false,
+              showWord = 'Disable',
+              callSnipper = 'Replace'
+            },
+            diagnostics = {
+              globals = {
+                'vim',
+                'service',
+                '_map',
+                '_augroup',
+                '_shortmap',
+                'use',
+                'pack',
+                'use_rocks',
+                'noop'
+              }
             }
           }
         }
       }
     }
-  })
-  lspconfig.sumneko_lua.setup(luadev)
+    lspconfig.sumneko_lua.setup(luadev)
+  end
 
   lspconfig.rust_analyzer.setup {}
   lspconfig.vimls.setup {}
-  -- Setup javascript
+  --
+  -- Flow and tsserver
+  --
   do
     local flow = lspconfig.flow
     flow.setup {}
@@ -504,7 +559,40 @@ do
     end
 
     local tsserver = lspconfig.tsserver
-    tsserver.setup {}
+    local ts_utils_settings = {
+      -- debug = true,
+      -- import_all_scan_buffers = 100
+      -- I really need this?
+      -- eslint_bin = 'eslint_d',
+      -- eslint_enable_diagnostics = true,
+      -- eslint_opts = {
+      --   condition = function(utils)
+      --     return utils.root_has_file('.eslintrc.js')
+      --   end,
+      --   diagnostics_format = '#{m} [#{c}]'
+      -- },
+      -- enable_formatting = true,
+      -- formatter = 'eslint_d',
+      -- update_imports_on_move = true,
+      -- filter out dumb module warning
+      -- filter_out_diagnostics_by_code = { 80001 }
+    }
+    tsserver.setup {
+      on_attach = function(client, bufnr)
+        client.resolved_capabilities.document_formatting = false
+        client.resolved_capabilities.document_range_formatting = false
+        default_on_attach(client, bufnr)
+
+        local ts_utils = require 'nvim-lsp-ts-utils'
+        ts_utils.setup(ts_utils_settings)
+        ts_utils.setup_client(client)
+
+        -- map_buf(bufnr, 'n', 'gs', '<cmd>TSLspOrganize<CR>')
+        -- map_buf(bufnr, 'n', 'gI', '<cmd>TSLspRenameFile<CR>')
+        -- map_buf(bufnr, 'n', 'go', '<cmd>TSLspImportAll<CR>')
+        -- map_buf(bufnr, 'n', 'qq', '<cmd>TSLspFixCurrent<CR>')
+      end
+    }
     local tsserver_add = tsserver.manager.add
     tsserver.manager.add = function(...)
       if not vim.b.flow_active then
@@ -525,7 +613,7 @@ do
     on_new_config = function(new_config, _)
       local cc_file = 'compile_commands.json'
 
-      for _, dir in ipairs({ '.', 'Debug', 'debugfull', 'Release' }) do
+      for _, dir in ipairs { '.', 'Debug', 'debugfull', 'Release' } do
         if vim.fn.filereadable(dir .. '/' .. cc_file) == 1 then
           new_config.init_options.compilationDatabasePath = dir
           return
@@ -555,55 +643,93 @@ do
     }
   }
 
-  lspconfig.efm.setup { -- on_attach = on_attach,
-    init_options = {
-      documentFormatting = true
-    },
-    filetypes = { 'lua', 'json', 'jsonc', 'html', 'css', 'sh', 'python' },
-    settings = {
-      rootMarkers = { '.git/' },
-      languages = {
-        lua = {
-          {
-            formatCommand = 'lua-format -i',
-            formatStdin = true
-          }
-        },
-        json = {
-          {
-            formatCommand = 'prettier --parser json',
-            formatStdin = true
-          }
-        },
-        jsonc = {
-          {
-            formatCommand = 'prettier --parser json',
-            formatStdin = true
-          }
-        },
-        sh = {
-          {
-            formatCommand = 'shfmt -i 2 -ci -sr',
-            -- lintCommand = 'shellcheck --format=gcc --severity=style -',
-            formatStdin = true -- lintStdin = true
-          }
-        },
-        python = {
-          {
-            formatCommand = 'yapf',
-            formatStdin = true
-          }
-        } -- html = { { formatCommand = 'prettier' } },
-        -- css = { { formatCommand = 'prettier' } }
-      },
-      logFile = vim.fn.stdpath('cache') .. '/efm.log',
-      logLevel = 1
+  --
+  -- null-ls linters and formatters
+  --
+  do
+    -- local null_ls = require 'null-ls'
+    -- local b = null_ls.builtins
+
+    -- local sources = {
+    -- b.formatting.prettier.with({
+    --   filetypes = { 'html', 'json', 'yaml', 'markdown' }
+    -- })
+    -- b.formatting.stylua.with({
+    --   condition = function(utils)
+    --     return utils.root_has_file('stylua.toml')
+    --   end
+    -- }),
+    -- b.formatting.trim_whitespace.with({
+    --   filetypes = { 'tmux', 'teal', 'zsh' }
+    -- }),
+    -- b.formatting.shfmt,
+    -- b.diagnostics.write_good,
+    -- b.diagnostics.markdownlint,
+    -- b.diagnostics.teal,
+    -- b.diagnostics.shellcheck.with({
+    --   diagnostics_format = '#{m} [#{c}]'
+    -- }),
+    -- b.code_actions.gitsigns,
+    -- b.hover.dictionary
+    -- }
+
+    -- null_ls.config {
+    --   -- debug = true,
+    --   sources = sources
+    -- }
+    -- lspconfig['null-ls'].setup {}
+  end
+
+  do
+    local prettier_format = {
+      formatCommand = 'PRETTIERD_LOCAL_PRETTIER_ONLY=true prettierd ${INPUT}',
+      -- formatCommand = 'node_modules/.bin/prettier --stdin --stdin-filepath ${INPUT}',
+      formatStdin = true
     }
-  }
+    local efm_filetypes = vim.list_extend({ 'lua', 'sh', 'python' }, prettier_filetype)
+    local efm_langs = vim.tbl_extend('keep', {
+      lua = {
+        {
+          formatCommand = 'lua-format -i',
+          -- formatCommand = 'stylua -',
+          formatStdin = true
+        }
+      },
+      sh = {
+        {
+          formatCommand = 'shfmt -i 2 -ci -sr',
+          -- lintCommand = 'shellcheck --format=gcc --severity=style -',
+          formatStdin = true -- lintStdin = true
+        }
+      },
+      python = {
+        {
+          formatCommand = 'yapf',
+          formatStdin = true
+        }
+      }
+    }, tablex.reduce(function(ac, v)
+      ac[v] = { prettier_format }
+      return ac
+    end, prettier_filetype, {}))
+
+    lspconfig.efm.setup { -- on_attach = on_attach,
+      init_options = {
+        documentFormatting = true
+      },
+      filetypes = efm_filetypes,
+      settings = {
+        rootMarkers = { '.git/' },
+        languages = efm_langs,
+        logFile = vim.fn.stdpath 'cache' .. '/efm.log',
+        logLevel = 1
+      }
+    }
+  end
 end
 
 --
--- And linters
+-- nvim-lint linters
 --
 do
   local shellcheck = lint.linters.shellcheck
@@ -624,16 +750,13 @@ do
 
   lint.linters.eslint.cmd = 'eslint_d'
 
-  lint.linters_by_ft = {
+  lint.linters_by_ft = vim.tbl_extend('keep', {
     sh = { 'shellcheck' },
-    cpp = { 'cppcheck' },
-    javascript = { 'eslint' },
-    typescript = { 'eslint' },
-    javascriptreact = { 'eslint' },
-    typescriptreact = { 'eslint' },
-    ['javascript.jsx'] = { 'eslint' },
-    ['typescript.jsx'] = { 'eslint' }
-  }
+    cpp = { 'cppcheck' }
+  }, tablex.reduce(function(ac, v)
+    ac[v] = { 'eslint' }
+    return ac
+  end, eslint_filetype, {}))
 end
 
 --
@@ -694,7 +817,6 @@ local function show_line_diagnostics()
       local uri = string.gsub(webpage_pattern, '%${code}', line_diagnostics[idx].code)
       os.execute('$BROWSER ' .. uri)
     end
-
   end
 
   map_buf(float_bufnr, 'n', 'd', disable, {
@@ -712,23 +834,23 @@ end
 -- Compe
 --
 local function compe_setup()
-  require'compe'.setup({
+  require('compe').setup {
     enabled = true,
     autocomplete = false,
     source = {
       nvim_lsp = true
     },
     preselect = 'always'
-  })
+  }
 
   local t = func.bind(api.nvim_replace_termcodes, func._1, true, true, true)
   local luasnip = require 'luasnip'
   -- luasnip.config.setup({ history = true })
-  luasnip.config.setup({})
+  luasnip.config.setup {}
 
   local function is_space_before()
-    local col = vim.fn.col('.') - 1
-    if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+    local col = vim.fn.col '.' - 1
+    if col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' then
       return true
     else
       return false
@@ -864,6 +986,7 @@ do
     { 'BufWritePre *', auto_format }, ------------------------------------
     { 'BufWritePost *', require('lint').try_lint }, ----------------------
     { 'FileType *', require('lint').try_lint }, --------------------------
-    [[ User LspDiagnosticsChanged redraws! ]], [[ User LspProgressUpdate redraws! ]]
+    [[ User LspDiagnosticsChanged redraws! ]],
+    [[ User LspProgressUpdate redraws! ]]
   })
 end

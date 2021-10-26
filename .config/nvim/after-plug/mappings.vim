@@ -115,15 +115,93 @@ nnoremap [t gT
 "Macro, <Home> is C-m
 nnoremap g<Home> q
 
-"Handy block movement
-nnoremap <expr><silent>K '<cmd>keepjumps normal! '.
-  \(<sid>IsLineEmpty() ? '{}k' : <sid>IsLineEmpty(-1) ? 'k{}k' : '{j')."\<cr>"
-xnoremap <expr><silent>K "\<cmd>keepjumps normal! ".
-  \(<sid>IsLineEmpty() ? '{}k' : <sid>IsLineEmpty(-1) ? 'k{}k' : '{j')."\<cr>"
-nnoremap <expr><silent>J '<cmd>keepjumps normal! '.
-  \(<sid>IsLineEmpty() ? '}{j' : <sid>IsLineEmpty(+1) ? 'j}{j' : '}k')."\<cr>"
-xnoremap <expr><silent>J "\<cmd>keepjumps normal! ".
-  \(<sid>IsLineEmpty() ? '}{j' : <sid>IsLineEmpty(+1) ? 'j}{j' : '}k')."\<cr>"
+"Handy paragraph movement
+function! s:IsLineEmpty(line) abort
+  return getline(a:line) !~ '\S'
+endfunction
+
+function! s:move_paragraph(forward) abort
+  if a:forward
+    let offset = 1
+    let Fold_near = function('foldclosed')
+    let Fold_far = function('foldclosedend')
+    let direct_par = '}'
+    let reverse_par = '{'
+    let direct_char = 'j'
+    let reverse_char = 'k'
+  else
+    let offset = -1
+    let Fold_near = function('foldclosedend')
+    let Fold_far = function('foldclosed')
+    let direct_par = '{'
+    let reverse_par = '}'
+    let direct_char = 'k'
+    let reverse_char = 'j'
+  endif
+
+  "Pass through all the adjacent folds
+  let start = line('.')
+  let non_fold = start
+  let fend = Fold_far(non_fold)
+  while fend != -1
+    let non_fold = fend + offset
+    let fend = Fold_far(non_fold)
+  endwhile
+
+  if start != non_fold
+    execute 'keepjumps' string(non_fold)
+  endif
+
+  if s:IsLineEmpty(non_fold)
+    execute 'keepjumps' 'normal!' direct_par
+    let fstart = Fold_near('.')
+    if fstart == -1
+      execute 'keepjumps' 'normal!' reverse_par.direct_char
+    else
+      execute 'keepjumps' string(fstart)
+    endif
+  else
+    if s:IsLineEmpty(line('.') + offset)
+      execute 'keepjumps' 'normal!' direct_char.direct_par
+      let fstart = Fold_near('.')
+      if fstart == -1
+        execute 'keepjumps' 'normal!' reverse_par.direct_char
+      else
+        execute 'keepjumps' string(fstart)
+      endif
+    else
+      "Here must be loop to go through fold inside text
+      execute 'keepjumps' 'normal!' direct_par.reverse_char
+    endif
+  endif
+endfunction
+
+nnoremap <silent>K <cmd>call <sid>move_paragraph(0)<cr>
+xnoremap <silent>K <cmd>call <sid>move_paragraph(0)<cr>
+nnoremap <silent>J <cmd>call <sid>move_paragraph(1)<cr>
+xnoremap <silent>J <cmd>call <sid>move_paragraph(1)<cr>
+
+" nnoremap <expr><silent>K '<cmd>keepjumps normal! '.
+"   \(<sid>IsLineEmpty() ? '{}k' : <sid>IsLineEmpty(-1) ? 'k{}k' : '{j')."\<cr>"
+" xnoremap <expr><silent>K "\<cmd>keepjumps normal! ".
+"   \(<sid>IsLineEmpty() ? '{}k' : <sid>IsLineEmpty(-1) ? 'k{}k' : '{j')."\<cr>"
+
+" nnoremap <expr><silent>J '<cmd>keepjumps normal! '.
+"   \(<sid>IsLineEmpty() ? '}{j' : <sid>IsLineEmpty(+1) ? 'j}{j' : '}k')."\<cr>"
+" xnoremap <expr><silent>J "\<cmd>keepjumps normal! ".
+"   \(<sid>IsLineEmpty() ? '}{j' : <sid>IsLineEmpty(+1) ? 'j}{j' : '}k')."\<cr>"
+
+"function! BlockUp() abort
+"  if s:IsLineEmpty()
+"    keepjumps normal! {}k
+"  endif
+
+"  " Maybe enough to ask IsLineEmpy count folds?
+
+"  "If -1 line is empty - just go to it and same jump
+"  "But that doesn't work if we are on fold
+"  "This may not work if we are on fold
+"endfunction
 
 "Handy line start/end
 noremap <C-h> _
@@ -306,10 +384,11 @@ nnoremap <silent><M-K>  <cmd>         resize +5<cr>
 nnoremap <silent><M-L>  <cmd>vertical resize +5<cr>
 
 "Jump forward/back in split
-nnoremap <C-w><C-o> <C-w>v<C-o>
-nnoremap <C-w>O <C-w>s<C-o>
-nnoremap <C-w><C-i> <C-w>v<C-i>
-nnoremap <C-w>I <C-w>s<C-i>
+" nnoremap <C-w><C-o> <C-w>v<C-o>
+" nnoremap <C-w>O <C-w>s<C-o>
+" nnoremap <C-w><C-i> <C-w>v<C-i>
+" nnoremap <C-w>I <C-w>s<C-i>
+nnoremap <C-w>t <C-w>v<C-w>T
 
 "Pair braces and quotes in command line
 cnoremap <M-9> ()<left>
@@ -429,10 +508,6 @@ endfunction
 "Replace last search pattern, i.e. '/' register content
 nnoremap <M-r> :.,$s//<c-r>=utils#GetSearchPatternWithoutFlags()<cr>/gc<left><left><left>
 xnoremap <M-r> :s///gc<left><left><left>
-
-function! s:IsLineEmpty(...) abort
-  return getline(line('.') + get(a:, '1', 0)) !~ '\S'
-endfunction
 
 function! s:WordMotions() abort
   function! s:RightExcl() abort

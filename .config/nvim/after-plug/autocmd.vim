@@ -19,7 +19,7 @@ augroup BeforePlug
   autocmd VimEnter /tmp/bash-* exe "normal!" "ggO#shellcheck shell=bash\<cr>" | startinsert
   autocmd VimEnter * call s:OnVimEnter()
 
-  autocmd BufRead,BufNewFile *.json set filetype=jsonc
+  autocmd BufRead,BufNewFile *.json,.prettierrc set filetype=jsonc
 
   autocmd BufWinEnter * call s:UserStateWinEnter()
   autocmd WinClosed * diffupdate! | call s:UserStateWinClosed(expand('<afile>'))

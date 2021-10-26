@@ -17,7 +17,7 @@ end
 local function with_nz(hunk)
   return function()
     hunk()
-    if vim.g.user_options.nz then
+    if vim.g.uopts.nz then
       vim.cmd('normal! zz')
     end
   end
