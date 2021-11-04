@@ -346,6 +346,11 @@ function tmux__list_options {
   man -P cat tmux | sed -En "$range" | grep -E --color=never '^ {5}[a-z]'
 }
 
+function has_gsettings {
+  type -t gsettings &&
+    [[ "$(gsettings get org.gnome.desktop.input-sources mru-sources)" =~ \[\(\'xkb\',\ \'[[:alpha:]]{2}\'\)(,\ \(\'xkb\',\ \'[[:alpha:]]{2}\'\))*] ]]
+}
+
 #font
 function font__ls_chars {
   font_pattern=${1}

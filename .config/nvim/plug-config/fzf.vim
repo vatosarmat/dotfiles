@@ -13,7 +13,7 @@ function! fzf#ProjectType() abort
     elseif g:project_type == 'rust'
       call extend(s:files_exclude, ['target'])
     elseif g:project_type == 'node'
-      call extend(s:files_exclude, ['node_modules', 'yarn.lock', 'package.lock'])
+      call extend(s:files_exclude, ['node_modules', 'coverage', 'yarn.lock', 'package.lock', 'build', 'yarn-error.log'])
     endif
   endif
 

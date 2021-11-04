@@ -24,15 +24,17 @@
   cmd = nvim -d $LOCAL $REMOTE
 
 [alias]
+  bc = checkout -b
+  bl = branch -avv
   c = checkout
-  full-clean = clean -xfd
-  shc = clone --depth=1024 --recursive --shallow-submodules
-  ba = branch -avv
   fap = fetch --all --prune
+  full-clean = clean -xfd
   lg = log --oneline --decorate --graph --all
-  pum = push -u origin/master
   pulr = pull --rebase
+  pum = push -u origin/master
+  rl = remote -v
   s = status --short
+  shc = clone --depth=1024 --recursive --shallow-submodules
   si = status --ignored
   smu = submodule update --init --recursive
   ss = status

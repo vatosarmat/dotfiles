@@ -16,7 +16,7 @@ local plug = require('packer').startup(function()
   use_rocks 'lua-cjson'
   use_rocks 'luasocket'
   use_rocks 'luasec'
-  -- Major
+
   use 'wbthomason/packer.nvim'
   use 'nvim-lua/plenary.nvim'
 
@@ -148,8 +148,9 @@ local plug = require('packer').startup(function()
     'christianchiarulli/nvcode-color-schemes.vim',
     config = mk_sourcer '$STD_PATH_CONFIG/plug-config/colors.vim'
   }
-  -- Rarely needed
+
   use 'teal-language/vim-teal'
+  use 'chr4/nginx.vim'
 end)
 
 return plug

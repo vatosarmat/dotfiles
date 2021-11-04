@@ -313,39 +313,39 @@ nnoremap <silent><C-q> <cmd>call <SID>Wipe()<cr>
 
 function! s:Wipe()
   let cnr = bufnr()
-  if empty(expand('#'))
-    q
-  else
-    if &ft == 'help'
-      "Try to locate prev help buffer. If no, just wipe this help and close
-      "the window
-      let prevNr = cnr
-      let bufInfos = getbufinfo()
-      for i in range(len(bufInfos))
-        let nr = bufInfos[i].bufnr
-        if nr == cnr
-          break
-        endif
-        if getbufvar(nr, '&ft') == 'help'
-          if nr < cnr
-            let prevNr = nr
-          endif
-        endif
-      endfor
-      "No prev help buffer, wipe this
-      if prevNr == cnr
-        bw %
-      else
-        execute 'b' prevNr
-        bw #
-      endif
-    else
+  "if empty(expand('#'))
+  "  q
+  "else
+  "  if &ft == 'help'
+  "    "Try to locate prev help buffer. If no, just wipe this help and close
+  "    "the window
+  "    let prevNr = cnr
+  "    let bufInfos = getbufinfo()
+  "    for i in range(len(bufInfos))
+  "      let nr = bufInfos[i].bufnr
+  "      if nr == cnr
+  "        break
+  "      endif
+  "      if getbufvar(nr, '&ft') == 'help'
+  "        if nr < cnr
+  "          let prevNr = nr
+  "        endif
+  "      endif
+  "    endfor
+  "    "No prev help buffer, wipe this
+  "    if prevNr == cnr
+  "      bw %
+  "    else
+  "      execute 'b' prevNr
+  "      bw #
+  "    endif
+  "  else
       if !s:BufJump('NEXT', 1)
         call s:BufJump('PREV', 1)
       endif
       execute 'bwipe' cnr
-    endif
-  endif
+    " endif
+  " endif
 endfunction
 
 "Useful before reviewing delta and commit
@@ -388,6 +388,7 @@ nnoremap <silent><M-L>  <cmd>vertical resize +5<cr>
 " nnoremap <C-w>O <C-w>s<C-o>
 " nnoremap <C-w><C-i> <C-w>v<C-i>
 " nnoremap <C-w>I <C-w>s<C-i>
+"Open window dup in a new tab
 nnoremap <C-w>t <C-w>v<C-w>T
 
 "Pair braces and quotes in command line

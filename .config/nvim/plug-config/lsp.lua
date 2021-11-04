@@ -57,6 +57,9 @@ local client_info = {
   ['tsserver'] = {
     short_name = 'TS'
   },
+  ['typescript'] = {
+    short_name = 'TS'
+  },
   ['eslint'] = {
     short_name = 'ES'
   }
@@ -232,7 +235,7 @@ local function document_highlight()
   local col = vim.fn.col '.'
   local cursor_char = vim.fn.getline('.'):sub(col, col)
   -- Send request to LSP only if keyword char is under cursor
-  if vim.api.nvim_eval(string.format('"%s" =~ \'\\k\'', cursor_char)) == 1 then
+  if vim.fn.matchstr(cursor_char, '\\k') ~= '' then
     lsp.buf.document_highlight()
   end
 end
@@ -504,7 +507,7 @@ local jsts_filetype = {
   'typescript.jsx'
 }
 local prettier_filetype = vim.list_extend({ 'html', 'css', 'json', 'jsonc' }, jsts_filetype)
-local eslint_filetype = jsts_filetype
+-- local eslint_filetype = jsts_filetype
 
 do
   do
@@ -575,7 +578,7 @@ do
       -- formatter = 'eslint_d',
       -- update_imports_on_move = true,
       -- filter out dumb module warning
-      -- filter_out_diagnostics_by_code = { 80001 }
+      filter_out_diagnostics_by_code = { 80001, 80006 }
     }
     tsserver.setup {
       on_attach = function(client, bufnr)
@@ -642,6 +645,8 @@ do
       }
     }
   }
+  lspconfig.yamlls.setup {}
+  lspconfig.eslint.setup {}
 
   --
   -- null-ls linters and formatters
@@ -681,6 +686,7 @@ do
   end
 
   do
+    -- lua, python yapf, shfmt, prettier
     local prettier_format = {
       formatCommand = 'PRETTIERD_LOCAL_PRETTIER_ONLY=true prettierd ${INPUT}',
       -- formatCommand = 'node_modules/.bin/prettier --stdin --stdin-filepath ${INPUT}',
@@ -735,7 +741,7 @@ do
   local shellcheck = lint.linters.shellcheck
   table.insert(shellcheck.args, 1, '-x') -- allow source
   table.insert(shellcheck.args, 1, function()
-    if vim.b.is_bash then
+    if vim.b.is_bash == 1 then
       return '--shell=bash'
     end
     return '--shell=sh'
@@ -749,14 +755,72 @@ do
   end
 
   lint.linters.eslint.cmd = 'eslint_d'
-
-  lint.linters_by_ft = vim.tbl_extend('keep', {
+  lint.linters_by_ft = {
     sh = { 'shellcheck' },
     cpp = { 'cppcheck' }
-  }, tablex.reduce(function(ac, v)
-    ac[v] = { 'eslint' }
-    return ac
-  end, eslint_filetype, {}))
+  }
+  -- lint.linters_by_ft = vim.tbl_extend('keep', {
+  --   sh = { 'shellcheck' },
+  --   cpp = { 'cppcheck' }
+  -- }, tablex.reduce(function(ac, v)
+  --   ac[v] = { 'eslint' }
+  --   return ac
+  -- end, eslint_filetype, {}))
+end
+
+--
+-- Typescript
+--
+local function const(v)
+  return function()
+    return v
+  end
+end
+
+local function diagnostic_highlight(text, line)
+  local type_hl_idx = 0
+  local pats = {
+    {
+      [[[tT]ype '[^']+']],
+      function()
+        local ret = type_hl_idx % 2 == 0 and 'TSType' or 'TSKeyword'
+        type_hl_idx = (type_hl_idx + 1) % 2
+        return ret
+      end
+    },
+    { [[[sS]ignature '[^']+']], const('TSInclude') },
+    { [[[oO]verload %d of %d, '[^']+']], const('TSFunction') }
+  }
+  local rest = line
+  local done = true
+  while #rest > 0 do
+    local q1, q2 = string.find(rest, [['[^']+']])
+
+    -- found something in quotes
+    if q1 then
+      local quote_area = string.sub(rest, 0, q2)
+
+      for _, pat in ipairs(pats) do
+        local rexp, hl_func = unpack(pat)
+        local _, e = string.find(quote_area, rexp)
+        -- quote_area is one of interested pats
+        if e == q2 then
+          text:append(string.sub(rest, 0, q1)) -- prefix
+          text:append(string.sub(rest, q1 + 1, q2 - 1), hl_func()) -- type
+          text:append('\'')
+          rest = string.sub(rest, q2 + 1)
+          done = false
+          break
+        end
+      end
+    end
+
+    if done then
+      text:append(rest)
+      return
+    end
+    done = true
+  end
 end
 
 --
@@ -767,6 +831,7 @@ local function show_line_diagnostics()
   local bufnr = api.nvim_get_current_buf()
   local line_nr = api.nvim_win_get_cursor(0)[1] - 1
   local opts = {}
+  local line_diag_idx = {}
 
   local line_diagnostics = lsp.diagnostic.get_line_diagnostics(bufnr, line_nr, opts)
   if vim.tbl_isempty(line_diagnostics) then
@@ -775,7 +840,7 @@ local function show_line_diagnostics()
 
   local text = Text:new()
   -- local diag_idx_by_text = {}
-  for _, diagnostic in ipairs(line_diagnostics) do
+  for diag_idx, diagnostic in ipairs(line_diagnostics) do
     local name = '?'
     local code = diagnostic.code or diagnostic.severity
     if diagnostic.source then
@@ -784,8 +849,16 @@ local function show_line_diagnostics()
     local hiname = severities[diagnostic.severity].hl_float
     assert(hiname, 'unknown severity: ' .. tostring(diagnostic.severity))
     text:append(name .. '_' .. code .. ': ', hiname)
-    text:append(pack(string.gsub(diagnostic.message, '\n', ' '))[1])
-    text:newline()
+    local lines = vim.fn.split(diagnostic.message, '\n', true)
+    for _, line in ipairs(lines) do
+      if name == 'TS' then
+        diagnostic_highlight(text, line)
+      else
+        text:append(line)
+      end
+      text:newline()
+      table.insert(line_diag_idx, diag_idx)
+    end
   end
 
   opts.focus_id = 'line_diagnostics'
@@ -794,7 +867,7 @@ local function show_line_diagnostics()
 
   local function disable()
     -- Current window is diagnostic float
-    local idx = api.nvim_win_get_cursor(0)[1]
+    local idx = line_diag_idx[api.nvim_win_get_cursor(0)[1]]
     local source = line_diagnostics[idx].source
     local dl_pattern = client_info[source].diagnostic_disable_line
     if dl_pattern then
@@ -809,7 +882,7 @@ local function show_line_diagnostics()
   end
 
   local function webpage()
-    local idx = api.nvim_win_get_cursor(0)[1]
+    local idx = line_diag_idx[api.nvim_win_get_cursor(0)[1]]
     local source = line_diagnostics[idx].source
     local webpage_pattern = client_info[source].diagnostic_webpage
     if webpage_pattern then
