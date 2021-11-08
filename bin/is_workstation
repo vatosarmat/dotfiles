@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#Check if output is sometning like this [('xkb', 'us'), ('xkb', 'ru')]
+
+true
+# echo 'HUY'
+# pattern="\[\('xkb', '[[:alpha:]]{2}'\)(, \('xkb', '[[:alpha:]]{2}'\))*]"
+# type -t gsettings > /dev/null &&
+#   [[ "$(gsettings get org.gnome.desktop.input-sources mru-sources)" =~ ${pattern} ]]

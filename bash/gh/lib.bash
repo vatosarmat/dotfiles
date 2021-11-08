@@ -1,5 +1,7 @@
-#shellcheck shell=bash
-#shellcheck disable=2164
+alias ghw="gh repo view --web"
+alias ghus="gh__search"
+alias ghuc="gh__cache"
+
 function __gh__prompt_repo_action {
   repo=${1##+( )}
   local prompt="${BOLD}${repo}${SGR0} - "
@@ -10,10 +12,12 @@ function __gh__prompt_repo_action {
 
     case $act in
       c | C)
+        #shellcheck disable=2164
         git clone "git@github.com:$repo" && cd "${repo#*/}"
         break
         ;;
       s | S)
+        #shellcheck disable=2164
         git clone --depth=256 --recursive --shallow-submodules "git@github.com:$repo" && cd "${repo#*/}"
         break
         ;;

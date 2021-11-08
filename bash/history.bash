@@ -1,5 +1,3 @@
-#!/bin/bash
-
 #This is for history access from scripts
 function history_config {
   HISTSIZE=
