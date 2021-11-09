@@ -65,7 +65,12 @@ bind_switching_command 'p' 'previous-window'
 
 #Split/unsplit/move panes
 bind_switching_command 'c' 'new-window'
-bind_switching_command 'v' 'split-window -h -c "#{pane_current_path}" -l 45%'
+if is_workstation; then
+  bind_switching_command 'v' 'split-window -h -c "#{pane_current_path}" -l 45%'
+else
+  #Assume older version of tmux
+  bind_switching_command 'v' 'split-window -h -c "#{pane_current_path}" -p 45%'
+fi
 bind_switching_command 's' 'split-window -v -c "#{pane_current_path}"'
 # bind_command 'q' 'if-shell -F "#{?#{==:#{pane_current_command},bash},1,}" dispaly display'
 bind_command 'x' 'display-panes "swap-pane -t %%"'
