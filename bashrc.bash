@@ -248,5 +248,7 @@ function is_ubuntu {
 }
 
 source "$HOME/dotfiles/bash/fancy_tools.bash"
-is_workstation && source "$HOME/dotfiles/bash/workstation.bash"
-is_ubuntu && source "$HOME/dotfiles/bash/ubuntu.bash"
+"$HOME/dotfiles/bin/is_workstation" &&
+  source "$HOME/dotfiles/bash/workstation.bash"
+is_ubuntu &&
+  source "$HOME/dotfiles/bash/ubuntu.bash"
