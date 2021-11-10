@@ -26,7 +26,7 @@ PS1='\[\033[01;38;2;159;151;216m\]\w\[\033[00m\]\$ '
 ### Less
 #squeeze blank lines, long prompt, ANSI colors, quit if one screen, ignore-case, padding 10 lines
 export LESS='-s -M -R -F -i -j10'
-export SYSTEMD_LESS="-M -R"
+export SYSTEMD_LESS="-M -R -i"
 BOLD=$(tput bold)
 # RED=$(tput setaf 1)
 BLUE=$(tput setaf 4)
