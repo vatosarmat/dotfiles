@@ -1,5 +1,6 @@
 #command
-C        filter \^[A-Z][A-Z\/ ]*$
+T        filter \^[A-Z][A-Z\/ ]*$
+C        filter \^([A-Z][A-Z\/ ]*|\\s{3}[A-Z][A-Za-z/ ]*)$
 c        forw-search \^[A-Z][A-Z\/ ]*$
 o        forw-search \^\\s*-
 a        forw-search \^\\s{3}[A-Z][A-Za-z/ ]*$
