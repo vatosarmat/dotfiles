@@ -14,6 +14,8 @@ function! fzf#ProjectType() abort
       call extend(s:files_exclude, ['target'])
     elseif g:project_type == 'node'
       call extend(s:files_exclude, ['node_modules', 'coverage', 'yarn.lock', 'package.lock', 'build', 'yarn-error.log'])
+    elseif g:project_type == 'python'
+      call extend(s:files_exclude, ['.venv', ' __pycache__'])
     endif
   endif
 

@@ -10,5 +10,7 @@ function! project_type#Guess() abort
     let g:project_type = 'rust'
   elseif filereadable('./package.json')
       let g:project_type = 'node'
+  elseif filereadable('./pyproject.toml')
+      let g:project_type = 'python'
   end
 endfunction
