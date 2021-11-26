@@ -2,9 +2,7 @@
 
 function tmux__zs {
   tmux \
-    new-session -s 0 \; \
-    new-window -n dotfiles -t 0 -c ~/dotfiles \; send-keys vimd C-m \; select-window -t 1 \; \
-    rename-window main
+    new-session -s 0 -n dotfiles \; send-keys vimd C-j \; new-window -n main
 }
 
 source "$HOME/dotfiles/bash/gh/lib.bash"

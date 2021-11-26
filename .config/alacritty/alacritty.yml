@@ -760,7 +760,7 @@ key_bindings:
   - { key: C, mods: Control|Shift, chars: "\x03" }
     # Swap Tab and Escape
   - { key: Tab, chars: "\x1b" }
-  - { key: Escape, chars: "\x09" }
+  - { key: Escape, mode: ~Search,chars: "\x09" }
     # Emulate Shift+Tab
   - { key: I, mods: Control|Shift, chars: "\e[Z" }
     # We already have Escape, so let ^[ to be End

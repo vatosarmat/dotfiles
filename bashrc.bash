@@ -19,9 +19,12 @@ eval "$(dircolors -b)"
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 ### prompt
-# PS1='\[\033[01;38;2;162;151;216m\]\w\[\033[00m\]\$ '
-PS1='\[\033[01;38;2;159;151;216m\]\w\[\033[00m\]\$ '
-# PS1='\[\033[01;38;2;122;122;218m\]\w\[\033[00m\]\$ '
+if "$HOME/dotfiles/bin/is_workstation"; then
+  #'[bold;foreground-color;rgb;R;G;B]working directory[reset]$ '
+  PS1='\[\e[01;38;2;159;151;216m\]\w\[\e[00m\]\$ '
+else
+  PS1='\[\e[01;38;2;159;151;216m\]${SHORT_HOSTNAME:-$"HOSTNAME"}:\w\[\e[00m\]\$ '
+fi
 
 ### Less
 #squeeze blank lines, long prompt, ANSI colors, quit if one screen, ignore-case, padding 10 lines
@@ -87,6 +90,7 @@ alias sbrc='source "$HOME/.bashrc"'
 alias ppath='echo -e "${PATH//:/\\n}"'
 alias tmpl='mktemp /tmp/XXXXXX.log | tr -d '"'"'\n'"'"' | xsel -ib'
 alias hcurl='curl -s -o /dev/null -D -'
+alias cul='curl -L'
 
 ### Functions
 
@@ -203,6 +207,42 @@ function tmux__list_options {
       ;;
   esac
   man -P cat tmux | sed -En "$range" | grep -E --color=never '^ {5}[a-z]'
+}
+
+#stdin input expected
+function conf__pick {
+  if [[ ! "${1-}" =~ [[:alnum:]_-] ]]; then
+    echo "At least one string key expected" >&2
+    return 1
+  fi
+
+  # local delim=':'
+  # awk --assign delim="$delim" 'BEGIN {
+  awk 'BEGIN {
+    for (i=1; i<ARGC; i++) {
+      key=ARGV[i];
+      key_order[i-1] = key
+      map[key] = "";
+    }
+    ARGC=1;
+  }
+  #Not a comment
+  !/^#/ {
+    key = $1;
+    if(key in map) {
+      map[key] = $2;
+    }
+  }
+  END {
+    for(i in key_order) {
+      print map[key_order[i]];
+    }
+  }' "$@"
+  #| cut -c 2-
+}
+
+function conf__read {
+  read -r -d '' "$@" < <(conf__pick "$@")
 }
 
 function lines {
