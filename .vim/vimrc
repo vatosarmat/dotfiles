@@ -1,0 +1,112 @@
+"""""""Terminal setup
+let &t_ke = ""
+let &t_ks = ""
+
+let &t_ku = "\e[A"
+let &t_kd = "\e[B"
+let &t_kr = "\e[C"
+let &t_kl = "\e[D"
+
+let &t_SI = "\e[6 q"
+let &t_SR = "\e[4 q"
+let &t_EI = "\e[2 q"
+
+function! s:EnableMeta(char) abort
+  execute "set <M-".a:char.">=\e".a:char
+endfunction
+
+call s:EnableMeta('f')
+call s:EnableMeta('b')
+call s:EnableMeta('d')
+call s:EnableMeta('u')
+call s:EnableMeta('y')
+call s:EnableMeta('n')
+call s:EnableMeta('p')
+set timeoutlen=10
+
+filetype plugin indent on
+
+hi! Visual       term=reverse ctermbg=17
+hi! Search       term=reverse ctermbg=53
+hi! ErrorMsg     term=reverse ctermbg=52
+hi! LineNr       term=reverse ctermfg=240
+hi! MatchParen   term=reverse ctermbg=23
+
+"""""""Options
+"Reasonable tab width
+set expandtab tabstop=2 softtabstop=2 shiftwidth=2 nosmarttab
+
+"Indent. Prevent set indentexpr to prevent forced cindent on =
+set autoindent indentexpr=-1
+
+"Search. Set shortmess to show matches count
+set nowrapscan noincsearch hlsearch smartcase ignorecase shortmess-=S
+
+"No backups
+set noundofile nobackup nowritebackup noswapfile
+
+"
+set splitbelow splitright
+
+"
+set number relativenumber scrolloff=5
+
+
+""""""Keymappings
+"Line start/end. And redraw
+noremap <C-h> _
+noremap <C-l> g_
+noremap _ <C-l>
+
+"""Emacs-like
+"Line begin-end
+inoremap <expr><C-a> getline('.')[0] == ' ' ? "\<Home>\<C-Right>" : "\<Home>"
+inoremap <C-e> <End>
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+
+"Word backward-forward
+inoremap <M-b> <C-Left>
+inoremap <M-f> <C-Right>
+cnoremap <M-f> <C-Right>
+cnoremap <M-b> <C-Left>
+
+"Delete char forward
+inoremap <C-d> <Del>
+cnoremap <C-d> <Del>
+
+"Delete word backward-forward
+inoremap <M-d> <C-o>de
+if has("nvim")
+inoremap <M-BS> <C-w>
+cnoremap <M-BS> <C-w>
+else
+inoremap <Esc><BS> <C-w>
+cnoremap <Esc><BS> <C-w>
+endif
+
+""Delete line end
+inoremap <C-k> <C-o>d$
+
+"Undo
+inoremap <C-_> <C-o>u
+
+
+""""""Command mappings
+function! Redraw(...) abort
+  redraw!
+endfunction
+
+function! s:Copy() abort
+  silent execute '!echo -n '.shellescape(@", 1).' | xsel -ib&'
+  call timer_start(100, 'Redraw')
+endfunction
+
+nnoremap <M-u> :nohlsearch<cr>
+nnoremap <M-y> :call <sid>Copy()<cr>
+
+set pastetoggle=<F10>
+
+nnoremap <C-n> :Ex<cr>
+nnoremap <M-n> :bn<cr>
+nnoremap <M-p> :bp<cr>
