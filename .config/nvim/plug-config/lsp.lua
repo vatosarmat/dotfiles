@@ -4,7 +4,22 @@ local log = require 'vim.lsp.log'
 local api = vim.api
 local lsp = vim.lsp
 local lspconfig = require 'lspconfig'
+local lspconfig_util = require 'lspconfig.util'
 local lint = require 'lint'
+
+local flags = {
+
+  -- typescript
+  ts_formatter_efm = true,
+  prettier_with_d = true,
+
+  -- lua
+  lua_stylua = false,
+
+  -- common
+  null_ls_debug = false,
+  lsp_autostart = true
+}
 
 local severities = {
   {
@@ -61,7 +76,11 @@ local client_info = {
     short_name = 'TS'
   },
   ['eslint'] = {
-    short_name = 'ES'
+    short_name = 'ES',
+    diagnostic_disable_line = '//eslint-disable-next-line ${code}',
+    diagnostic_webpage = function(diagnostic)
+      return diagnostic.codeDescription.href
+    end
   }
 }
 
@@ -99,7 +118,8 @@ local symbol_icons = {
 
 do
   local lsp_service = {
-    symbol_icons = symbol_icons
+    symbol_icons = symbol_icons,
+    flags = flags
   }
 
   local separator = {
@@ -229,7 +249,6 @@ local autocmd = require('before-plug.vim_utils').autocmd
 --
 -- Default config
 --
-vim.g.lsp_autostart = true
 
 local function document_highlight()
   local col = vim.fn.col '.'
@@ -260,7 +279,7 @@ do
   }
 
   lspconfig.util.default_config = vim.tbl_extend('force', lspconfig.util.default_config, {
-    autostart = vim.g.lsp_autostart,
+    autostart = flags.lsp_autostart,
     flags = {
       debounce_text_changes = 500
     },
@@ -276,10 +295,10 @@ end
 
 do
   local util = lsp.util
-  lsp.handlers['textDocument/definition'] = function(_, method, result, client_id, _, _)
+  lsp.handlers['textDocument/definition'] = function(_, result, ctx, _)
     if result == nil or vim.tbl_isempty(result) then
-      local _ = log.info() and log.info(method, 'No location found')
-      if lsp.get_client_by_id(client_id).name ~= 'efm' then
+      local _ = log.info() and log.info(ctx.method, 'No location found')
+      if lsp.get_client_by_id(ctx.client_id).name ~= 'efm' then
         api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
       end
       return nil
@@ -288,13 +307,17 @@ do
     -- textDocument/definition can return Location or Location[]
     -- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
 
+    -- There could be logic to auto-close this sometimes annoying list
+    -- when we return back from where we go to definition
     if vim.tbl_islist(result) then
-      util.jump_to_location(result[1])
-
       if #result > 1 then
-        util.set_qflist(util.locations_to_items(result))
-        api.nvim_command 'copen | wincmd p'
+        util.set_loclist(util.locations_to_items(result))
+        api.nvim_command 'lopen | wincmd p'
+        autocmd('go_to_definition', 'BufWinEnter <buffer> ++once lclose', {
+          buffer = true
+        })
       end
+      util.jump_to_location(result[1])
     else
       util.jump_to_location(result)
     end
@@ -429,10 +452,10 @@ local function SymbolSelectors()
   -- handler with filter_sort and on_done
   local function make_symbol_handler(title, filter_sort, on_done)
     ---@diagnostic disable-next-line: unused-local
-    return function(err, method, request_result, client_id, bufnr, config)
+    return function(err, request_result, ctx, config)
       if not request_result or vim.tbl_isempty(request_result) then
-        local _ = log.info() and log.info(method, 'No location found')
-        if lsp.get_client_by_id(client_id).name ~= 'efm' then
+        local _ = log.info() and log.info(ctx.method, 'No location found')
+        if lsp.get_client_by_id(ctx.client_id).name ~= 'efm' then
           api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
         end
         return
@@ -440,7 +463,7 @@ local function SymbolSelectors()
 
       local psuc = parent_symbol_under_cursor(request_result)
       local a = filter_sort(psuc and psuc.children or request_result)
-      local items = symbols_to_items(a, bufnr)
+      local items = symbols_to_items(a, ctx.bufnr)
       loclist_set(psuc and psuc.name .. ': ' .. title or title, items)
       api.nvim_command 'lopen | wincmd p'
       on_done()
@@ -595,6 +618,7 @@ do
         -- map_buf(bufnr, 'n', 'go', '<cmd>TSLspImportAll<CR>')
         -- map_buf(bufnr, 'n', 'qq', '<cmd>TSLspFixCurrent<CR>')
       end
+      -- root_dir = lspconfig_util.find_git_ancestor
     }
     local tsserver_add = tsserver.manager.add
     tsserver.manager.add = function(...)
@@ -646,58 +670,64 @@ do
     }
   }
   lspconfig.yamlls.setup {}
-  lspconfig.eslint.setup {}
+  lspconfig.eslint.setup {
+    settings = {
+      format = true,
+      workingDirectory = {
+        mode = 'location'
+      }
+    },
+    root_dir = lspconfig_util.find_git_ancestor
+  }
 
   --
   -- null-ls linters and formatters
   --
   do
-    -- local null_ls = require 'null-ls'
-    -- local b = null_ls.builtins
+    if not flags.ts_formatter_efm then
+      local null_ls = require 'null-ls'
+      local b = null_ls.builtins
 
-    -- local sources = {
-    -- b.formatting.prettier.with({
-    --   filetypes = { 'html', 'json', 'yaml', 'markdown' }
-    -- })
-    -- b.formatting.stylua.with({
-    --   condition = function(utils)
-    --     return utils.root_has_file('stylua.toml')
-    --   end
-    -- }),
-    -- b.formatting.trim_whitespace.with({
-    --   filetypes = { 'tmux', 'teal', 'zsh' }
-    -- }),
-    -- b.formatting.shfmt,
-    -- b.diagnostics.write_good,
-    -- b.diagnostics.markdownlint,
-    -- b.diagnostics.teal,
-    -- b.diagnostics.shellcheck.with({
-    --   diagnostics_format = '#{m} [#{c}]'
-    -- }),
-    -- b.code_actions.gitsigns,
-    -- b.hover.dictionary
-    -- }
+      local prettier_source = flags.prettier_with_d and b.formatting.prettierd.with({
+        filetypes = prettier_filetype
+      }) or b.formatting.prettier.with({
+        filetypes = prettier_filetype,
+        only_local = 'node_modules/.bin'
+      })
+      local sources = {
+        prettier_source
 
-    -- null_ls.config {
-    --   -- debug = true,
-    --   sources = sources
-    -- }
-    -- lspconfig['null-ls'].setup {}
+        -- b.formatting.stylua.with({
+        --   condition = function(utils)
+        --     return utils.root_has_file('stylua.toml')
+        --   end
+        -- }),
+        -- b.formatting.shfmt,
+        -- b.diagnostics.write_good,
+        -- b.diagnostics.markdownlint,
+        -- b.diagnostics.teal,
+        -- b.diagnostics.shellcheck.with({
+        --   diagnostics_format = '#{m} [#{c}]'
+        -- }),
+        -- b.code_actions.gitsigns,
+        -- b.hover.dictionary
+      }
+
+      null_ls.config {
+        debug = flags.null_ls_debug,
+        sources = sources
+      }
+      lspconfig['null-ls'].setup {}
+    end
   end
 
   do
-    -- lua, python yapf, shfmt, prettier
-    local prettier_format = {
-      formatCommand = 'PRETTIERD_LOCAL_PRETTIER_ONLY=true prettierd ${INPUT}',
-      -- formatCommand = 'node_modules/.bin/prettier --stdin --stdin-filepath ${INPUT}',
-      formatStdin = true
-    }
-    local efm_filetypes = vim.list_extend({ 'lua', 'sh', 'python' }, prettier_filetype)
-    local efm_langs = vim.tbl_extend('keep', {
+    -- lua, python yapf, shfmt, maybe prettier
+    local efm_filetypes = { 'lua', 'sh', 'python' }
+    local efm_langs = {
       lua = {
         {
-          formatCommand = 'lua-format -i',
-          -- formatCommand = 'stylua -',
+          formatCommand = flags.lua_stylua and 'stylua -' or 'lua-format -i',
           formatStdin = true
         }
       },
@@ -714,12 +744,23 @@ do
           formatStdin = true
         }
       }
-    }, tablex.reduce(function(ac, v)
-      ac[v] = { prettier_format }
-      return ac
-    end, prettier_filetype, {}))
+    }
 
-    lspconfig.efm.setup { -- on_attach = on_attach,
+    if flags.ts_formatter_efm then
+      local prettier_format = {
+        formatCommand = flags.prettier_with_d and
+          'PRETTIERD_LOCAL_PRETTIER_ONLY=true prettierd ${INPUT}' or
+          'node_modules/.bin/prettier --stdin --stdin-filepath ${INPUT}',
+        formatStdin = true
+      }
+      efm_filetypes = vim.list_extend(efm_filetypes, prettier_filetype)
+      efm_langs = vim.tbl_extend('keep', efm_langs, tablex.reduce(function(ac, v)
+        ac[v] = { prettier_format }
+        return ac
+      end, prettier_filetype, {}))
+    end
+
+    lspconfig.efm.setup {
       init_options = {
         documentFormatting = true
       },
@@ -884,10 +925,11 @@ local function show_line_diagnostics()
   local function webpage()
     local idx = line_diag_idx[api.nvim_win_get_cursor(0)[1]]
     local source = line_diagnostics[idx].source
-    local webpage_pattern = client_info[source].diagnostic_webpage
-    if webpage_pattern then
-      api.nvim_buf_delete(float_bufnr, {})
-      local uri = string.gsub(webpage_pattern, '%${code}', line_diagnostics[idx].code)
+    local diagnostic_webpag = client_info[source].diagnostic_webpage
+    if diagnostic_webpag then
+      local uri = type(diagnostic_webpag) == 'string' and
+                    string.gsub(diagnostic_webpag, '%${code}', line_diagnostics[idx].code) or
+                    diagnostic_webpag(line_diagnostics[idx])
       os.execute('$BROWSER ' .. uri)
     end
   end

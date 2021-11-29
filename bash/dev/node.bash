@@ -37,25 +37,56 @@ function node__sortdeps {
 }
 
 function node__updeps {
-  # Take dir as param or use current dir
-  local pacjson="$(realpath "${1:-.}/package.json")"
-  if ! [[ -f "$pacjson" ]]; then
-    echo 'Expected to get path as parameter or to be run in a directory with package.json' >&2
+  # Expect package.json in the current dir
+  local package_name
+  if ! package_name="$(jq -r '.name' package.json)"; then
     return 1
   fi
-  local pacdir="$(dirname "$pacjson")"
-  if [[ -f "$pacdir/yarn.lock" ]]; then
-    # declare -ar cmd_remove=("yarn" "remove")
-    declare -ar cmd_install=("yarn" "add")
-  else
-    # declare -ar cmd_remove=("npm" "uninstall" "--save")
-    declare -ar cmd_install=("npm" "install" "--save-prod")
-  fi
-  # readarray -t deps_prod < <(jq --raw-output '.dependencies | keys | .[]' < "$pacjson")
-  # "${cmd_remove[@]}" "${deps[@]}"
-  # "${cmd_install[@]}" "${deps_prod[@]}"
 
-  jq --raw-output '.dependencies | keys | map(.+"@latest") | .[]' < "$pacjson" |
-    tr '\n' ' ' |
-    xargs "${cmd_install[@]}"
+  declare -a cmd_install_dev
+  declare -a cmd_install_prod
+  local package_json_path
+  if [[ "$1" = "-w" ]]; then
+    local subpackage="${2-}"
+    test "$subpackage" || {
+      echo 'workspace subpackage name expected' >&2
+      return 1
+    }
+    local workspace_info_json="$(yarn --silent workspaces info --json)"
+    jq -r --arg package_name "$package_name" 'keys | map(ltrimstr("@"+$package_name+"/")) | .[]' <<< "$workspace_info_json" |
+      grep -Fqx "$subpackage" || {
+      echo 'No such subpackage in the workspace!' >&2
+      return 1
+    }
+    package_json_path="$(jq -r \
+      --arg package_name "$package_name" \
+      --arg subpackage "$subpackage" \
+      '.["@"+$package_name+"/"+$subpackage].location' <<< "$workspace_info_json")/package.json"
+
+    cmd_install_dev=("yarn" "workspace" "@${package_name}/${subpackage}" "add" "--dev")
+    cmd_install_prod=("yarn" "workspace" "@${package_name}/${subpackage}" "add")
+  else
+    if [[ -r "yarn.lock" ]]; then
+      cmd_install_dev=("yarn" "add" "--dev")
+      cmd_install_prod=("yarn" "add")
+    else
+      cmd_install_prod=("npm" "install" "--save-prod")
+      cmd_install_dev=("npm" "install" "--save-dev")
+    fi
+    package_json_path="package.json"
+  fi
+
+  #shellcheck disable=2016
+  local jq_filter='keys | map(select(startswith("@"+$package_name+"/")|not)+"@latest") | .[]'
+  declare -ar deps_dev="($(
+    jq -r --arg package_name "$package_name" "try .devDependencies | $jq_filter" \
+      < "$package_json_path"
+  ))"
+  declare -ar deps_prod="($(
+    jq -r --arg package_name "$package_name" "try .dependencies | $jq_filter" \
+      < "$package_json_path"
+  ))"
+
+  test "${deps_dev[0]}" && "${cmd_install_dev[@]}" "${deps_dev[@]}"
+  test "${deps_prod[0]}" && "${cmd_install_prod[@]}" "${deps_prod[@]}"
 }

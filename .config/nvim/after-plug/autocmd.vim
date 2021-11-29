@@ -4,7 +4,7 @@ augroup BeforePlug
   autocmd!
   autocmd TextYankPost * call s:TextYankPost()
 
-  autocmd BufAdd * if !empty(&buftype) | call mappings#NopDiff() | endif
+  autocmd BufAdd * call s:OnBufAdd()
 
   autocmd FileType qf setlocal norelativenumber | call mappings#FtQf()
   autocmd FileType help call docfavs#Init()
@@ -27,6 +27,14 @@ augroup BeforePlug
   "Clear trailing spaces
   autocmd BufWritePre * if g:uopts.laf | call s:TrimLines() | endif
 augroup END
+
+function! s:OnBufAdd() abort
+  if !empty(&buftype)
+    call mappings#NopDiff()
+  endif
+  "Force buffer names to be relative paths
+  execute 'cd' getcwd()
+endfunction
 
 function! s:OnVimEnter() abort
   call s:HighlightDiffConflictMarker()
