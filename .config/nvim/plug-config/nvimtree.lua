@@ -79,4 +79,4 @@ require'nvim-tree'.setup {
 }
 
 map('n', '<C-n>', '<cmd>NvimTreeToggle<CR>')
-map('n', '<leader>zx', '<cmd>NvimTreeFindFile<CR>')
+map('n', '<leader>nf', '<cmd>NvimTreeFindFile<CR>')

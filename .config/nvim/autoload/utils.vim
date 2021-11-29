@@ -147,3 +147,10 @@ function! utils#Print(dflt, ...) abort
   let g:ustate.print_clear_timer = timer_start(g:uopts.print_duration, function('Clear'))
 endfunction
 
+function! utils#Warning(...) abort
+  call call(function('utils#Print'), insert(deepcopy(a:000), 'WarningMsg'))
+endfunction
+
+function! utils#Error(...) abort
+  call call(function('utils#Print'), insert(deepcopy(a:000), 'ErrorMsg'))
+endfunction

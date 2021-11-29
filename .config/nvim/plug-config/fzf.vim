@@ -4,31 +4,19 @@ function! s:build_quickfix_list(lines)
   copen
 endfunction
 
-function! fzf#ProjectType() abort
-  let s:files_exclude = ['.git', '.shada']
+function! s:files_source_cmd() abort
+  return 'fd --type file --follow --no-ignore --hidden '.
+    \ join(map(deepcopy(g:project.exclude_files), {_,value-> '-E '.value}), ' ')
+endfunction
 
-  if exists('g:project_type')
-    if g:project_type == 'cmake' || g:project_type == 'gnu'
-      call extend(s:files_exclude, ['.ccls-cache','Debug', 'Release'])
-    elseif g:project_type == 'rust'
-      call extend(s:files_exclude, ['target'])
-    elseif g:project_type == 'node'
-      call extend(s:files_exclude, ['node_modules', 'coverage', 'yarn.lock', 'package.lock', 'build', 'yarn-error.log'])
-    elseif g:project_type == 'python'
-      call extend(s:files_exclude, ['.venv', ' __pycache__'])
-    endif
-  endif
-
-  let g:files_source_cmd = 'fd --type file --follow --no-ignore --hidden '.
-    \ join(map(deepcopy(s:files_exclude), {_,value-> '-E '.value}), ' ')
-
-  let g:rga_source_cmd = "rg --column --line-number --no-heading --color=always --smart-case ".
-    \ join(map(deepcopy(s:files_exclude), {_,value-> '--glob !'.value}), ' ')
+function! s:rga_source_cmd() abort
+  return "rg --column --line-number --no-heading --color=always --smart-case ".
+    \ join(map(deepcopy(g:project.exclude_files), {_,value-> '--glob !'.value}), ' ')
 endfunction
 
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(#{
-  \ source: g:files_source_cmd,
+  \ source: s:files_source_cmd(),
   \ options: ['--tiebreak=begin,length']}), <bang>0)
 
 nnoremap <silent><C-p> :Files<cr>
@@ -65,10 +53,10 @@ cnoreabbrev rq Rga -F '???'
 
 "Ripgrep taking command line args
 command! -bang -nargs=* Rga
-  \ call fzf#vim#grep(g:rga_source_cmd." ".<q-args>, 1, fzf#vim#with_preview(), <bang>0)
+  \ call fzf#vim#grep(s:rga_source_cmd()." ".<q-args>, 1, fzf#vim#with_preview(), <bang>0)
 
 command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(g:rga_source_cmd.' -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+  \ call fzf#vim#grep(s:rga_source_cmd().' -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
 
 "Implementations
 function! s:MarksLocal() abort

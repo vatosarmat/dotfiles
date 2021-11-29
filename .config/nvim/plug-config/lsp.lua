@@ -601,7 +601,13 @@ do
       -- formatter = 'eslint_d',
       -- update_imports_on_move = true,
       -- filter out dumb module warning
-      filter_out_diagnostics_by_code = { 80001, 80006 }
+      -- https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
+      filter_out_diagnostics_by_code = {
+        6133, -- '{0}' is declared but its value is never read.
+        6196, -- '{0}' is declared but never used.
+        80001, -- "File is a CommonJS module; it may be converted to an ES module."
+        80006 -- "This may be converted to an async function."
+      }
     }
     tsserver.setup {
       on_attach = function(client, bufnr)
@@ -925,11 +931,11 @@ local function show_line_diagnostics()
   local function webpage()
     local idx = line_diag_idx[api.nvim_win_get_cursor(0)[1]]
     local source = line_diagnostics[idx].source
-    local diagnostic_webpag = client_info[source].diagnostic_webpage
-    if diagnostic_webpag then
-      local uri = type(diagnostic_webpag) == 'string' and
-                    string.gsub(diagnostic_webpag, '%${code}', line_diagnostics[idx].code) or
-                    diagnostic_webpag(line_diagnostics[idx])
+    local diagnostic_webpage = client_info[source].diagnostic_webpage
+    if diagnostic_webpage then
+      local uri = type(diagnostic_webpage) == 'string' and
+                    string.gsub(diagnostic_webpage, '%${code}', line_diagnostics[idx].code) or
+                    diagnostic_webpage(line_diagnostics[idx])
       os.execute('$BROWSER ' .. uri)
     end
   end
