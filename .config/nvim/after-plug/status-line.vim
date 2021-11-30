@@ -88,9 +88,10 @@ function! StatusQfTitle() abort
 endfunction
 
 function! StatusTreesitter() abort
-  let w = winwidth(0)
-  if w < 100 | return '' | endif
-  return nvim_treesitter#statusline(#{separator: '->', indicator_size: w/2})
+  " let w = winwidth(0)
+  " if w < 100 | return '' | endif
+  " return nvim_treesitter#statusline(#{separator: '->', indicator_size: w/2})
+  return ''
 endfunction
 
 function! StatusShortmap() abort

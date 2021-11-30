@@ -27,7 +27,7 @@ function! s:QflistStep(next, loc = 0) abort
     "Clear first/last item warning
     execute cmd
   catch /E42/
-    call utils#Print('WarningMsg', 'No qflist available')
+    call utils#Print('WarningMsg', 'No list for ', [cmd, 'LspDiagnosticsSignInformation'])
   catch /E776/
     call utils#Print('WarningMsg', 'No loclist available')
   catch /E553/
@@ -636,4 +636,4 @@ endfunction
 call s:WordMotions()
 
 "Folds
-nnoremap <M-f> za
+" nnoremap <M-f> za

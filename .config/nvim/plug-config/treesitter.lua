@@ -32,11 +32,51 @@ require'nvim-treesitter.configs'.setup {
   incremental_selection = {
     enable = true,
     keymaps = {
-      init_selection = 'gnn',
-      node_incremental = '<C-u>',
-      node_decremental = '<C-d>',
-      scope_incremental = 'grc'
+      init_selection = '<M-f>',
+      node_incremental = '<M-f>',
+      node_decremental = '<M-a>'
+      -- scope_incremental = 'grc'
     }
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      lookahead = true,
+      keymaps = {
+        ['af'] = '@function.outer',
+        ['if'] = '@function.inner',
+        ['ac'] = '@class.outer',
+        ['ic'] = '@class.inner'
+      }
+    },
+    move = {
+      enable = true,
+      set_jumps = true, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        [']f'] = '@function.outer'
+        -- [']]'] = '@class.outer'
+      },
+      goto_next_end = {
+        [']F'] = '@function.outer'
+        -- [']['] = '@class.outer'
+      },
+      goto_previous_start = {
+        ['[f'] = '@function.outer'
+        -- ['[['] = '@class.outer'
+      },
+      goto_previous_end = {
+        ['[F'] = '@function.outer'
+        -- ['[]'] = '@class.outer'
+      }
+    },
+    lsp_interop = {
+      enable = true,
+      border = 'none',
+      peek_definition_code = {
+        ['g<C-d>'] = '@function.outer'
+      }
+    }
+
   }
 }
 local parser_config = require'nvim-treesitter.parsers'.get_parser_configs()

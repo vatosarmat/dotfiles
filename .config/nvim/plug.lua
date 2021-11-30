@@ -50,7 +50,7 @@ local plug = require('packer').startup(function()
   }
   use {
     'windwp/nvim-autopairs',
-    after = 'LuaSnip',
+    after = { 'LuaSnip', 'nvim-treesitter' },
     config = function()
       require 'plug-config.lsp'
       local npairs = require 'nvim-autopairs'
@@ -85,11 +85,18 @@ local plug = require('packer').startup(function()
 
   use {
     'nvim-treesitter/nvim-treesitter',
-    branch = '0.5-compat',
-    config = mk_sourcer 'plug-config.treesitter',
+    event = 'VimEnter',
     run = ':TSUpdate'
   }
-  use 'nvim-treesitter/playground'
+  use {
+    'nvim-treesitter/playground',
+    after = 'nvim-treesitter'
+  }
+  use {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    config = mk_sourcer 'plug-config.treesitter',
+    after = 'nvim-treesitter'
+  }
 
   use {
     'tpope/vim-fugitive',
@@ -123,7 +130,10 @@ local plug = require('packer').startup(function()
     'tpope/vim-commentary',
     config = misc.commentary
   }
-  use 'JoosepAlviste/nvim-ts-context-commentstring'
+  use {
+    'JoosepAlviste/nvim-ts-context-commentstring',
+    after = { 'vim-commentary', 'nvim-treesitter' }
+  }
 
   use {
     'chaoren/vim-wordmotion',
