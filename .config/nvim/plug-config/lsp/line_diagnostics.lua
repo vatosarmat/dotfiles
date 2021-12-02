@@ -7,52 +7,6 @@ local map_buf = require'before-plug.vim_utils'.map_buf
 local cext = require 'plug-config.lsp.client_ext'
 local pui = require 'plug-config.lsp.protocol_ui'
 
-local function diagnostic_highlight(text, line)
-  local type_hl_idx = 0
-  local pats = {
-    {
-      [[[tT]ype '[^']+']],
-      function()
-        local ret = type_hl_idx % 2 == 0 and 'TSType' or 'TSKeyword'
-        type_hl_idx = (type_hl_idx + 1) % 2
-        return ret
-      end
-    },
-    { [[[sS]ignature '[^']+']], const('TSInclude') },
-    { [[[oO]verload %d of %d, '[^']+']], const('TSFunction') }
-  }
-  local rest = line
-  local done = true
-  while #rest > 0 do
-    local q1, q2 = string.find(rest, [['[^']+']])
-
-    -- found something in quotes
-    if q1 then
-      local quote_area = string.sub(rest, 0, q2)
-
-      for _, pat in ipairs(pats) do
-        local rexp, hl_func = unpack(pat)
-        local _, e = string.find(quote_area, rexp)
-        -- quote_area is one of interested pats
-        if e == q2 then
-          text:append(string.sub(rest, 0, q1)) -- prefix
-          text:append(string.sub(rest, q1 + 1, q2 - 1), hl_func()) -- type
-          text:append('\'')
-          rest = string.sub(rest, q2 + 1)
-          done = false
-          break
-        end
-      end
-    end
-
-    if done then
-      text:append(rest)
-      return
-    end
-    done = true
-  end
-end
-
 local function show_line_diagnostics()
   local bufnr = api.nvim_get_current_buf()
   local line_nr = api.nvim_win_get_cursor(0)[1] - 1
@@ -77,8 +31,9 @@ local function show_line_diagnostics()
     text:append(name .. '_' .. code .. ': ', hiname)
     local lines = vim.fn.split(diagnostic.message, '\n', true)
     for _, line in ipairs(lines) do
-      if name == 'TS' then
-        diagnostic_highlight(text, line)
+      local hl = cext[diagnostic.source].diagnostic_highlight
+      if hl then
+        hl(text, line)
       else
         text:append(line)
       end
