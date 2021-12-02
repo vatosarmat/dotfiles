@@ -1,3 +1,5 @@
+local find_if = require'pl.tablex'.find_if
+
 local function tsserver_diagnostic_highlight(text, line)
   local type_hl_idx = 0
   local pats = {
@@ -74,6 +76,12 @@ local client_ext = {
     diagnostic_disable_line = '//eslint-disable-next-line ${code}',
     diagnostic_webpage = function(diagnostic)
       return diagnostic.codeDescription.href
+    end,
+    diagnostic_fix_action_selector = function(ca_result)
+      local idx = find_if(ca_result, function(action)
+        return action.command.command == 'eslint.applySingleFix'
+      end)
+      return ca_result[idx]
     end
   }
 }
