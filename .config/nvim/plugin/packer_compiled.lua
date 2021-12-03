@@ -57,7 +57,7 @@ end
 time([[Luarocks path setup]], false)
 time([[try_loadstring definition]], true)
 local function try_loadstring(s, component, name)
-  local success, result = pcall(loadstring(s))
+  local success, result = pcall(loadstring(s), name, _G.packer_plugins[name])
   if not success then
     vim.schedule(function()
       vim.api.nvim_notify('packer.nvim: Error running ' .. component .. ' for ' .. name .. ': ' .. result, vim.log.levels.ERROR, {})
@@ -202,7 +202,7 @@ _G.packer_plugins = {
     url = "https://github.com/kyazdani42/nvim-tree.lua"
   },
   ["nvim-treesitter"] = {
-    after = { "nvim-ts-context-commentstring", "nvim-treesitter-textobjects", "playground", "nvim-autopairs" },
+    after = { "nvim-autopairs", "nvim-ts-context-commentstring", "playground", "nvim-treesitter-textobjects" },
     loaded = false,
     needs_bufread = true,
     only_cond = false,
@@ -314,6 +314,10 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
+-- Config for: vim-surround
+time([[Config for vim-surround]], true)
+try_loadstring("\27LJ\2\n…\1\0\0\b\0\f\0\0226\0\0\0'\2\1\0B\0\2\0029\0\2\0006\1\3\0009\1\4\1)\2\1\0=\2\5\0015\1\6\0\18\2\0\0'\4\a\0'\5\b\0'\6\t\0\18\a\1\0B\2\5\1\18\2\0\0'\4\n\0'\5\b\0'\6\v\0\18\a\1\0B\2\5\1K\0\1\0\20<Plug>VSurround\6x\20<Plug>Ysurround\6,\6n\1\0\1\fnoremap\1\20surround_indent\6g\bvim\bmap\26before-plug.vim_utils\frequire\0", "config", "vim-surround")
+time([[Config for vim-surround]], false)
 -- Config for: nvim-scrollview
 time([[Config for nvim-scrollview]], true)
 try_loadstring("\27LJ\2\n£\1\0\0\2\0\6\0\0176\0\0\0009\0\1\0)\1\1\0=\1\2\0006\0\0\0009\0\1\0)\1<\0=\1\3\0006\0\0\0009\0\1\0)\1\1\0=\1\4\0006\0\0\0009\0\1\0)\1\0\0=\1\5\0K\0\1\0\26scrollview_auto_mouse\22scrollview_column\24scrollview_winblend\26scrollview_on_startup\6g\bvim\0", "config", "nvim-scrollview")
@@ -330,35 +334,31 @@ time([[Config for gitsigns.nvim]], false)
 time([[Config for nvim-tree.lua]], true)
 if not pcall(require, 'plug-config.nvimtree') then print('plug-config.nvimtree config failed') end 
 time([[Config for nvim-tree.lua]], false)
--- Config for: vim-wordmotion
-time([[Config for vim-wordmotion]], true)
-try_loadstring("\27LJ\2\n•\3\0\0\b\0\21\0.6\0\0\0'\2\1\0B\0\2\0029\0\2\0006\1\3\0009\1\4\1)\2\1\0=\2\5\0015\1\6\0\18\2\0\0'\4\a\0'\5\b\0'\6\t\0\18\a\1\0B\2\5\1\18\2\0\0'\4\a\0'\5\n\0'\6\v\0\18\a\1\0B\2\5\1\18\2\0\0'\4\a\0'\5\f\0'\6\r\0\18\a\1\0B\2\5\1\18\2\0\0'\4\a\0'\5\14\0'\6\15\0\18\a\1\0B\2\5\1\18\2\0\0'\4\16\0'\5\17\0'\6\18\0\18\a\1\0B\2\5\1\18\2\0\0'\4\16\0'\5\19\0'\6\20\0\18\a\1\0B\2\5\1K\0\1\0\24<Plug>WordMotion_iw\vi<M-w>\24<Plug>WordMotion_aw\va<M-w>\6o\24<Plug>WordMotion_ge\n<M-s>\23<Plug>WordMotion_e\n<M-e>\23<Plug>WordMotion_b\n<M-b>\23<Plug>WordMotion_w\n<M-w>\bnxo\1\0\1\fnoremap\1\21wordmotion_nomap\6g\bvim\bmap\26before-plug.vim_utils\frequire\0", "config", "vim-wordmotion")
-time([[Config for vim-wordmotion]], false)
--- Config for: nvim-dap
-time([[Config for nvim-dap]], true)
-if not pcall(require, 'plug-config.dap') then print('plug-config.dap config failed') end 
-time([[Config for nvim-dap]], false)
--- Config for: vim-commentary
-time([[Config for vim-commentary]], true)
-try_loadstring("\27LJ\2\n≠\1\0\0\b\0\t\0\0186\0\0\0'\2\1\0B\0\2\0029\0\2\0005\1\3\0\18\2\0\0'\4\4\0'\5\5\0'\6\6\0\18\a\1\0B\2\5\1\18\2\0\0'\4\a\0'\5\5\0'\6\b\0\18\a\1\0B\2\5\1K\0\1\0\21<Plug>Commentary\6x\25<Plug>CommentaryLine\n<C-_>\6n\1\0\1\fnoremap\1\bmap\26before-plug.vim_utils\frequire\0", "config", "vim-commentary")
-time([[Config for vim-commentary]], false)
--- Config for: nvcode-color-schemes.vim
-time([[Config for nvcode-color-schemes.vim]], true)
-vim.cmd('source $STD_PATH_CONFIG/plug-config/colors.vim')
-time([[Config for nvcode-color-schemes.vim]], false)
 -- Config for: vim-fugitive
 time([[Config for vim-fugitive]], true)
 vim.cmd('source $STD_PATH_CONFIG/plug-config/fugitive.vim')
 time([[Config for vim-fugitive]], false)
--- Config for: vim-surround
-time([[Config for vim-surround]], true)
-try_loadstring("\27LJ\2\n…\1\0\0\b\0\f\0\0226\0\0\0'\2\1\0B\0\2\0029\0\2\0006\1\3\0009\1\4\1)\2\1\0=\2\5\0015\1\6\0\18\2\0\0'\4\a\0'\5\b\0'\6\t\0\18\a\1\0B\2\5\1\18\2\0\0'\4\n\0'\5\b\0'\6\v\0\18\a\1\0B\2\5\1K\0\1\0\20<Plug>VSurround\6x\20<Plug>Ysurround\6,\6n\1\0\1\fnoremap\1\20surround_indent\6g\bvim\bmap\26before-plug.vim_utils\frequire\0", "config", "vim-surround")
-time([[Config for vim-surround]], false)
+-- Config for: vim-commentary
+time([[Config for vim-commentary]], true)
+try_loadstring("\27LJ\2\n≠\1\0\0\b\0\t\0\0186\0\0\0'\2\1\0B\0\2\0029\0\2\0005\1\3\0\18\2\0\0'\4\4\0'\5\5\0'\6\6\0\18\a\1\0B\2\5\1\18\2\0\0'\4\a\0'\5\5\0'\6\b\0\18\a\1\0B\2\5\1K\0\1\0\21<Plug>Commentary\6x\25<Plug>CommentaryLine\n<C-_>\6n\1\0\1\fnoremap\1\bmap\26before-plug.vim_utils\frequire\0", "config", "vim-commentary")
+time([[Config for vim-commentary]], false)
+-- Config for: nvim-dap
+time([[Config for nvim-dap]], true)
+if not pcall(require, 'plug-config.dap') then print('plug-config.dap config failed') end 
+time([[Config for nvim-dap]], false)
+-- Config for: vim-wordmotion
+time([[Config for vim-wordmotion]], true)
+try_loadstring("\27LJ\2\n•\3\0\0\b\0\21\0.6\0\0\0'\2\1\0B\0\2\0029\0\2\0006\1\3\0009\1\4\1)\2\1\0=\2\5\0015\1\6\0\18\2\0\0'\4\a\0'\5\b\0'\6\t\0\18\a\1\0B\2\5\1\18\2\0\0'\4\a\0'\5\n\0'\6\v\0\18\a\1\0B\2\5\1\18\2\0\0'\4\a\0'\5\f\0'\6\r\0\18\a\1\0B\2\5\1\18\2\0\0'\4\a\0'\5\14\0'\6\15\0\18\a\1\0B\2\5\1\18\2\0\0'\4\16\0'\5\17\0'\6\18\0\18\a\1\0B\2\5\1\18\2\0\0'\4\16\0'\5\19\0'\6\20\0\18\a\1\0B\2\5\1K\0\1\0\24<Plug>WordMotion_iw\vi<M-w>\24<Plug>WordMotion_aw\va<M-w>\6o\24<Plug>WordMotion_ge\n<M-s>\23<Plug>WordMotion_e\n<M-e>\23<Plug>WordMotion_b\n<M-b>\23<Plug>WordMotion_w\n<M-w>\bnxo\1\0\1\fnoremap\1\21wordmotion_nomap\6g\bvim\bmap\26before-plug.vim_utils\frequire\0", "config", "vim-wordmotion")
+time([[Config for vim-wordmotion]], false)
+-- Config for: nvcode-color-schemes.vim
+time([[Config for nvcode-color-schemes.vim]], true)
+vim.cmd('source $STD_PATH_CONFIG/plug-config/colors.vim')
+time([[Config for nvcode-color-schemes.vim]], false)
 vim.cmd [[augroup packer_load_aucmds]]
 vim.cmd [[au!]]
   -- Event lazy-loads
 time([[Defining lazy-load event autocommands]], true)
-vim.cmd [[au VimEnter * ++once lua require("packer.load")({'nvim-treesitter', 'lua-dev.nvim', 'fzf'}, { event = "VimEnter *" }, _G.packer_plugins)]]
+vim.cmd [[au VimEnter * ++once lua require("packer.load")({'fzf', 'lua-dev.nvim', 'nvim-treesitter'}, { event = "VimEnter *" }, _G.packer_plugins)]]
 time([[Defining lazy-load event autocommands]], false)
 vim.cmd("augroup END")
 if should_profile then save_profiles() end

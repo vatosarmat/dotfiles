@@ -1,11 +1,11 @@
+
 call setenv("STD_PATH_CONFIG", stdpath('config'))
-call setenv("LUA_PATH", printf('%s/?.lua', stdpath('config')))
-call setenv("LUA_CPATH", '')
 
 source $STD_PATH_CONFIG/before-plug/options.vim
 source $STD_PATH_CONFIG/before-plug/ustate.vim
 source $STD_PATH_CONFIG/before-plug/uopts.vim
 packadd cfilter
+
 lua << END
 _G.pack = function(...) return { ... } end
 if not service then
@@ -36,15 +36,19 @@ function _G.const(v)
   end
 end
 
---Copied from packer_compiled.lua. Need rocks to be available before all other lua plugins
-local package_path_str = "/home/igor/.cache/nvim/packer_hererocks/2.1.0-beta3/share/lua/5.1/?.lua;/home/igor/.cache/nvim/packer_hererocks/2.1.0-beta3/share/lua/5.1/?/init.lua;/home/igor/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/luarocks/rocks-5.1/?.lua;/home/igor/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/luarocks/rocks-5.1/?/init.lua"
-local install_cpath_pattern = "/home/igor/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/lua/5.1/?.so"
-if not string.find(package.path, package_path_str, 1, true) then
-  package.path = package.path .. ';' .. package_path_str
+local home = os.getenv('HOME')
+local here = ".cache/nvim/packer_hererocks/2.1.0-beta3"
+local paths = {
+  "share/lua/5.1",
+  "lib/luarocks/rocks-5.1"
+}
+local package_path_str = string.format('%s/?.lua', vim.fn.stdpath('config'))
+for _, path in ipairs(paths) do
+  package_path_str = string.format('%s;%s/%s/%s/?.lua', package_path_str, home, here, path)
+  package_path_str = string.format('%s;%s/%s/%s/?/init.lua', package_path_str, home, here, path)
 end
+package.path = package_path_str
+package.cpath = string.format('%s/%s/lib/lua/5.1/?.so', home, here)
 
-if not string.find(package.cpath, install_cpath_pattern, 1, true) then
-  package.cpath = package.cpath .. ';' .. install_cpath_pattern
-end
 END
 luafile $STD_PATH_CONFIG/plug.lua
