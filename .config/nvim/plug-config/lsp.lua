@@ -11,7 +11,7 @@ local pui = require 'plug-config.lsp.protocol_ui'
 local lsp_flags = require 'plug-config.lsp.flags'
 local completion = require 'plug-config.lsp.completion'
 local sym_nav = require 'plug-config.lsp.symbol_navigation'
-require 'plug-config.lsp.line_diagnostics'
+require 'plug-config.lsp.diagnostic'
 require 'plug-config.lsp.server_setups'
 
 do
@@ -50,7 +50,10 @@ do
     -- when we return back from where we go to definition
     if vim.tbl_islist(result) then
       if #result > 1 then
-        util.set_loclist(util.locations_to_items(result))
+        vim.fn.setloclist(0, {}, ' ', {
+          title = 'Definitions',
+          items = util.locations_to_items(result)
+        })
         api.nvim_command 'lopen | wincmd p'
         autocmd('go_to_definition', 'BufWinEnter <buffer> ++once lclose', {
           buffer = true
@@ -61,19 +64,6 @@ do
       util.jump_to_location(result)
     end
   end
-
-  lsp.handlers['textDocument/publishDiagnostics'] =
-    lsp.with(lsp.diagnostic.on_publish_diagnostics, {
-      virtual_text = function(_, _)
-        return vim.g.uopts.ldv == 1 -- { severity_limit = "Error" }
-      end,
-      underline = function(_, _)
-        return vim.g.uopts.ldu == 1 -- { severity_limit = "Error" }
-      end,
-      signs = true,
-      update_in_insert = false,
-      severity_sort = true
-    })
 end
 
 --
@@ -83,13 +73,7 @@ do
   local function toggle_option(option)
     vim.fn['uopts#toggle'](option)
     if vim.tbl_contains({ 'ldu', 'ldv' }, option) then
-      local config = {
-        virtual_text = vim.g.uopts.ldv == 1,
-        underline = vim.g.uopts.ldu == 1
-      }
-      for _, client in ipairs(lsp.get_active_clients()) do
-        lsp.diagnostic.display(lsp.diagnostic.get(0, client.id), 0, client.id, config)
-      end
+      vim.diagnostic.show()
     end
   end
 
@@ -129,19 +113,19 @@ do
     expr = true
   })
 
-  map('n', '<C-k>', lsp.diagnostic.show_line_diagnostics)
+  map('n', '<C-k>', vim.diagnostic.open_float)
 
   -- Goto's
   map('n', 'gd', lsp.buf.definition)
   map('n', 'gt', lsp.buf.type_definition)
   map('n', 'gr', lsp.buf.references)
-  map('n', 'g[', func.bind1(lsp.diagnostic.goto_prev, {
+  map('n', 'g[', func.bind1(vim.diagnostic.goto_prev, {
     wrap = false,
-    enable_popup = false
+    float = false
   }))
-  map('n', 'g]', func.bind1(lsp.diagnostic.goto_next, {
+  map('n', 'g]', func.bind1(vim.diagnostic.goto_next, {
     wrap = false,
-    enable_popup = false
+    float = false
   }))
 
   -- Refactor

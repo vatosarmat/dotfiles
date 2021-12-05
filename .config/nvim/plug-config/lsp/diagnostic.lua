@@ -8,12 +8,52 @@ local map_buf = require'before-plug.vim_utils'.map_buf
 local cext = require 'plug-config.lsp.client_ext'
 local pui = require 'plug-config.lsp.protocol_ui'
 
+local function get_source(diagnostic)
+  return cext[diagnostic.source].short_name or diagnostic.source or '?'
+end
+
+local function get_code(diagnostic)
+  local u = diagnostic.user_data
+  if u then
+    local l = u.lsp
+    if l and l.code then
+      return l.code
+    end
+  end
+  return diagnostic.severity
+end
+
 local function lookup_client_by_name(name, bufnr)
   local clients = lsp.buf_get_clients(bufnr)
   local idx = find_if(clients, function(client)
     return client.name == name
   end)
   return clients[idx]
+end
+
+local function severity_vim_to_lsp(severity)
+  if type(severity) == 'string' then
+    severity = vim.diagnostic.severity[severity]
+  end
+  return severity
+end
+
+local function diagnostic_vim_to_lsp(d)
+  return vim.tbl_extend('error', {
+    range = {
+      start = {
+        line = d.lnum,
+        character = d.col
+      },
+      ['end'] = {
+        line = d.end_lnum,
+        character = d.end_col
+      }
+    },
+    severity = severity_vim_to_lsp(d.severity),
+    message = d.message,
+    source = d.source
+  }, d.user_data and (d.user_data.lsp or {}) or {})
 end
 
 local function show_line_diagnostics()
@@ -23,7 +63,9 @@ local function show_line_diagnostics()
   local opts = {}
   local diag_idx_by_line = {}
 
-  local line_diagnostics = lsp.diagnostic.get_line_diagnostics(bufnr, line_nr, opts)
+  local line_diagnostics = vim.diagnostic.get(bufnr, {
+    lnum = line_nr
+  })
   if vim.tbl_isempty(line_diagnostics) then
     return
   end
@@ -31,11 +73,8 @@ local function show_line_diagnostics()
   local text = Text:new()
   -- local diag_idx_by_text = {}
   for diag_idx, diagnostic in ipairs(line_diagnostics) do
-    local name = '?'
-    local code = diagnostic.code or diagnostic.severity
-    if diagnostic.source then
-      name = cext[diagnostic.source].short_name or diagnostic.source
-    end
+    local name = get_source(diagnostic)
+    local code = get_code(diagnostic)
     local hiname = pui.severities[diagnostic.severity].hl_float
     assert(hiname, 'unknown severity: ' .. tostring(diagnostic.severity))
     text:append(name .. '_' .. code .. ': ', hiname)
@@ -67,7 +106,8 @@ local function show_line_diagnostics()
       local line = api.nvim_buf_get_lines(bufnr, line_nr, line_nr + 1, false)[1]
       print(vim.inspect(line))
       local indent_spaces = string.sub(line, string.find(line, '%s*'))
-      local dl = indent_spaces .. string.gsub(dl_pattern, '%${code}', line_diagnostics[idx].code)
+      local dl = indent_spaces ..
+                   string.gsub(dl_pattern, '%${code}', get_code(line_diagnostics[idx]))
       api.nvim_buf_set_lines(bufnr, line_nr, line_nr, false, { dl })
       vim.cmd('write ' .. tostring(vim.fn.bufname(bufnr)))
     end
@@ -79,7 +119,7 @@ local function show_line_diagnostics()
     local diagnostic_webpage = cext[source].diagnostic_webpage
     if diagnostic_webpage then
       local uri = type(diagnostic_webpage) == 'string' and
-                    string.gsub(diagnostic_webpage, '%${code}', line_diagnostics[idx].code) or
+                    string.gsub(diagnostic_webpage, '%${code}', get_code(line_diagnostics[idx])) or
                     diagnostic_webpage(line_diagnostics[idx])
       os.execute('$BROWSER ' .. uri)
     end
@@ -94,7 +134,7 @@ local function show_line_diagnostics()
       local client = lookup_client_by_name(source, bufnr)
       -- There must be a client. If no, let error message
       range_params.context = {
-        diagnostics = { line_diagnostics[idx] },
+        diagnostics = { diagnostic_vim_to_lsp(line_diagnostics[idx]) },
         only = { 'quickfix' }
       }
       ---@diagnostic disable-next-line: unused-local
@@ -143,4 +183,22 @@ local function show_line_diagnostics()
   return float_bufnr, float_winnr
 end
 
-lsp.diagnostic.show_line_diagnostics = show_line_diagnostics
+vim.diagnostic.config({
+  virtual_text = function(_, _)
+    return vim.g.uopts.ldv == 1 and {
+      format = function(d)
+        return string.format('%s:%s', get_source(d), get_code(d))
+      end
+    } or false
+  end,
+  underline = function(_, _)
+    return vim.g.uopts.ldu == 1 and {
+      -- severity_limit = 'Error'
+    } or false
+  end,
+  signs = true,
+  update_in_insert = false,
+  severity_sort = true
+})
+
+vim.diagnostic.open_float = show_line_diagnostics

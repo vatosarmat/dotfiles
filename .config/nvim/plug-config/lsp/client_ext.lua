@@ -3,6 +3,7 @@ local find_if = require'pl.tablex'.find_if
 local function tsserver_diagnostic_highlight(text, line)
   local type_hl_idx = 0
   local pats = {
+    { [[[pP]roperty '[^']+']], const('TSProperty') },
     {
       [[[tT]ype '[^']+']],
       function()
@@ -15,14 +16,13 @@ local function tsserver_diagnostic_highlight(text, line)
     { [[[oO]verload %d of %d, '[^']+']], const('TSFunction') }
   }
   local rest = line
-  local done = true
   while #rest > 0 do
     local q1, q2 = string.find(rest, [['[^']+']])
 
-    -- found something in quotes
     if q1 then
+      -- found something in quotes
       local quote_area = string.sub(rest, 0, q2)
-
+      local matched = false
       for _, pat in ipairs(pats) do
         local rexp, hl_func = unpack(pat)
         local _, e = string.find(quote_area, rexp)
@@ -31,19 +31,20 @@ local function tsserver_diagnostic_highlight(text, line)
           text:append(string.sub(rest, 0, q1)) -- prefix
           text:append(string.sub(rest, q1 + 1, q2 - 1), hl_func()) -- type
           text:append('\'')
-          rest = string.sub(rest, q2 + 1)
-          done = false
+          matched = true
           break
         end
       end
+      if not matched then
+        text:append(quote_area)
+      end
+      rest = string.sub(rest, q2 + 1)
+    else
+      -- nothing in quotes
+      break
     end
-
-    if done then
-      text:append(rest)
-      return
-    end
-    done = true
   end
+  text:append(rest)
 end
 
 local client_ext = {
@@ -75,7 +76,7 @@ local client_ext = {
     short_name = 'ES',
     diagnostic_disable_line = '//eslint-disable-next-line ${code}',
     diagnostic_webpage = function(diagnostic)
-      return diagnostic.codeDescription.href
+      return diagnostic.user_data.lsp.codeDescription.href
     end,
     diagnostic_fix_action_selector = function(ca_result)
       local idx = find_if(ca_result, function(action)
