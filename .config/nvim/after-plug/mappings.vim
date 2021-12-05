@@ -615,18 +615,18 @@ function! s:WordMotions() abort
     normal! _
   endfunction
 
-  nnoremap w <cmd>call <sid>move_w()<cr>
-  nnoremap b <cmd>call <sid>move_b()<cr>
-  nnoremap e <cmd>call <sid>move_e()<cr>
-  nnoremap s <cmd>call <sid>move_ge()<cr>
-  xnoremap w <cmd>call <sid>move_w()<cr>
-  xnoremap b <cmd>call <sid>move_b()<cr>
-  xnoremap e <cmd>call <sid>move_e()<cr>
-  xnoremap s <cmd>call <sid>move_ge()<cr>
-  onoremap w <cmd>call <sid>move_w()<cr>
-  onoremap b <cmd>call <sid>move_b()<cr>
-  onoremap e <cmd>call <sid>move_e()<cr>
-  onoremap s <cmd>call <sid>move_ge()<cr>
+  " nnoremap w <cmd>call <sid>move_w()<cr>
+  " nnoremap b <cmd>call <sid>move_b()<cr>
+  " nnoremap e <cmd>call <sid>move_e()<cr>
+  " nnoremap s <cmd>call <sid>move_ge()<cr>
+  " xnoremap w <cmd>call <sid>move_w()<cr>
+  " xnoremap b <cmd>call <sid>move_b()<cr>
+  " xnoremap e <cmd>call <sid>move_e()<cr>
+  " xnoremap s <cmd>call <sid>move_ge()<cr>
+  " onoremap w <cmd>call <sid>move_w()<cr>
+  " onoremap b <cmd>call <sid>move_b()<cr>
+  " onoremap e <cmd>call <sid>move_e()<cr>
+  " onoremap s <cmd>call <sid>move_ge()<cr>
 
   nnoremap S gE
   xnoremap S gE

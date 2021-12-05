@@ -49,6 +49,7 @@ set completeopt=menuone,noselect
 "set shortmess+=c
 set omnifunc=v:lua.service.lsp.omnifunc
 
+set inccommand=
 
 let mapleader = " "
 nnoremap <Space> <Nop>

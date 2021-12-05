@@ -10,14 +10,18 @@ function M.commentary()
   --     return "<Plug>CommentaryLine"
   --   end
   -- end
-  local opts = { noremap = false }
+  local opts = {
+    noremap = false
+  }
   map('n', '<C-_>', '<Plug>CommentaryLine', opts)
   map('x', '<C-_>', '<Plug>Commentary', opts)
 end
 
 function M.asterisk()
   local map = require'before-plug.vim_utils'.map
-  local opts = { noremap = false }
+  local opts = {
+    noremap = false
+  }
   map('nxo', '*', '<Plug>(asterisk-z*)', opts)
   map('nxo', '#', '<Plug>(asterisk-z#)', opts)
   map('nxo', 'g*', '<Plug>(asterisk-gz*)', opts)
@@ -27,7 +31,14 @@ end
 function M.wordmotion()
   local map = require'before-plug.vim_utils'.map
   vim.g.wordmotion_nomap = 1
-  local opts = { noremap = false }
+  vim.g.wordmotion_uppercase_spaces = { '[^[:keyword:]]' }
+  local opts = {
+    noremap = false
+  }
+  map('nxo', 'w', '<Plug>WordMotion_W', opts)
+  map('nxo', 'b', '<Plug>WordMotion_B', opts)
+  map('nxo', 'e', '<Plug>WordMotion_E', opts)
+  map('nxo', 's', '<Plug>WordMotion_gE', opts)
   map('nxo', '<M-w>', '<Plug>WordMotion_w', opts)
   map('nxo', '<M-b>', '<Plug>WordMotion_b', opts)
   map('nxo', '<M-e>', '<Plug>WordMotion_e', opts)
@@ -39,7 +50,9 @@ end
 function M.surround()
   local map = require'before-plug.vim_utils'.map
   vim.g.surround_indent = 1
-  local opts = { noremap = false }
+  local opts = {
+    noremap = false
+  }
   map('n', ',', '<Plug>Ysurround', opts)
   map('x', ',', '<Plug>VSurround', opts)
 end
