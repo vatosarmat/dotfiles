@@ -1,12 +1,23 @@
 local api = vim.api
 local lsp = vim.lsp
 local find_if = require'pl.tablex'.find_if
+local reduce = require'pl.tablex'.reduce
 local Text = require'before-plug.vim_utils'.Text
 local map_buf = require'before-plug.vim_utils'.map_buf
 
 -- LSP submodules
 local cext = require 'plug-config.lsp.client_ext'
 local pui = require 'plug-config.lsp.protocol_ui'
+
+--
+-- Utils
+--
+local function get_bufnr(bufnr)
+  if not bufnr or bufnr == 0 then
+    return vim.api.nvim_get_current_buf()
+  end
+  return bufnr
+end
 
 local function get_source(diagnostic)
   return cext[diagnostic.source].short_name or diagnostic.source or '?'
@@ -56,6 +67,9 @@ local function diagnostic_vim_to_lsp(d)
   }, d.user_data and (d.user_data.lsp or {}) or {})
 end
 
+--
+-- Diagnostics float
+--
 local function show_line_diagnostics()
   local bufnr = api.nvim_get_current_buf()
   local range_params = lsp.util.make_range_params()
@@ -183,13 +197,53 @@ local function show_line_diagnostics()
   return float_bufnr, float_winnr
 end
 
+--
+-- Virtual text
+--
+
+local function diagnostic_format(d)
+  return string.format('%s:%s ', get_source(d), get_code(d))
+end
+
+---@diagnostic disable-next-line: unused-local
+vim.diagnostic.handlers.virtual_text.show = function(namespace, bufnr, diagnostics, opts)
+  bufnr = get_bufnr(bufnr)
+
+  local ns = vim.diagnostic.get_namespace(namespace)
+  if not ns.user_data.virt_text_ns then
+    ns.user_data.virt_text_ns = vim.api.nvim_create_namespace('')
+  end
+  local virt_text_ns = ns.user_data.virt_text_ns
+
+  local virt_text_per_line = reduce(function(ret, diagnostic)
+    local lnum = diagnostic.lnum
+    -- print(vim.inspect(diagnostic))
+    -- print(vim.inspect(ret))
+    local chunk = { diagnostic_format(diagnostic), pui.severities[diagnostic.severity].hl_virt }
+    if not ret[lnum] then
+      ret[lnum] = { chunk }
+    else
+      -- Comma separated diagnostic list
+      -- table.insert(ret[lnum], { ' ', 'Normal' })
+      table.insert(ret[lnum], chunk)
+    end
+    return ret
+  end, diagnostics, {})
+
+  for line, virt_text in pairs(virt_text_per_line) do
+    vim.api.nvim_buf_set_extmark(bufnr, virt_text_ns, line, 0, {
+      hl_mode = 'combine',
+      virt_text = virt_text,
+      virt_text_pos = 'right_align',
+      virt_text_hide = true
+    })
+  end
+  vim.diagnostic.save_extmarks(virt_text_ns, bufnr)
+end
+
 vim.diagnostic.config({
   virtual_text = function(_, _)
-    return vim.g.uopts.ldv == 1 and {
-      format = function(d)
-        return string.format('%s:%s', get_source(d), get_code(d))
-      end
-    } or false
+    return vim.g.uopts.ldv == 1
   end,
   underline = function(_, _)
     return vim.g.uopts.ldu == 1 and {

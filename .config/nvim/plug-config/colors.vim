@@ -5,35 +5,41 @@ hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE ct
 hi! link Folded Normal
 
 "Error
-hi! LspDiagnosticsVirtualTextError guifg=#f44747
-hi! link LspDiagnosticsFloatingError LspDiagnosticsVirtualTextError
-hi! LspDiagnosticsSignError guifg=#f41d1d
-hi! link NvimTreeLspDiagnosticsError LspDiagnosticsSignError
-"Warning
-hi! link LspDiagnosticsFloatingWarning LspDiagnosticsVirtualTextWarning
-hi! link NvimTreeLspDiagnosticsWarning LspDiagnosticsSignWarning
+hi! DiagnosticVirtualTextError guifg=#800f0f
+hi! DiagnosticFloatingError    guifg=#f44747
+hi! DiagnosticSignError        guifg=#f41d1d
+
+hi! link NvimTreeLspDiagnosticsError DiagnosticSignError
+"Warn
+hi! DiagnosticVirtualTextWarn guifg=#804400
+hi! DiagnosticFloatingWarn    guifg=#ff8800
+hi! DiagnosticSignWarn        guifg=#ff8800
+
+hi! link NvimTreeLspDiagnosticsWarning DiagnosticSignWarn
 "Information
-hi! LspDiagnosticsVirtualTextInformation guifg=#4fc1ff
-hi! link LspDiagnosticsSignInformation LspDiagnosticsVirtualTextInformation
-hi! link LspDiagnosticsFloatingInformation LspDiagnosticsVirtualTextInformation
-hi! link NvimTreeLspDiagnosticsInformation LspDiagnosticsSignInformation
+hi! DiagnosticVirtualTextInfo guifg=#4fc1ff
+hi! DiagnosticFloatingInfo    guifg=#4fc1ff
+hi! DiagnosticSignInfo        guifg=#4fc1ff
+
+hi! link NvimTreeLspDiagnosticsInfo DiagnosticSignInfo
 "Hint
-hi! LspDiagnosticsVirtualTextHint guifg=#3bc03d
-hi! link LspDiagnosticsSignHint LspDiagnosticsVirtualTextHint
-hi! link LspDiagnosticsFloatingHint LspDiagnosticsVirtualTextHint
-hi! link NvimTreeLspDiagnosticsHint LspDiagnosticsSignHint
+hi! DiagnosticVirtualTextHint guifg=#3bc03d
+hi! DiagnosticFloatingHint    guifg=#3bc03d
+hi! DiagnosticSignHint        guifg=#3bc03d
+
+hi! link NvimTreeLspDiagnosticsHint DiagnosticSignHint
 
 execute 'highlight!' 'User1'
-  \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignError', 'fg')
+  \ 'guifg='.utils#GetHlAttr('DiagnosticSignError', 'fg')
   \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
 execute 'highlight!' 'User2'
-  \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignWarning', 'fg')
+  \ 'guifg='.utils#GetHlAttr('DiagnosticSignWarn', 'fg')
   \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
 execute 'highlight!' 'User3'
-  \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignInformation', 'fg')
+  \ 'guifg='.utils#GetHlAttr('DiagnosticSignInfo', 'fg')
   \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
 execute 'highlight!' 'User4'
-  \ 'guifg='.utils#GetHlAttr('LspDiagnosticsSignHint', 'fg')
+  \ 'guifg='.utils#GetHlAttr('DiagnosticSignHint', 'fg')
   \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
 
 hi LspReferenceText guibg=#3a3a3a
@@ -41,7 +47,7 @@ hi LspReferenceRead guibg=#304030
 hi LspReferenceWrite guibg=#502842
 
 hi! link TSTypeBuiltin TSType
-hi! link CocErrorSign LspDiagnosticsSignError
+hi! link CocErrorSign DiagnosticSignError
 hi Pmenu guifg=#e6eeff
 hi Comment gui=NONE cterm=NONE
 hi Special gui=NONE cterm=NONE

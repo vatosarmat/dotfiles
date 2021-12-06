@@ -3,31 +3,31 @@ local lsp = vim.lsp
 local severities = {
   {
     name = 'Error',
-    sign_name = 'DiagnosticSignError',
     sign = '',
-    hl_sign = 'LspDiagnosticsSignError',
-    hl_float = 'LspDiagnosticsFloatingError'
+    hl_sign = 'DiagnosticSignError',
+    hl_float = 'DiagnosticFloatingError',
+    hl_virt = 'DiagnosticVirtualTextError'
   },
   {
     name = 'Warning',
-    sign_name = 'DiagnosticSignWarn',
     sign = '',
-    hl_sign = 'LspDiagnosticsSignWarning',
-    hl_float = 'LspDiagnosticsFloatingWarning'
+    hl_sign = 'DiagnosticSignWarn',
+    hl_float = 'DiagnosticFloatingWarn',
+    hl_virt = 'DiagnosticVirtualTextWarn'
   },
   {
     name = 'Information',
-    sign_name = 'DiagnosticSignInfo',
     sign = '',
-    hl_sign = 'LspDiagnosticsSignInformation',
-    hl_float = 'LspDiagnosticsFloatingInformation'
+    hl_sign = 'DiagnosticSignInfo',
+    hl_float = 'DiagnosticFloatingInfo',
+    hl_virt = 'DiagnosticVirtualTextInfo'
   },
   {
     name = 'Hint',
-    sign_name = 'DiagnosticSignHint',
     sign = '',
-    hl_sign = 'LspDiagnosticsSignHint',
-    hl_float = 'LspDiagnosticsFloatingHint'
+    hl_sign = 'DiagnosticSignHint',
+    hl_float = 'DiagnosticFloatingHint',
+    hl_virt = 'DiagnosticVirtualTextHint'
   }
 }
 
@@ -48,7 +48,7 @@ local symbol_icons = {
 }
 
 for _, sev in ipairs(severities) do
-  vim.fn.sign_define(sev.sign_name, {
+  vim.fn.sign_define(sev.hl_sign, {
     texthl = sev.hl_sign,
     text = sev.sign,
     numhl = sev.hl_sign

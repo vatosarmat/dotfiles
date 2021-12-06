@@ -188,6 +188,14 @@ function Text:render_in_buf(bufnr)
   end
 end
 
+function Text:render_in_virt_text()
+  -- virt_text is expected to have only 1 line
+  local line = self.lines[0]
+  return vim.tbl_map(function(hl)
+    return { string.sub(line.str, hl.from + 1, hl.to), hl.group }
+  end, line.hl_ranges)
+end
+
 return {
   map_buf = map_buf,
   map = map,

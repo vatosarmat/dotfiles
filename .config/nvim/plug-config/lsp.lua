@@ -144,7 +144,7 @@ do
   map('n', '<leader>lw', lsp.buf.workspace_symbol)
 
   -- Options
-  map('n', '<leader>l<M-v>', func.bind1(toggle_option, 'ldv'))
+  map('n', '<leader>lv', func.bind1(toggle_option, 'ldv'))
   map('n', '<leader>l<M-u>', func.bind1(toggle_option, 'ldu'))
   map('n', '<leader>l<M-f>', func.bind1(toggle_option, 'laf'))
 
