@@ -31,7 +31,7 @@ local function get_code(diagnostic)
       return l.code
     end
   end
-  return diagnostic.severity
+  return pui.severities[diagnostic.severity].name
 end
 
 local function lookup_client_by_name(name, bufnr)
@@ -202,7 +202,12 @@ end
 --
 
 local function diagnostic_format(d)
-  return string.format('%s:%s ', get_source(d), get_code(d))
+  local format = cext[d.source].diagnostic_virtual_text
+  if format then
+    return format(d)
+  else
+    return string.format('%s:%s', get_source(d), get_code(d))
+  end
 end
 
 ---@diagnostic disable-next-line: unused-local
@@ -219,13 +224,16 @@ vim.diagnostic.handlers.virtual_text.show = function(namespace, bufnr, diagnosti
     local lnum = diagnostic.lnum
     -- print(vim.inspect(diagnostic))
     -- print(vim.inspect(ret))
-    local chunk = { diagnostic_format(diagnostic), pui.severities[diagnostic.severity].hl_virt }
-    if not ret[lnum] then
-      ret[lnum] = { chunk }
-    else
-      -- Comma separated diagnostic list
-      -- table.insert(ret[lnum], { ' ', 'Normal' })
-      table.insert(ret[lnum], chunk)
+    local str = diagnostic_format(diagnostic)
+    if str then
+      local chunk = { str .. ' ', pui.severities[diagnostic.severity].hl_virt }
+      if not ret[lnum] then
+        ret[lnum] = { chunk }
+      else
+        -- Comma separated diagnostic list
+        -- table.insert(ret[lnum], { ' ', 'Normal' })
+        table.insert(ret[lnum], chunk)
+      end
     end
     return ret
   end, diagnostics, {})

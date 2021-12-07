@@ -5,13 +5,13 @@ hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE ct
 hi! link Folded Normal
 
 "Error
-hi! DiagnosticVirtualTextError guifg=#800f0f
+hi! DiagnosticVirtualTextError guifg=#a01212
 hi! DiagnosticFloatingError    guifg=#f44747
 hi! DiagnosticSignError        guifg=#f41d1d
 
 hi! link NvimTreeLspDiagnosticsError DiagnosticSignError
 "Warn
-hi! DiagnosticVirtualTextWarn guifg=#804400
+hi! DiagnosticVirtualTextWarn guifg=#a05200
 hi! DiagnosticFloatingWarn    guifg=#ff8800
 hi! DiagnosticSignWarn        guifg=#ff8800
 

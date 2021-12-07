@@ -47,6 +47,58 @@ local function tsserver_diagnostic_highlight(text, line)
   text:append(rest)
 end
 
+local function eslint_diagnostic_virtual_text(d)
+  local code = d.user_data.lsp.code or 'parsing-error'
+  local dont_show_them = {
+    'prettier',
+    'indent',
+    'semi',
+    'space-in-parens',
+    'no-trailing-spaces',
+    'keyword-spacing',
+    'arrow-spacing',
+    'object-curly-spacing',
+    'quotes',
+    'no-multiple-empty-lines'
+  }
+  local dont_show = find_if(dont_show_them, function(item)
+    return vim.endswith(code, item)
+  end)
+  if dont_show then
+    return nil
+  end
+
+  return string.gsub(code, '^@typescript%-eslint', '@ts')
+end
+
+local function jsonls_diagnostic_virtual_text(d)
+  -- https://github.com/microsoft/vscode-json-languageservice/blob/main/src/jsonLanguageTypes.ts
+  local ErrorCode = {
+    [0] = 'Undefined',
+    [1] = 'EnumValueMismatch',
+    [2] = 'Deprecated',
+    [0x101] = 'UnexpectedEndOfComment',
+    [0x102] = 'UnexpectedEndOfString',
+    [0x103] = 'UnexpectedEndOfNumber',
+    [0x104] = 'InvalidUnicode',
+    [0x105] = 'InvalidEscapeCharacter',
+    [0x106] = 'InvalidCharacter',
+    [0x201] = 'PropertyExpected',
+    [0x202] = 'CommaExpected',
+    [0x203] = 'ColonExpected',
+    [0x204] = 'ValueExpected',
+    [0x205] = 'CommaOrCloseBacketExpected',
+    [0x206] = 'CommaOrCloseBraceExpected',
+    [0x207] = 'TrailingComma',
+    [0x208] = 'DuplicateKey',
+    [0x209] = 'CommentNotPermitted',
+    [0x300] = 'SchemaResolveError'
+  }
+  local code = d.user_data.lsp.code
+
+  return ErrorCode[tonumber(code)]
+end
+
 local client_ext = {
   ['shellcheck'] = {
     kind = 'linter',
@@ -70,7 +122,8 @@ local client_ext = {
   },
   ['tsserver'] = {
     short_name = 'TS',
-    diagnostic_highlight = tsserver_diagnostic_highlight
+    diagnostic_highlight = tsserver_diagnostic_highlight,
+    diagnostic_disable_line = '//@ts-expect-error'
   },
   ['eslint'] = {
     short_name = 'ES',
@@ -83,12 +136,18 @@ local client_ext = {
         return action.command.command == 'eslint.applySingleFix'
       end)
       return ca_result[idx]
-    end
+    end,
+    diagnostic_virtual_text = eslint_diagnostic_virtual_text
+  },
+  ['jsonls'] = {
+    short_name = 'JSON',
+    diagnostic_virtual_text = jsonls_diagnostic_virtual_text
   }
 }
 
 client_ext['Lua Diagnostics.'] = client_ext['sumneko_lua']
 client_ext['typescript'] = client_ext['tsserver']
+client_ext['jsonc'] = client_ext['jsonls']
 
 setmetatable(client_ext, {
   __index = function(tbl, key)

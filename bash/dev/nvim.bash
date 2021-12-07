@@ -16,18 +16,21 @@ function v {
 function lsp_log {
   local cmd=''
   # declare -ar pass=()
-  declare -ar skip_fixed=('"textDocument/documentHighlight"' '"textDocument/publishDiagnostics"' '"$/progress"' '"$/status/report"')
+  declare -a skip_fixed=('"textDocument/documentHighlight"' '"$/progress"' '"$/status/report"')
   declare -ar skip_br=('"decoded"	{  id = [[:digit:]]\+,  jsonrpc = "2.0",  result = {}}')
 
-  local is_reset is_follow
+  local is_reset is_follow is_diagnostic
   local OPTIND OPTARG OPTERR opt
-  while getopts "rf" opt; do
+  while getopts "rfd" opt; do
     case $opt in
       [r])
         is_reset=1
         ;;
       [f])
         is_follow=1
+        ;;
+      [d])
+        is_diagnostic=1
         ;;
       *) ;;
     esac
@@ -43,6 +46,10 @@ function lsp_log {
     cmd="tail -f"
   else
     cmd="cat"
+  fi
+
+  if [[ ! "$is_diagnostic" ]]; then
+    skip_fixed+=('"textDocument/publishDiagnostics"')
   fi
 
   declare -a skip_fixed_args=()

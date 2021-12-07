@@ -57,10 +57,10 @@ end
 
 lsp.protocol.CompletionItemKind = {
   ' ',
-  ' ',
+  symbol_icons.Method,
   symbol_icons.Function,
-  ' ',
-  'ﰠ ',
+  symbol_icons.Constructor,
+  symbol_icons.Field,
   symbol_icons.Variable,
   symbol_icons.Class,
   symbol_icons.Interface,
