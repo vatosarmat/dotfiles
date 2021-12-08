@@ -85,3 +85,5 @@ hi SymbolIconVariable guifg=#0080c0
 hi SymbolIconClass guifg=#008064
 
 hi! link NvimTreeIndentMarker Normal
+
+hi! QuickFixLine guibg=#3a3a3a

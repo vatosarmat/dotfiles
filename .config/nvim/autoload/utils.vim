@@ -154,3 +154,8 @@ endfunction
 function! utils#Error(...) abort
   call call(function('utils#Print'), insert(deepcopy(a:000), 'ErrorMsg'))
 endfunction
+
+function! utils#LineCol() abort
+  let [b,l,c,o,w] = getcurpos()
+  return [l, c]
+endfunction

@@ -4,9 +4,7 @@ s/^(\[ \w+ \])/\[\1\]/
 #Remove date
 s/\][^]]+\]/\]/
 #Remove file name
-s/\][^]]+\]/\]/
-#Remove spacing after file name
-s/\s*//
+#s/[^]]+\.lua:[[:digit:]]+\s*/ /
 #Move the first opening bracket to the next line
 s/\s*\{/\n{/
 #Consider 2 more spaces after opening bracket is a new line indent

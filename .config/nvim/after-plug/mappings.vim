@@ -17,21 +17,37 @@ nnoremap <C-M-k> <cmd>call <sid>QflistStep(0, 1)<cr>
 function! s:QflistStep(next, loc = 0) abort
   if a:next
     let edge = 'LAST'
-    let cmd = a:loc ? 'lafter' : 'cnext' "'cafter'
+    if a:loc
+      let after = 'lafter'
+      let next = 'lnext'
+    else
+      let after = 'cafter'
+      let next = 'cnext'
+    endif
   else
     let edge = 'FIRST'
-    " let cmd = a:loc ? 'lprev' :
-    let cmd = a:loc ? 'lbefore' : 'cprev' "'cbefore'
+    if a:loc
+      let after = 'lbefore'
+      let next = 'lprev'
+    else
+      let after = 'cbefore'
+      let next = 'cprev'
+    endif
   endif
   try
-    "Clear first/last item warning
-    execute cmd
+    "This 'after' may actually be before...
+    execute after
   catch /E42/
-    call utils#Print('WarningMsg', 'No list for ', [cmd, 'LspDiagnosticsSignInformation'])
+    call utils#Print('WarningMsg', 'No list for ', [after, 'LspDiagnosticsSignInformation'])
   catch /E776/
     call utils#Print('WarningMsg', 'No loclist available')
   catch /E553/
-    call utils#Print('WarningMsg', [edge, 'LspDiagnosticsSignInformation'], ' item')
+    try
+      "This 'next' may actually be prev...
+      execute next
+    catch /E553/
+      call utils#Print('WarningMsg', [edge, 'LspDiagnosticsSignInformation'], ' item')
+    endtry
   endtry
   if g:uopts.nz
     if a:loc
@@ -156,22 +172,22 @@ function! s:move_paragraph(forward) abort
     execute 'keepjumps' 'normal!' direct_par
     let fstart = Fold_near('.')
     if fstart == -1
-      execute 'keepjumps' 'normal!' reverse_par.direct_char
+      execute 'keepjumps' 'normal!' reverse_par.direct_char '_'
     else
-      execute 'keepjumps' string(fstart)
+      execute 'keepjumps' string(fstart) '_'
     endif
   else
     if s:IsLineEmpty(line('.') + offset)
       execute 'keepjumps' 'normal!' direct_char.direct_par
       let fstart = Fold_near('.')
       if fstart == -1
-        execute 'keepjumps' 'normal!' reverse_par.direct_char
+        execute 'keepjumps' 'normal!' reverse_par.direct_char '_'
       else
-        execute 'keepjumps' string(fstart)
+        execute 'keepjumps' string(fstart) '_'
       endif
     else
       "Here must be loop to go through fold inside text
-      execute 'keepjumps' 'normal!' direct_par.reverse_char
+      execute 'keepjumps' 'normal!' direct_par.reverse_char '_'
     endif
   endif
 endfunction

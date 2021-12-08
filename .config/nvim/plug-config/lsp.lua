@@ -45,21 +45,23 @@ do
 
     -- textDocument/definition can return Location or Location[]
     -- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
-
-    -- There could be logic to auto-close this sometimes annoying list
-    -- when we return back from where we go to definition
     if vim.tbl_islist(result) then
       if #result > 1 then
-        vim.fn.setloclist(0, {}, ' ', {
-          title = 'Definitions',
-          items = util.locations_to_items(result)
-        })
-        api.nvim_command 'lopen | wincmd p'
-        autocmd('go_to_definition', 'BufWinEnter <buffer> ++once lclose', {
-          buffer = true
-        })
+        -- vim.fn.setloclist(0, {}, ' ', {
+        --   title = 'Definitions',
+        --   items = util.locations_to_items(result)
+        -- })
+        -- api.nvim_command 'lopen | wincmd p | try | lbefore | catch /E553/ | lafter | endtry'
+        -- -- Close loclist when we get back from definition
+        -- local pos = api.nvim_win_get_cursor(0)
+        -- local auto_cmd = 'let b:lsp_gd_pos = | BufWinEnter <buffer> ++once if b:lsp_gd_pos] lclose'
+        -- autocmd('go_to_definition', 'BufWinEnter <buffer> ++once lclose', {
+        --   buffer = true
+        -- })
+        vim.fn['lsp#DefinitionList'](util.locations_to_items(result))
+      else
+        util.jump_to_location(result[1])
       end
-      util.jump_to_location(result[1])
     else
       util.jump_to_location(result)
     end
