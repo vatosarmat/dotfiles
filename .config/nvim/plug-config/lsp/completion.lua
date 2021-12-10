@@ -1,62 +1,93 @@
-local api = vim.api
-local func = require 'pl.func'
 local luasnip = require 'luasnip'
-local compe = require 'compe'
-
-compe.setup {
-  enabled = true,
-  autocomplete = false,
-  source = {
-    nvim_lsp = true
-  },
-  preselect = 'always'
-}
-
-local t = func.bind(api.nvim_replace_termcodes, func._1, true, true, true)
--- luasnip.config.setup({ history = true })
-luasnip.config.setup {}
+local cmp = require 'cmp'
+local cmp_nvim_lsp = require 'cmp_nvim_lsp'
+local autopairs = require('nvim-autopairs')
+-- local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 
 local function is_space_before()
   local col = vim.fn.col '.' - 1
-  if col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' then
-    return true
-  else
-    return false
-  end
+  return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
 end
 
-local function on_tab()
-  if vim.fn.pumvisible() == 1 then
-    return t '<C-n>'
-  elseif luasnip.expandable() then
-    return t '<Plug>luasnip-expand-snippet'
-  elseif is_space_before() then
-    return t '<Tab>'
-  else
-    return vim.fn['compe#complete']()
-  end
-end
+local M = {}
 
-local function on_cp()
-  if luasnip.jumpable(-1) then
-    return t '<Plug>luasnip-jump-prev'
-  else
-    return t '<C-p>'
-  end
-end
+local mapping = {
+  ['<C-i>'] = function(fallback)
+    if cmp.visible() then
+      return cmp.mapping.select_next_item {
+        behavior = cmp.SelectBehavior.Insert
+      }(fallback)
+    elseif is_space_before() then
+      return fallback()
+    else
+      return cmp.mapping.complete()(fallback)
+    end
+  end,
+  ['<M-C-i>'] = cmp.mapping.complete(),
+  ['<C-f>'] = cmp.mapping.scroll_docs(2),
+  ['<C-b>'] = cmp.mapping.scroll_docs(-2),
+  ['<M-C-y>'] = cmp.mapping.close()
 
-local function on_cn()
-  if luasnip.jumpable(1) then
-    return t '<Plug>luasnip-jump-next'
-  else
-    return t '<C-n>'
-  end
-end
+  -- Default
+  -- ['<C-n>'] = mapping(mapping.select_next_item({
+  --   behavior = types.cmp.SelectBehavior.Insert
+  -- }), { 'i', 'c' }),
+  -- ['<C-p>'] = mapping(mapping.select_prev_item({
+  --   behavior = types.cmp.SelectBehavior.Insert
+  -- }), { 'i', 'c' }),
+  -- ['<C-y>'] = mapping.confirm({
+  --   select = false
+  -- }),
+  -- ['<C-e>'] = mapping.abort()
 
--- local function on_ce() return t '<Plug>luasnip-next-choice' end
-
-return {
-  on_tab = on_tab,
-  on_cn = on_cn,
-  on_cp = on_cp
 }
+
+function M.setup()
+  luasnip.config.setup {}
+  autopairs.setup()
+
+  -- cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done({
+  --   map_char = {
+  --     tex = ''
+  --   }
+  -- }))
+
+  cmp.setup({
+    snippet = {
+      expand = function(args)
+        luasnip.lsp_expand(args.body) -- For `luasnip` users.
+      end
+    },
+    completion = {
+      autocomplete = false,
+      completeopt = 'menu,menuone,noinsert'
+    },
+    mapping = mapping,
+    -- why 2 arrays?
+    sources = {
+      -- {
+      --   name = 'buffer'
+      -- },
+      {
+        name = 'nvim_lsp'
+      }
+      -- {
+      --   name = 'nvim_lua'
+      -- },
+      -- {
+      --   name = 'path'
+      -- },
+      -- {
+      --   name = 'luasnip'
+      -- }
+    }
+
+  })
+
+end
+
+function M.capabilities(client_capabilities)
+  return cmp_nvim_lsp.update_capabilities(client_capabilities)
+end
+
+return M

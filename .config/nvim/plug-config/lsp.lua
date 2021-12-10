@@ -2,19 +2,24 @@ local api = vim.api
 local lsp = vim.lsp
 local func = require 'pl.func'
 local log = require 'vim.lsp.log'
-local map = require'before-plug.vim_utils'.map
-local autocmd = require'before-plug.vim_utils'.autocmd
+local vim_utils = require 'before-plug.vim_utils'
 
 -- LSP submodules
 local status_line = require 'plug-config.lsp.status_line'
 local pui = require 'plug-config.lsp.protocol_ui'
 local lsp_flags = require 'plug-config.lsp.flags'
-local completion = require 'plug-config.lsp.completion'
 local sym_nav = require 'plug-config.lsp.symbol_navigation'
-require 'plug-config.lsp.diagnostic'
-require 'plug-config.lsp.server_setups'
+local completion = require 'plug-config.lsp.completion'
+local diagnostic = require 'plug-config.lsp.diagnostic'
+local servers = require 'plug-config.lsp.server_setups'
+
+completion.setup()
+diagnostic.setup()
+servers.setup(completion.capabilities(lsp.protocol.make_client_capabilities()))
 
 do
+  pui.setup()
+
   local lsp_service = {
     symbol_icons = pui.symbol_icons,
     flags = lsp_flags,
@@ -72,6 +77,9 @@ end
 -- Mappings and (auto)commands
 --
 do
+  local map = vim_utils.map
+  local autocmd = vim_utils.autocmd
+
   local function toggle_option(option)
     vim.fn['uopts#toggle'](option)
     if vim.tbl_contains({ 'ldu', 'ldv' }, option) then
@@ -85,36 +93,7 @@ do
     end
   end
 
-  -- Commands
-  -- In use
   map('n', '<C-j>', lsp.buf.hover)
-  map('i', '<C-i>', completion.on_tab, {
-    expr = true,
-    noremap = false
-  })
-  map('is', '<C-n>', completion.on_cn, {
-    expr = true,
-    noremap = false
-  })
-  map('is', '<C-p>', completion.on_cp, {
-    expr = true,
-    noremap = false
-  })
-  map('i', '<C-y>', 'compe#confirm(\'<C-y>\')', {
-    expr = true,
-    noremap = false
-  })
-  map('i', '<M-C-y>', '<C-y><Esc>')
-  map('i', '<C-e>', 'compe#close(\'<End>\')', {
-    expr = true
-  })
-  map('i', '<C-f>', 'compe#scroll(#{delta: +2})', {
-    expr = true
-  })
-  map('i', '<C-b>', 'compe#scroll(#{delta: -2})', {
-    expr = true
-  })
-
   map('n', '<C-k>', vim.diagnostic.open_float)
 
   -- Goto's
@@ -132,12 +111,12 @@ do
 
   -- Refactor
   map('n', '<leader>ln', lsp.buf.rename)
+  map('n', 'ga', lsp.buf.code_action)
 
   -- Less in use
   map('n', 'gi', lsp.buf.implementation)
   map('nx', '<M-j>', lsp.buf.signature_help) -- C-;
   map('n', 'gD', lsp.buf.declaration)
-  map('n', 'ga', lsp.buf.code_action)
 
   -- Symbol lists
   map('n', '<leader>ls', sym_nav.document_list_non_props)

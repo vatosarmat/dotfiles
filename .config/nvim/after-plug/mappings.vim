@@ -172,22 +172,22 @@ function! s:move_paragraph(forward) abort
     execute 'keepjumps' 'normal!' direct_par
     let fstart = Fold_near('.')
     if fstart == -1
-      execute 'keepjumps' 'normal!' reverse_par.direct_char '_'
+      execute 'keepjumps' 'normal!' reverse_par.direct_char.'_'
     else
-      execute 'keepjumps' string(fstart) '_'
+      execute 'keepjumps' string(fstart).'_'
     endif
   else
     if s:IsLineEmpty(line('.') + offset)
       execute 'keepjumps' 'normal!' direct_char.direct_par
       let fstart = Fold_near('.')
       if fstart == -1
-        execute 'keepjumps' 'normal!' reverse_par.direct_char '_'
+        execute 'keepjumps' 'normal!' reverse_par.direct_char.'_'
       else
-        execute 'keepjumps' string(fstart) '_'
+        execute 'keepjumps' string(fstart).'_'
       endif
     else
       "Here must be loop to go through fold inside text
-      execute 'keepjumps' 'normal!' direct_par.reverse_char '_'
+      execute 'keepjumps' 'normal!' direct_par.reverse_char.'_'
     endif
   endif
 endfunction
@@ -415,7 +415,8 @@ cnoremap <M-[> []<left>
 "Emacs keybindings in insert and command modes
 "Line begin-end
 inoremap <expr><C-a> getline('.')[0] == ' ' ? "\<Home>\<C-Right>" : "\<Home>"
-" inoremap <C-e> <End> this mapped in lsp
+"this mapped in lsp
+inoremap <C-e> <End>
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 "Word backward-forward

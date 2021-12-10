@@ -1,6 +1,6 @@
-local lsp = vim.lsp
+local M = {}
 
-local severities = {
+M.severities = {
   {
     name = 'Error',
     sign = '',
@@ -31,7 +31,7 @@ local severities = {
   }
 }
 
-local symbol_icons = {
+M.symbol_icons = {
   Function = 'F',
   Method = 'M',
   Variable = 'V',
@@ -47,43 +47,44 @@ local symbol_icons = {
   EnumMember = '喝'
 }
 
-for _, sev in ipairs(severities) do
-  vim.fn.sign_define(sev.hl_sign, {
-    texthl = sev.hl_sign,
-    text = sev.sign,
-    numhl = sev.hl_sign
-  })
+function M.setup()
+  for _, sev in ipairs(M.severities) do
+    vim.fn.sign_define(sev.hl_sign, {
+      texthl = sev.hl_sign,
+      text = sev.sign,
+      numhl = sev.hl_sign
+    })
+  end
+
+  local si = M.symbol_icons
+
+  vim.lsp.protocol.CompletionItemKind = {
+    ' ',
+    si.Method,
+    si.Function,
+    si.Constructor,
+    si.Field,
+    si.Variable,
+    si.Class,
+    si.Interface,
+    ' ',
+    si.Property,
+    ' ',
+    ' ',
+    si.Enum,
+    ' ',
+    '﬌ ',
+    ' ',
+    ' ',
+    ' ',
+    ' ',
+    si.EnumMember,
+    si.Constant,
+    si.Struct,
+    '⌘ ',
+    ' ',
+    ' '
+  }
 end
 
-lsp.protocol.CompletionItemKind = {
-  ' ',
-  symbol_icons.Method,
-  symbol_icons.Function,
-  symbol_icons.Constructor,
-  symbol_icons.Field,
-  symbol_icons.Variable,
-  symbol_icons.Class,
-  symbol_icons.Interface,
-  ' ',
-  symbol_icons.Property,
-  ' ',
-  ' ',
-  symbol_icons.Enum,
-  ' ',
-  '﬌ ',
-  ' ',
-  ' ',
-  ' ',
-  ' ',
-  symbol_icons.EnumMember,
-  symbol_icons.Constant,
-  symbol_icons.Struct,
-  '⌘ ',
-  ' ',
-  ' '
-}
-
-return {
-  severities = severities,
-  symbol_icons = symbol_icons
-}
+return M

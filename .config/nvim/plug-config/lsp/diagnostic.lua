@@ -210,57 +210,65 @@ local function diagnostic_format(d)
   end
 end
 
----@diagnostic disable-next-line: unused-local
-vim.diagnostic.handlers.virtual_text.show = function(namespace, bufnr, diagnostics, opts)
-  bufnr = get_bufnr(bufnr)
+local M = {}
 
-  local ns = vim.diagnostic.get_namespace(namespace)
-  if not ns.user_data.virt_text_ns then
-    ns.user_data.virt_text_ns = vim.api.nvim_create_namespace('')
-  end
-  local virt_text_ns = ns.user_data.virt_text_ns
+function M.setup()
 
-  local virt_text_per_line = reduce(function(ret, diagnostic)
-    local lnum = diagnostic.lnum
-    -- print(vim.inspect(diagnostic))
-    -- print(vim.inspect(ret))
-    local str = diagnostic_format(diagnostic)
-    if str then
-      local chunk = { str .. ' ', pui.severities[diagnostic.severity].hl_virt }
-      if not ret[lnum] then
-        ret[lnum] = { chunk }
-      else
-        -- Comma separated diagnostic list
-        -- table.insert(ret[lnum], { ' ', 'Normal' })
-        table.insert(ret[lnum], chunk)
-      end
+  ---@diagnostic disable-next-line: unused-local
+  vim.diagnostic.handlers.virtual_text.show = function(namespace, bufnr, diagnostics, opts)
+    bufnr = get_bufnr(bufnr)
+
+    local ns = vim.diagnostic.get_namespace(namespace)
+    if not ns.user_data.virt_text_ns then
+      ns.user_data.virt_text_ns = vim.api.nvim_create_namespace('')
     end
-    return ret
-  end, diagnostics, {})
+    local virt_text_ns = ns.user_data.virt_text_ns
 
-  for line, virt_text in pairs(virt_text_per_line) do
-    vim.api.nvim_buf_set_extmark(bufnr, virt_text_ns, line, 0, {
-      hl_mode = 'combine',
-      virt_text = virt_text,
-      virt_text_pos = 'right_align',
-      virt_text_hide = true
-    })
+    local virt_text_per_line = reduce(function(ret, diagnostic)
+      local lnum = diagnostic.lnum
+      -- print(vim.inspect(diagnostic))
+      -- print(vim.inspect(ret))
+      local str = diagnostic_format(diagnostic)
+      if str then
+        local chunk = { str .. ' ', pui.severities[diagnostic.severity].hl_virt }
+        if not ret[lnum] then
+          ret[lnum] = { chunk }
+        else
+          -- Comma separated diagnostic list
+          -- table.insert(ret[lnum], { ' ', 'Normal' })
+          table.insert(ret[lnum], chunk)
+        end
+      end
+      return ret
+    end, diagnostics, {})
+
+    for line, virt_text in pairs(virt_text_per_line) do
+      vim.api.nvim_buf_set_extmark(bufnr, virt_text_ns, line, 0, {
+        hl_mode = 'combine',
+        virt_text = virt_text,
+        virt_text_pos = 'right_align',
+        virt_text_hide = true
+      })
+    end
+    vim.diagnostic.save_extmarks(virt_text_ns, bufnr)
   end
-  vim.diagnostic.save_extmarks(virt_text_ns, bufnr)
+
+  vim.diagnostic.config({
+    virtual_text = function(_, _)
+      return vim.g.uopts.ldv == 1
+    end,
+    underline = function(_, _)
+      return vim.g.uopts.ldu == 1 and {
+        -- severity_limit = 'Error'
+      } or false
+    end,
+    signs = true,
+    update_in_insert = false,
+    severity_sort = true
+  })
+
+  vim.diagnostic.open_float = show_line_diagnostics
+
 end
 
-vim.diagnostic.config({
-  virtual_text = function(_, _)
-    return vim.g.uopts.ldv == 1
-  end,
-  underline = function(_, _)
-    return vim.g.uopts.ldu == 1 and {
-      -- severity_limit = 'Error'
-    } or false
-  end,
-  signs = true,
-  update_in_insert = false,
-  severity_sort = true
-})
-
-vim.diagnostic.open_float = show_line_diagnostics
+return M
