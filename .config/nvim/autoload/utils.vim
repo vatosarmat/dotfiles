@@ -159,3 +159,11 @@ function! utils#LineCol() abort
   let [b,l,c,o,w] = getcurpos()
   return [l, c]
 endfunction
+
+function! utils#TrimBufLines() abort
+  if g:uopts.laf
+    let save_cursor = getpos(".")
+    keeppatterns keepjumps %s/\s\+$//e
+    call setpos('.', save_cursor)
+  endif
+endfun

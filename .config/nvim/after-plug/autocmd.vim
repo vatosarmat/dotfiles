@@ -23,9 +23,6 @@ augroup BeforePlug
 
   autocmd BufWinEnter * call s:UserStateWinEnter()
   autocmd WinClosed * diffupdate! | call s:UserStateWinClosed(expand('<afile>'))
-
-  "Clear trailing spaces
-  autocmd BufWritePre * if g:uopts.laf | call s:TrimLines() | endif
 augroup END
 
 function! s:OnBufAdd() abort
@@ -99,12 +96,3 @@ function! s:HighlightDiffConflictMarker() abort
     let w:conflict_markers_match = matchadd('DiffConflictMarker','^\(<<<<<<<\|=======\|>>>>>>>\||||||||\).*$', 9999)
   endif
 endfunction
-
-function! s:TrimLines()
-  let save_cursor = getpos(".")
-  keeppatterns keepjumps %s/\s\+$//e
-  call setpos('.', save_cursor)
-endfun
-
-
-
