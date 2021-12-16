@@ -37,16 +37,15 @@ function! s:QflistStep(next, loc = 0) abort
   try
     "This 'after' may actually be before...
     execute after
-  catch /E42/
-    call utils#Print('WarningMsg', 'No list for ', [after, 'LspDiagnosticsSignInformation'])
-  catch /E776/
-    call utils#Print('WarningMsg', 'No loclist available')
-  catch /E553/
+  catch
     try
-      "This 'next' may actually be prev...
       execute next
     catch /E553/
       call utils#Print('WarningMsg', [edge, 'LspDiagnosticsSignInformation'], ' item')
+    catch /E42/
+      call utils#Print('WarningMsg', 'No list for ', [after, 'LspDiagnosticsSignInformation'])
+    catch /E776/
+      call utils#Print('WarningMsg', 'No loclist available')
     endtry
   endtry
   if g:uopts.nz
@@ -525,7 +524,7 @@ endfunction
 
 "Replace last search pattern, i.e. '/' register content
 nnoremap <M-r> :.,$s//<c-r>=utils#GetSearchPatternWithoutFlags()<cr>/gc<left><left><left>
-xnoremap <M-r> :s///gc<left><left><left>
+xnoremap <M-r> :s//<c-r>=utils#GetSearchPatternWithoutFlags()<cr>/gc<left><left><left>
 
 function! s:WordMotions() abort
   function! s:RightExcl() abort
@@ -651,6 +650,9 @@ function! s:WordMotions() abort
 endfunction
 
 call s:WordMotions()
+
+inoremap <C-l> <C-o>==
+nnoremap <leader><C-l> ==
 
 "Folds
 " nnoremap <M-f> za

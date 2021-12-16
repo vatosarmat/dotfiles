@@ -7,7 +7,7 @@ auto
 --no-ignore-exclude
 --no-ignore-global
 --ignore-dot
---glob=!.git
+--glob=!.git/
 --glob=!.shada
 --type-add
 web:*.{html,css,js}*

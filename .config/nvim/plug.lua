@@ -30,10 +30,6 @@ local plug = require('packer').startup({
       after = 'lua-dev.nvim'
     }
     use {
-      'mfussenegger/nvim-lint',
-      after = 'nvim-lspconfig'
-    }
-    use {
       'jose-elias-alvarez/null-ls.nvim',
       after = 'nvim-lspconfig'
     }
@@ -59,12 +55,12 @@ local plug = require('packer').startup({
         require('coq')
       end,
       requires = { 'ms-jpq/coq.artifacts', 'ms-jpq/coq.thirdparty', 'neovim/nvim-lspconfig' },
-      after = { 'nvim-lint' },
       disable = true
     }
     use {
       'ms-jpq/coq.artifacts',
-      branch = 'artifacts'
+      branch = 'artifacts',
+      disable = true
     }
     use {
       'ms-jpq/coq.thirdparty',
@@ -79,7 +75,7 @@ local plug = require('packer').startup({
           requires = {
             {
               'L3MON4D3/LuaSnip',
-              after = 'nvim-lint'
+              after = 'nvim-lsp-ts-utils'
             }
           },
           after = 'nvim-cmp'

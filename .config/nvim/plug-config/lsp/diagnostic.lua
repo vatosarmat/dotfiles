@@ -24,6 +24,9 @@ local function get_source(diagnostic)
 end
 
 local function get_code(diagnostic)
+  if diagnostic.code then
+    return diagnostic.code
+  end
   local u = diagnostic.user_data
   if u then
     local l = u.lsp
@@ -42,13 +45,6 @@ local function lookup_client_by_name(name, bufnr)
   return clients[idx]
 end
 
-local function severity_vim_to_lsp(severity)
-  if type(severity) == 'string' then
-    severity = vim.diagnostic.severity[severity]
-  end
-  return severity
-end
-
 local function diagnostic_vim_to_lsp(d)
   return vim.tbl_extend('error', {
     range = {
@@ -61,7 +57,7 @@ local function diagnostic_vim_to_lsp(d)
         character = d.end_col
       }
     },
-    severity = severity_vim_to_lsp(d.severity),
+    severity = pui.severity_vim_to_lsp(d.severity),
     message = d.message,
     source = d.source
   }, d.user_data and (d.user_data.lsp or {}) or {})

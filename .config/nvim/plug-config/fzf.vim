@@ -40,13 +40,14 @@ nnoremap <leader>ra :Rga ''<left>
 
 "Handy abbrevs
 cnoreabbrev ht h \| Helptags
-cnoreabbrev bl BLines
-cnoreabbrev li Lines
-cnoreabbrev ma Maps
-cnoreabbrev gf GFiles?
-cnoreabbrev gc Commits
-cnoreabbrev gb BCommits
 cnoreabbrev hf h fzf-vim
+
+call utils#Cnoreabbrev('bl', 'BLines')
+call utils#Cnoreabbrev('li', 'Lines')
+call utils#Cnoreabbrev('ma', 'Maps')
+call utils#Cnoreabbrev('gf', 'GFiles?')
+call utils#Cnoreabbrev('gc', 'Commits')
+call utils#Cnoreabbrev('gb', 'BCommits')
 
 "Find quesitions
 cnoreabbrev rq Rga -F '???'

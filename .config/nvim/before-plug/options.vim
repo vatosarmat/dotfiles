@@ -54,7 +54,6 @@ let mapleader = " "
 nnoremap <Space> <Nop>
 
 let g:vim_indent_cont=shiftwidth()
-let g:is_bash = 1
 let g:rust_recommended_style = 0
 let g:markdown_fenced_languages = [
   \'lua', 'vim',

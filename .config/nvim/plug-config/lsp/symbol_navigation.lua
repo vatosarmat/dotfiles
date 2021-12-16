@@ -117,7 +117,7 @@ local function make_symbol_handler(title, filter_sort, on_done)
   return function(err, request_result, ctx, config)
     if not request_result or vim.tbl_isempty(request_result) then
       local _ = log.info() and log.info(ctx.method, 'No location found')
-      if lsp.get_client_by_id(ctx.client_id).name ~= 'efm' then
+      if lsp.get_client_by_id(ctx.client_id).name ~= 'null-ls' then
         api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
       end
       return

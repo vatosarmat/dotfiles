@@ -105,13 +105,14 @@ local client_ext = {
     short_name = 'SC',
     diagnostic_disable_line = '#shellcheck disable=${code}',
     diagnostic_webpage = 'https://github.com/koalaman/shellcheck/wiki/SC${code}'
-  }, -- ['clang-tidy'] = { kind = 'linter', short_name = 'CT' },
-  ['cppcheck'] = {
-    kind = 'linter',
-    short_name = 'CC'
   },
   ['clangd'] = {
     short_name = 'CD'
+  },
+  ['clang-tidy'] = {
+    short_name = 'CT',
+    diagnostic_disable_line = '// NOLINTNEXTLINE(${code})',
+    diagnostic_webpage = 'https://clang.llvm.org/extra/clang-tidy/checks/${code}.html'
   },
   ['sumneko_lua'] = {
     short_name = 'SL',
@@ -142,6 +143,18 @@ local client_ext = {
   ['jsonls'] = {
     short_name = 'JSON',
     diagnostic_virtual_text = jsonls_diagnostic_virtual_text
+  },
+  ['lua-format'] = {
+    short_name = 'LUAF'
+  },
+  ['prettierd'] = {
+    short_name = 'P'
+  },
+  ['shfmt'] = {
+    short_name = 'SHF'
+  },
+  ['bashls'] = {
+    short_name = 'B'
   }
 }
 

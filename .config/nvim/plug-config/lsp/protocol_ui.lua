@@ -55,36 +55,20 @@ function M.setup()
       numhl = sev.hl_sign
     })
   end
+end
 
-  local si = M.symbol_icons
+function M.severity_lsp_to_vim(severity)
+  if type(severity) == 'string' then
+    severity = vim.lsp.protocol.DiagnosticSeverity[severity]
+  end
+  return severity
+end
 
-  vim.lsp.protocol.CompletionItemKind = {
-    ' ',
-    si.Method,
-    si.Function,
-    si.Constructor,
-    si.Field,
-    si.Variable,
-    si.Class,
-    si.Interface,
-    ' ',
-    si.Property,
-    ' ',
-    ' ',
-    si.Enum,
-    ' ',
-    '﬌ ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    si.EnumMember,
-    si.Constant,
-    si.Struct,
-    '⌘ ',
-    ' ',
-    ' '
-  }
+function M.severity_vim_to_lsp(severity)
+  if type(severity) == 'string' then
+    severity = vim.diagnostic.severity[severity]
+  end
+  return severity
 end
 
 return M

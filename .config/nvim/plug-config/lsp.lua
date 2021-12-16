@@ -42,7 +42,7 @@ do
   lsp.handlers['textDocument/definition'] = function(_, result, ctx, _)
     if result == nil or vim.tbl_isempty(result) then
       local _ = log.info() and log.info(ctx.method, 'No location found')
-      if lsp.get_client_by_id(ctx.client_id).name ~= 'efm' then
+      if lsp.get_client_by_id(ctx.client_id).name ~= 'null-ls' then
         api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
       end
       return nil
@@ -131,8 +131,6 @@ do
 
   autocmd('LSP', {
     { 'BufWritePre *', auto_format }, ------------------------------------
-    { 'BufWritePost *', require('lint').try_lint }, ----------------------
-    { 'FileType *', require('lint').try_lint }, --------------------------
     [[ User LspDiagnosticsChanged redraws! ]],
     [[ User LspProgressUpdate redraws! ]]
   })
