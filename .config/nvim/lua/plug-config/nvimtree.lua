@@ -1,4 +1,4 @@
-local map = require'before-plug.vim_utils'.map
+local map = require'vim_utils'.map
 
 vim.g.nvim_tree_root_folder_modifier = ':t'
 vim.g.nvim_tree_group_empty = 1

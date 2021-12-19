@@ -1,4 +1,4 @@
-local pui = require 'plug-config.lsp.protocol_ui'
+local pui = require 'lsp.protocol_ui'
 local luasnip = require 'luasnip'
 local cmp = require 'cmp'
 local cmp_nvim_lsp = require 'cmp_nvim_lsp'

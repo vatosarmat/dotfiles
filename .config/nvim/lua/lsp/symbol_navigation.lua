@@ -2,7 +2,7 @@ local api = vim.api
 local lsp = vim.lsp
 local log = require 'vim.lsp.log'
 local tablex = require 'pl.tablex'
-local pui = require 'plug-config.lsp.protocol_ui'
+local pui = require 'lsp.protocol_ui'
 
 local symbol_icons = pui.symbol_icons
 local util = lsp.util

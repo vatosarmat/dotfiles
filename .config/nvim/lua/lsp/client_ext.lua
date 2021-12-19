@@ -3,7 +3,7 @@ local find_if = require'pl.tablex'.find_if
 local function tsserver_diagnostic_highlight(text, line)
   local type_hl_idx = 0
   local pats = {
-    { [[[pP]roperty '[^']+']], const('TSProperty') },
+    { [[[pP]roperty '[^']+']], fconst('TSProperty') },
     {
       [[[tT]ype '[^']+']],
       function()
@@ -12,8 +12,8 @@ local function tsserver_diagnostic_highlight(text, line)
         return ret
       end
     },
-    { [[[sS]ignature '[^']+']], const('TSInclude') },
-    { [[[oO]verload %d of %d, '[^']+']], const('TSFunction') }
+    { [[[sS]ignature '[^']+']], fconst('TSInclude') },
+    { [[[oO]verload %d of %d, '[^']+']], fconst('TSFunction') }
   }
   local rest = line
   while #rest > 0 do

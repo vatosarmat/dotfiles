@@ -35,14 +35,14 @@ endfunction
 
 function! s:OnVimEnter() abort
   call s:HighlightDiffConflictMarker()
-  lua require 'after-plug.project'.detect_type()
+  lua require 'project'.detect_type()
   "M-n M-p navigate through jump-list
   clearjumps
 endfunction
 
 function! s:OnDirChanged() abort
   if v:event.scope == 'global'
-    lua require 'after-plug.project'.detect_type()
+    lua require 'project'.detect_type()
   endif
 endfunction
 

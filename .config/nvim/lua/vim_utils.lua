@@ -79,14 +79,6 @@ end
 
 local map = func.bind1(map_buf, nil)
 
-local function mk_sourcer(path)
-  if vim.endswith(path, '.vim') then
-    return string.format('vim.cmd(\'source %s\')', path)
-  else
-    return string.format('if not pcall(require, \'%s\') then print(\'' .. path ..
-                           ' config failed\') end ', path)
-  end
-end
 
 -- cmd is either string or tuple
 -- cmds is either array of string-cmd's and tuple-cmd's or single string-cmd
@@ -199,7 +191,6 @@ end
 return {
   map_buf = map_buf,
   map = map,
-  mk_sourcer = mk_sourcer,
   autocmd = autocmd,
   assert_key_mode = assert_key_mode,
   Text = Text,

@@ -2,12 +2,12 @@ local api = vim.api
 local lsp = vim.lsp
 local find_if = require'pl.tablex'.find_if
 local reduce = require'pl.tablex'.reduce
-local Text = require'before-plug.vim_utils'.Text
-local map_buf = require'before-plug.vim_utils'.map_buf
+local Text = require'vim_utils'.Text
+local map_buf = require'vim_utils'.map_buf
 
 -- LSP submodules
-local cext = require 'plug-config.lsp.client_ext'
-local pui = require 'plug-config.lsp.protocol_ui'
+local cext = require 'lsp.client_ext'
+local pui = require 'lsp.protocol_ui'
 
 --
 -- Utils

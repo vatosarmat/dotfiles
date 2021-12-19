@@ -2,16 +2,16 @@ local api = vim.api
 local lsp = vim.lsp
 local func = require 'pl.func'
 local log = require 'vim.lsp.log'
-local vim_utils = require 'before-plug.vim_utils'
+local vim_utils = require 'vim_utils'
 
 -- LSP submodules
-local status_line = require 'plug-config.lsp.status_line'
-local pui = require 'plug-config.lsp.protocol_ui'
-local lsp_flags = require 'plug-config.lsp.flags'
-local sym_nav = require 'plug-config.lsp.symbol_navigation'
-local completion = require 'plug-config.lsp.completion'
-local diagnostic = require 'plug-config.lsp.diagnostic'
-local servers = require 'plug-config.lsp.server_setups'
+local status_line = require 'lsp.status_line'
+local pui = require 'lsp.protocol_ui'
+local lsp_flags = require 'lsp.flags'
+local sym_nav = require 'lsp.symbol_navigation'
+local completion = require 'lsp.completion'
+local diagnostic = require 'lsp.diagnostic'
+local servers = require 'lsp.server_setups'
 
 completion.setup()
 diagnostic.setup()

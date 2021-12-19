@@ -1,7 +1,7 @@
 local M = {}
 
 function M.commentary()
-  local map = require'before-plug.vim_utils'.map
+  local map = require'vim_utils'.map
   -- function comment(a)
   --   require'ts_context_commentstring.internal'.update_commentstring()
   --   if a == 1 then
@@ -18,7 +18,7 @@ function M.commentary()
 end
 
 function M.asterisk()
-  local map = require'before-plug.vim_utils'.map
+  local map = require'vim_utils'.map
   local opts = {
     noremap = false
   }
@@ -29,7 +29,7 @@ function M.asterisk()
 end
 
 function M.wordmotion()
-  local map = require'before-plug.vim_utils'.map
+  local map = require'vim_utils'.map
   vim.g.wordmotion_nomap = 1
   vim.g.wordmotion_uppercase_spaces = { '[^[:keyword:]]' }
   local opts = {
@@ -48,7 +48,7 @@ function M.wordmotion()
 end
 
 function M.surround()
-  local map = require'before-plug.vim_utils'.map
+  local map = require'vim_utils'.map
   vim.g.surround_indent = 1
   local opts = {
     noremap = false

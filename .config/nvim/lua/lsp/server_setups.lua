@@ -2,12 +2,12 @@ local lsp = vim.lsp
 -- local tablex = require 'pl.tablex'
 local lspconfig = require 'lspconfig'
 local lspconfig_util = require 'lspconfig.util'
-local autocmd = require'before-plug.vim_utils'.autocmd
-local lsp_flags = require 'plug-config.lsp.flags'
+local autocmd = require'vim_utils'.autocmd
+local lsp_flags = require 'lsp.flags'
 local null_ls = require 'null-ls'
 local luadev = require 'lua-dev'
 local ts_utils = require 'nvim-lsp-ts-utils'
-local json_schemas = require 'plug-config.json_schemas'
+local json_schemas = require 'json_schemas'
 --
 --
 -- server.setup takes same parameters as lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
@@ -196,8 +196,8 @@ function M.setup(capabilities)
               'use',
               'pack',
               'use_rocks',
-              'noop',
-              'const'
+              'fnoop',
+              'fconst'
             }
           }
         }

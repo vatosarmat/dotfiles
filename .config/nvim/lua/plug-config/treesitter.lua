@@ -87,7 +87,7 @@ parser_config.jsonc.used_by = 'json'
 --
 --
 local ts_utils = require 'nvim-treesitter.ts_utils'
-local map = require('before-plug.vim_utils').map
+local map = require('vim_utils').map
 
 local function package_webpage()
   local cache_file = vim.fn.stdpath('cache') .. '/package_webpage.txt'

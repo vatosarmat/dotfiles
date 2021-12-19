@@ -1,16 +1,15 @@
 local func = require 'pl.func'
 local bind1 = require'pl.func'.bind1
 local bind = require'pl.func'.bind
-local dap = require "dap"
+local dap = require 'dap'
 local widgets = require 'dap.ui.widgets'
 local dutils = require 'dap.utils'
-local shortmap = require 'before-plug.shortmap'
+local shortmap = require 'shortmap'
 
 local function debugee_cmd_input(_config, done)
   local config = vim.deepcopy(_config)
   local from_clipboard = vim.trim(vim.fn.getreg('+'))
-  local cmd = vim.trim(vim.fn
-                         .input('Cmd to debug: ', from_clipboard, 'shellcmd'))
+  local cmd = vim.trim(vim.fn.input('Cmd to debug: ', from_clipboard, 'shellcmd'))
   local words = vim.gsplit(cmd, ' ', true)
 
   config.program = words()
@@ -39,7 +38,7 @@ dap.configurations.lua = {
   {
     type = 'nlua',
     request = 'attach',
-    name = "Attach to running Neovim instance",
+    name = 'Attach to running Neovim instance',
     -- host = function()
     --   local value = vim.fn.input('Host [127.0.0.1]: ')
     --   if value ~= "" then
@@ -75,7 +74,7 @@ dap.adapters.cppdbg = {
 dap.adapters.lldb = {
   type = 'executable',
   command = '/usr/bin/lldb-vscode',
-  name = "lldb",
+  name = 'lldb',
   enrich_config = debugee_cmd_input
 }
 
@@ -84,9 +83,9 @@ dap.adapters.lldb = {
 -- https://github.com/llvm/llvm-project/tree/main/lldb/tools/lldb-vscode#configurations
 dap.configurations.cpp = {
   {
-    name = "LLDB launch",
-    type = "lldb",
-    request = "launch",
+    name = 'LLDB launch',
+    type = 'lldb',
+    request = 'launch',
     cwd = '${workspaceFolder}',
     stopOnEntry = false
 
@@ -101,20 +100,22 @@ dap.configurations.cpp = {
     -- But you should be aware of the implications:
     -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
     -- runInTerminal = true
-  }, {
+  },
+  {
     {
       -- If you get an "Operation not permitted" error using this, try disabling YAMA:
       --  echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-      name = "Attach to process",
+      name = 'Attach to process',
       type = 'lldb',
       request = 'attach',
       pid = require('dap.utils').pick_process,
       args = {}
     }
-  }, {
-    name = "GDB launch",
-    type = "cppdbg",
-    request = "launch",
+  },
+  {
+    name = 'GDB launch',
+    type = 'cppdbg',
+    request = 'launch',
     cwd = '${workspaceFolder}',
     stopOnEntry = true
   }
@@ -145,7 +146,7 @@ do
 
   local function map(mode, key, command, short)
     key = '<leader>d' .. key
-    require'before-plug.vim_utils'.map(mode, key, command)
+    require'vim_utils'.map(mode, key, command)
     if short then
       table.insert(short_mappings, { mode, short, key })
     end
@@ -153,9 +154,13 @@ do
 
   local mapn = bind(map, 'n', func._1, func._2, func._3)
 
-  local function sidebar_frames() widgets.sidebar(widgets.frames).open() end
+  local function sidebar_frames()
+    widgets.sidebar(widgets.frames).open()
+  end
 
-  local function sidebar_scopes() widgets.sidebar(widgets.scopes).open() end
+  local function sidebar_scopes()
+    widgets.sidebar(widgets.scopes).open()
+  end
 
   mapn('b', dap.toggle_breakpoint, '<C-b>')
 
@@ -188,5 +193,4 @@ do
 end
 
 vim.fn['utils#Cnoreabbrev']('osv', 'lua require"osv".launch({port = 40001})')
-vim.fn['utils#Cnoreabbrev']('osvl',
-                            'lua require"osv".launch({log = true, port = 40001})')
+vim.fn['utils#Cnoreabbrev']('osvl', 'lua require"osv".launch({log = true, port = 40001})')

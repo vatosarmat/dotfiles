@@ -1,8 +1,7 @@
 local func = require 'pl.func'
 local reduce = require'pl.tablex'.reduce
-local assert_key_mode = require'before-plug.vim_utils'.assert_key_mode
-local buf_set_map = func.bind(vim.api.nvim_buf_set_keymap, 0, func._1, func._2,
-                              func._3, func._4)
+local assert_key_mode = require'vim_utils'.assert_key_mode
+local buf_set_map = func.bind(vim.api.nvim_buf_set_keymap, 0, func._1, func._2, func._3, func._4)
 local buf_del_map = func.bind(vim.api.nvim_buf_del_keymap, 0, func._1, func._2)
 
 local M = {}
@@ -40,13 +39,12 @@ function M.define(name, mappings)
   assert(not _shortmap[name], 'Shortmap \'' .. name .. '\' already defined')
   local function f(full_mappings, abbreved_mapping)
     local modes, lhs, rhs = unpack(abbreved_mapping)
-    modes:gsub(".", function(m)
+    modes:gsub('.', function(m)
       assert_key_mode(m)
       if not full_mappings[m] then
         full_mappings[m] = {}
       end
-      assert(not full_mappings[m][lhs],
-             'Shortmapping ' .. m .. lhs .. ' already defined')
+      assert(not full_mappings[m][lhs], 'Shortmapping ' .. m .. lhs .. ' already defined')
 
       full_mappings[m][lhs] = rhs
     end)
@@ -74,7 +72,9 @@ function M.enable(name)
       if maybe_overwritten then
         overwritten_keymaps[mode][lhs] = maybe_overwritten
       end
-      buf_set_map(mode, lhs, rhs, { noremap = false })
+      buf_set_map(mode, lhs, rhs, {
+        noremap = false
+      })
     end
   end
   vim.b.overwritten_keymaps = overwritten_keymaps
@@ -93,8 +93,7 @@ function M.disable()
       buf_del_map(mode, lhs)
       local maybe_overwritten = overwritten_keymaps[mode][lhs]
       if maybe_overwritten then
-        buf_set_map(mode, maybe_overwritten.lhs, maybe_overwritten.rhs,
-                    maybe_overwritten.opts)
+        buf_set_map(mode, maybe_overwritten.lhs, maybe_overwritten.rhs, maybe_overwritten.opts)
       end
     end
   end

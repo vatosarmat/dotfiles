@@ -3,8 +3,8 @@ local lsp = vim.lsp
 -- local null_ls = require 'null-ls'
 local null_ls_namespace = require'null-ls.diagnostics'.get_namespace
 local null_ls_available_sources = require'null-ls.sources'.get_available
-local pui = require 'plug-config.lsp.protocol_ui'
-local cext = require 'plug-config.lsp.client_ext'
+local pui = require 'lsp.protocol_ui'
+local cext = require 'lsp.client_ext'
 
 local separator = {
   clients = '][',
