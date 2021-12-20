@@ -2,7 +2,8 @@ local common_exclude_files = { '.git', '.shada' }
 
 vim.g.project = {
   kind = 'common',
-  exclude_files = common_exclude_files
+  exclude_files = common_exclude_files,
+  package_webpage = 'https://github.com/${package}'
 }
 
 local M = {}

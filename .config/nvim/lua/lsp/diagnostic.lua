@@ -158,7 +158,6 @@ local function show_line_diagnostics()
           return ret
         end
         lsp.handlers['workspace/applyEdit'] = with_write
-
         local action_chosen = fix_action_selector(result)
         -- textDocument/codeAction can return either Command[] or CodeAction[].
         -- If it is a CodeAction, it can have either an edit, a command or both.
@@ -226,13 +225,23 @@ function M.setup()
       -- print(vim.inspect(ret))
       local str = diagnostic_format(diagnostic)
       if str then
-        local chunk = { str .. ' ', pui.severities[diagnostic.severity].hl_virt }
-        if not ret[lnum] then
-          ret[lnum] = { chunk }
+        if ret[lnum] then
+          local severity = ret[lnum].severity[str]
+          if severity then
+            if diagnostic.severity < severity then
+              ret[lnum].severity[str] = diagnostic.severity
+            end
+          else
+            ret[lnum].severity[str] = diagnostic.severity
+            table.insert(ret[lnum].order, str)
+          end
         else
-          -- Comma separated diagnostic list
-          -- table.insert(ret[lnum], { ' ', 'Normal' })
-          table.insert(ret[lnum], chunk)
+          ret[lnum] = {
+            severity = {
+              [str] = diagnostic.severity
+            },
+            order = { str }
+          }
         end
       end
       return ret
@@ -241,7 +250,10 @@ function M.setup()
     for line, virt_text in pairs(virt_text_per_line) do
       vim.api.nvim_buf_set_extmark(bufnr, virt_text_ns, line, 0, {
         hl_mode = 'combine',
-        virt_text = virt_text,
+        -- make list of {str, hl} chunks
+        virt_text = vim.tbl_map(function(item)
+          return { item .. ' ', pui.severities[virt_text.severity[item]].hl_virt }
+        end, virt_text.order),
         virt_text_pos = 'right_align',
         virt_text_hide = true
       })
@@ -251,10 +263,10 @@ function M.setup()
 
   vim.diagnostic.config({
     virtual_text = function(_, _)
-      return vim.g.uopts.ldv == 1
+      return vim.g.UOPTS.ldv == 1
     end,
     underline = function(_, _)
-      return vim.g.uopts.ldu == 1 and {
+      return vim.g.UOPTS.ldu == 1 and {
         -- severity_limit = 'Error'
       } or false
     end,

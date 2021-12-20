@@ -1,6 +1,8 @@
 local pui = require 'lsp.protocol_ui'
+local map = require'vim_utils'.map
 local luasnip = require 'luasnip'
 local cmp = require 'cmp'
+local cmp_types = require('cmp.types')
 local cmp_nvim_lsp = require 'cmp_nvim_lsp'
 local autopairs = require 'nvim-autopairs'
 -- local cmp_autopairs = require('nvim-autopairs.completion.cmp')
@@ -84,10 +86,20 @@ local kind_icons = {
   TypeParameter = ' '
 }
 
+local function is_autocomplete()
+  return vim.g.UOPTS.lac == 1 and { cmp_types.cmp.TriggerEvent.TextChanged } or false
+end
+
 function M.setup()
   luasnip.config.setup {}
-  autopairs.setup()
-
+  autopairs.setup({
+    check_ts = true,
+    ts_config = {
+      lua = { 'string' }
+    }
+  })
+  autopairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
+  vim.cmd([[ inoremap <M-C-m> <C-m> ]])
   -- cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done({
   --   map_char = {
   --     tex = ''
@@ -101,8 +113,8 @@ function M.setup()
       end
     },
     completion = {
-      autocomplete = false,
-      completeopt = 'menu,menuone,noinsert'
+      autocomplete = is_autocomplete(),
+      completeopt = 'menu,menuone,noselect'
     },
     mapping = mapping,
     -- why 2 arrays?
@@ -132,6 +144,14 @@ function M.setup()
       end
     }
   })
+  map('n', '<leader>lc', function()
+    vim.fn['uopts#toggle']('lac')
+    cmp.setup({
+      completion = {
+        autocomplete = is_autocomplete()
+      }
+    })
+  end)
 end
 
 function M.capabilities(client_capabilities)

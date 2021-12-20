@@ -144,7 +144,7 @@ function! utils#Print(dflt, ...) abort
   endfunction
 
   call timer_stop(g:ustate.print_clear_timer)
-  let g:ustate.print_clear_timer = timer_start(g:uopts.print_duration, function('Clear'))
+  let g:ustate.print_clear_timer = timer_start(g:UOPTS.print_duration, function('Clear'))
 endfunction
 
 function! utils#Warning(...) abort
@@ -161,7 +161,7 @@ function! utils#LineCol() abort
 endfunction
 
 function! utils#TrimBufLines() abort
-  if g:uopts.laf
+  if g:UOPTS.laf
     let save_cursor = getpos(".")
     keeppatterns keepjumps %s/\s\+$//e
     call setpos('.', save_cursor)

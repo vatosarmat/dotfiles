@@ -48,7 +48,7 @@ function! s:QflistStep(next, loc = 0) abort
       call utils#Print('WarningMsg', 'No loclist available')
     endtry
   endtry
-  if g:uopts.nz
+  if g:UOPTS.nz
     if a:loc
       call win_gotoid(getloclist(0, #{winid: 0 }).winid) | normal! zz
     else
@@ -312,7 +312,7 @@ function s:Jump(cmd) abort
   try
     " execute 'keepjumps' 'normal!' a:cmd
     execute 'normal!' a:cmd
-    if g:uopts.nz
+    if g:UOPTS.nz
       normal! zz
     endif
   catch /E384/
@@ -452,8 +452,8 @@ nnoremap <leader>gml <cmd>diffget LOCAL<cr>
 nnoremap <leader>gmr <cmd>diffget REMOTE<cr>
 
 "Diff, jump to the next hunk. With default 'c' it may be erroneously changed
-nmap [w [czz
-nmap ]w ]czz
+" nmap [w [czz
+" nmap ]w ]czz
 
 "Comfy buffer switching
 nnoremap <silent> <M-n> <cmd>call <sid>Next()<cr>
@@ -503,7 +503,7 @@ endfunction
 function! s:Next() abort
   if &diff
     keepjumps normal! ]c
-    if g:uopts.nz
+    if g:UOPTS.nz
       normal! zz
     endif
   else
@@ -514,7 +514,7 @@ endfunction
 function! s:Prev() abort
   if &diff
     keepjumps normal! [c
-    if g:uopts.nz
+    if g:UOPTS.nz
       normal! zz
     endif
   else

@@ -1,4 +1,4 @@
-let g:uopts = #{
+let g:UOPTS = #{
   \ print_duration: 5000,
   \ }
 
@@ -14,11 +14,12 @@ let s:lsp_flags = #{
  \ ldu: 0,
  \ ldv: 0,
  \ laf: 1,
+ \ lac: 0,
  \ }
 
 function uopts#toggle(flag) abort
-  let g:uopts[a:flag] = !g:uopts[a:flag]
-  echom a:flag.' '.(g:uopts[a:flag] ? 'SET' : 'UNset')
+  let g:UOPTS[a:flag] = !g:UOPTS[a:flag]
+  echom a:flag.' '.(g:UOPTS[a:flag] ? 'SET' : 'UNset')
 endfunction
 
 function s:MapAllFlags() abort
@@ -29,7 +30,7 @@ function s:MapAllFlags() abort
 endfunction
 
 call extend(s:util_flags, s:lsp_flags)
-call extend(g:uopts, s:util_flags)
+call extend(g:UOPTS, s:util_flags)
 call s:MapAllFlags()
 
 "The options useful when iterating through many similarly highlighted search

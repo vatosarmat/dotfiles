@@ -88,9 +88,23 @@ do
   end
 
   local function auto_format()
-    if vim.g.uopts.laf == 1 then
+    if vim.g.UOPTS.laf == 1 then
       lsp.buf.formatting_sync(nil, 1500)
     end
+  end
+
+  local function map_diagnostic_goto(sev, key)
+    key = key or 'g'
+    map('n', '[' .. key, func.bind1(vim.diagnostic.goto_prev, {
+      wrap = false,
+      float = false,
+      severity = vim.diagnostic.severity[sev]
+    }))
+    map('n', ']' .. key, func.bind1(vim.diagnostic.goto_next, {
+      wrap = false,
+      float = false,
+      severity = vim.diagnostic.severity[sev]
+    }))
   end
 
   map('n', '<C-j>', lsp.buf.hover)
@@ -100,14 +114,11 @@ do
   map('n', 'gd', lsp.buf.definition)
   map('n', 'gt', lsp.buf.type_definition)
   map('n', 'gr', lsp.buf.references)
-  map('n', 'g[', func.bind1(vim.diagnostic.goto_prev, {
-    wrap = false,
-    float = false
-  }))
-  map('n', 'g]', func.bind1(vim.diagnostic.goto_next, {
-    wrap = false,
-    float = false
-  }))
+  map_diagnostic_goto()
+  map_diagnostic_goto('ERROR', 'e')
+  map_diagnostic_goto('WARN', 'w')
+  map_diagnostic_goto('INFO', '<M-e>')
+  map_diagnostic_goto('HINT', '<M-w>')
 
   -- Refactor
   map('n', '<leader>ln', lsp.buf.rename)

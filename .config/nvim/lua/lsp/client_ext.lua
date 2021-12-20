@@ -99,6 +99,10 @@ local function jsonls_diagnostic_virtual_text(d)
   return ErrorCode[tonumber(code)]
 end
 
+local function rust_diagnostic_virtual_text(d)
+  return d.user_data.lsp.code
+end
+
 local client_ext = {
   ['shellcheck'] = {
     kind = 'linter',
@@ -155,12 +159,16 @@ local client_ext = {
   },
   ['bashls'] = {
     short_name = 'B'
+  },
+  ['rustc'] = {
+    diagnostic_virtual_text = rust_diagnostic_virtual_text
   }
 }
 
 client_ext['Lua Diagnostics.'] = client_ext['sumneko_lua']
 client_ext['typescript'] = client_ext['tsserver']
 client_ext['jsonc'] = client_ext['jsonls']
+client_ext['rust-analyzer'] = client_ext['rustc']
 
 setmetatable(client_ext, {
   __index = function(tbl, key)

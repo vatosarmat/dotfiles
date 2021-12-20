@@ -74,7 +74,7 @@ endfunction
 
 function! s:OnBufWinEnterTxt() abort
   "Move each new help window right if no other help windows
-  if g:uopts.hl &&
+  if g:UOPTS.hl &&
     \ win_getid() == g:autocmd#last_win_new &&
     \ &buftype == 'help' &&
     \ !exists('w:help_moved') &&
