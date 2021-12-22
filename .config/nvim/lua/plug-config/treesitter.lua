@@ -101,7 +101,7 @@ local function package_webpage()
     local query_cache_cmd = string.format('grep -Fqsx %s %s', uri, cache_file)
     if os.execute(query_cache_cmd) ~= 0 then
       local test_uri_cmd = string.format(
-                             'test "$(curl -s -o /dev/null -w "%%{http_code}" %s)" = "200"', uri)
+                             'test "$(curl -Ls -o /dev/null -w "%%{http_code}" %s)" = "200"', uri)
       if os.execute(test_uri_cmd) == 0 then
         vim.fn.writefile({ uri }, cache_file, 'a')
         good_uri = true

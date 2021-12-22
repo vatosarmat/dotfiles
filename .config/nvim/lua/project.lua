@@ -22,7 +22,8 @@ function M.detect_type()
   elseif vim.fn.filereadable('./Cargo.toml') == 1 then
     vim.g.project = {
       kind = 'rust',
-      exclude_files = vim.list_extend(common_exclude_files, { 'target' })
+      exclude_files = vim.list_extend(common_exclude_files, { 'target' }),
+      package_webpage = 'https://docs.rs/${package}'
     }
   elseif vim.fn.filereadable('./package.json') == 1 then
     vim.g.project = {

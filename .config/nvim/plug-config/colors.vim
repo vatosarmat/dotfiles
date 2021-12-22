@@ -99,3 +99,8 @@ highlight! CmpItemKindMethod guibg=NONE guifg=#C586C0
 highlight! CmpItemKindKeyword guibg=NONE guifg=#D4D4D4
 highlight! CmpItemKindProperty guibg=NONE guifg=#D4D4D4
 highlight! CmpItemKindUnit guibg=NONE guifg=#D4D4D4
+
+hi! link TSText Normal
+hi! TSStrong guifg=#e6eeff
+hi! TSEmphasis guifg=#e6eeff
+hi! TSTitle guifg=#e6eeff
