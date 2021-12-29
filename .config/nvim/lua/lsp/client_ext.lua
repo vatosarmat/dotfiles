@@ -1,5 +1,7 @@
 local find_if = require'pl.tablex'.find_if
 
+local diagnostic_get_code = require'lsp.misc'.diagnostic_get_code
+
 local function tsserver_diagnostic_highlight(text, line)
   local type_hl_idx = 0
   local pats = {
@@ -45,6 +47,16 @@ local function tsserver_diagnostic_highlight(text, line)
     end
   end
   text:append(rest)
+end
+
+local function tsserver_diagnostic_virtual_text(d)
+  local code = diagnostic_get_code(d)
+  local code_short_msg = {
+    [6133] = 'unused_decl',
+    [6192] = 'unused_import',
+    [2304] = 'not_found'
+  }
+  return code_short_msg[code] or ('ts:' .. code)
 end
 
 local function eslint_diagnostic_virtual_text(d)
@@ -128,7 +140,8 @@ local client_ext = {
   ['tsserver'] = {
     short_name = 'TS',
     diagnostic_highlight = tsserver_diagnostic_highlight,
-    diagnostic_disable_line = '//@ts-expect-error'
+    diagnostic_disable_line = '//@ts-expect-error',
+    diagnostic_virtual_text = tsserver_diagnostic_virtual_text
   },
   ['eslint'] = {
     short_name = 'ES',
@@ -162,11 +175,15 @@ local client_ext = {
   },
   ['rustc'] = {
     diagnostic_virtual_text = rust_diagnostic_virtual_text
+  },
+  ['css'] = {
+    diagnostic_virtual_text = diagnostic_get_code
   }
 }
 
 client_ext['Lua Diagnostics.'] = client_ext['sumneko_lua']
 client_ext['typescript'] = client_ext['tsserver']
+client_ext['ts'] = client_ext['tsserver']
 client_ext['jsonc'] = client_ext['jsonls']
 client_ext['rust-analyzer'] = client_ext['rustc']
 

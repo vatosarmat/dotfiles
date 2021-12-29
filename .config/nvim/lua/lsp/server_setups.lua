@@ -21,7 +21,7 @@ local jsts_filetype = {
   'typescriptreact',
   'typescript.jsx'
 }
-local prettier_filetype = vim.list_extend({ 'html', 'css', 'json', 'jsonc' }, jsts_filetype)
+local prettier_filetype = vim.list_extend({ 'html', 'css', 'json', 'jsonc', 'vue' }, jsts_filetype)
 -- local eslint_filetype = jsts_filetype
 
 local function document_highlight()
@@ -46,7 +46,7 @@ local function default_on_attach(client, _bufnr)
   end
 end
 
-local function setup_ts_flow()
+local function setup_ts_flow_volar()
   local flow = lspconfig.flow
   flow.setup {}
   local flow_add = flow.manager.add
@@ -86,7 +86,7 @@ local function setup_ts_flow()
   tsserver.setup {
     on_attach = function(client, bufnr)
       client.resolved_capabilities.document_formatting = false
-      client.resolved_capabilities.document_range_formatting = false
+      -- client.resolved_capabilities.document_range_formatting = false
       default_on_attach(client, bufnr)
 
       ts_utils.setup(ts_utils_settings)
@@ -105,6 +105,14 @@ local function setup_ts_flow()
       return tsserver_add(...)
     end
   end
+
+  lspconfig.volar.setup {
+    on_attach = function(client, bufnr)
+      client.resolved_capabilities.document_formatting = false
+      -- client.resolved_capabilities.document_range_formatting = false
+      default_on_attach(client, bufnr)
+    end
+  }
 end
 
 local function setup_null_ls()
@@ -197,7 +205,8 @@ function M.setup(capabilities)
               'pack',
               'use_rocks',
               'fnoop',
-              'fconst'
+              'fconst',
+              'pprint'
             }
           }
         }
@@ -234,7 +243,7 @@ function M.setup(capabilities)
   }
 
   setup_cpp()
-  setup_ts_flow()
+  setup_ts_flow_volar()
   setup_null_ls()
 end
 

@@ -20,8 +20,8 @@ local mapping = {
       return cmp.mapping.select_next_item {
         behavior = cmp.SelectBehavior.Insert
       }(fallback)
-    elseif luasnip.expand_or_jumpable() then
-      luasnip.expand_or_jump()
+    elseif luasnip.expandable() then
+      luasnip.expand()
     elseif is_space_before() then
       return fallback()
     else

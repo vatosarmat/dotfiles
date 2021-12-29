@@ -8,6 +8,7 @@ local map_buf = require'vim_utils'.map_buf
 -- LSP submodules
 local cext = require 'lsp.client_ext'
 local pui = require 'lsp.protocol_ui'
+local misc = require 'lsp.misc'
 
 --
 -- Utils
@@ -23,19 +24,7 @@ local function get_source(diagnostic)
   return cext[diagnostic.source].short_name or diagnostic.source or '?'
 end
 
-local function get_code(diagnostic)
-  if diagnostic.code then
-    return diagnostic.code
-  end
-  local u = diagnostic.user_data
-  if u then
-    local l = u.lsp
-    if l and l.code then
-      return l.code
-    end
-  end
-  return pui.severities[diagnostic.severity].name
-end
+local get_code = misc.diagnostic_get_code
 
 local function lookup_client_by_name(name, bufnr)
   local clients = lsp.buf_get_clients(bufnr)

@@ -189,6 +189,7 @@ function! s:move_paragraph(forward) abort
       execute 'keepjumps' 'normal!' direct_par.reverse_char.'_'
     endif
   endif
+  call uopts#pzz()
 endfunction
 
 nnoremap <silent>K <cmd>call <sid>move_paragraph(0)<cr>
@@ -312,9 +313,7 @@ function s:Jump(cmd) abort
   try
     " execute 'keepjumps' 'normal!' a:cmd
     execute 'normal!' a:cmd
-    if g:UOPTS.nz
-      normal! zz
-    endif
+    call uopts#nzz()
   catch /E384/
     call utils#Print('ErrorMsg', 'TOP ', [@/, 'LspDiagnosticsSignInformation'])
   catch /E385/
@@ -503,9 +502,7 @@ endfunction
 function! s:Next() abort
   if &diff
     keepjumps normal! ]c
-    if g:UOPTS.nz
-      normal! zz
-    endif
+    call uopts#nzz()
   else
     call s:BufJump('NEXT')
   endif
@@ -514,9 +511,7 @@ endfunction
 function! s:Prev() abort
   if &diff
     keepjumps normal! [c
-    if g:UOPTS.nz
-      normal! zz
-    endif
+    call uopts#nzz()
   else
     call s:BufJump('PREV')
   endif

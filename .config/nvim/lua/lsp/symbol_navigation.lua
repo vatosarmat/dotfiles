@@ -8,67 +8,168 @@ local symbol_icons = pui.symbol_icons
 local util = lsp.util
 local M = {}
 
-local function symbol_lnum(symbol)
-  if symbol.location then
-    -- SymbolInformation type
-    return symbol.location.range.start.line + 1
-  else
-    -- DocumentSymbol type
-    return symbol.selectionRange.start.line + 1
+--
+-- LSP range and pos. Zero-based
+--
+local function is_pos_in_range(range, pos)
+  local pos_line, pos_char = unpack(pos)
+  return (pos_line > range.start.line and pos_line < range['end'].line) or
+           ((pos_line == range.start.line or pos_line == range['end'].line) and
+             (pos_char >= range.start.character and pos_char <= range['end'].character))
+end
+
+local function get_cursor_pos()
+  -- zero-based line number
+  local pos = api.nvim_win_get_cursor(0)
+  pos[1] = pos[1] - 1
+  return pos
+end
+
+local function get_loclist_item_lsp_pos(item)
+  return { item.lnum - 1, item.col - 1 }
+end
+
+-- DocumentSymbol: name:string, detail?:string, kind:SymbolKind, range:Range(body), selectionRange:Range(function name), children:DocumentSymbol[]
+-- SymbolInformation: name:string, kind:SymbolKind, location:Location{uri:DocumentUri, range:Range}
+-- Range{start:{line, character}, end{line, character}}
+
+--
+-- DocumentSymbol
+--
+local DocumentSymbol = {}
+do
+  function DocumentSymbol.make_loclist_item(symbol)
+    local start = symbol.selectionRange.start
+    local kind = util._get_symbol_kind_name(symbol.kind)
+    local maybe_detail = symbol.detail and '  ' .. symbol.detail or ''
+    return {
+      filename = vim.api.nvim_buf_get_name(0),
+      lnum = start.line + 1,
+      col = start.character + 1,
+      text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name .. maybe_detail
+    }
   end
-end
 
-local function sort_symbols_by_lnum(list)
-  table.sort(list, function(a, b)
-    return symbol_lnum(a) < symbol_lnum(b)
-  end)
-  return list
-end
+  function DocumentSymbol.is_pos_in_symbol_range(symbol, pos)
+    return is_pos_in_range(symbol.range, pos)
+  end
 
--- Convert symbols to quickfix list
-local function symbols_to_items(symbols, bufnr)
-  local function _symbols_to_items(_symbols, _items, _bufnr)
-    for _, symbol in ipairs(_symbols) do
-      local lnum = symbol_lnum(symbol)
-      if symbol.location then -- SymbolInformation type
-        local range = symbol.location.range
-        local kind = util._get_symbol_kind_name(symbol.kind)
-        table.insert(_items, {
-          filename = vim.uri_to_fname(symbol.location.uri),
-          lnum = lnum,
-          col = range.start.character + 1,
-          kind = kind,
-          -- text = '[' .. kind .. '] ' .. symbol.name
-          text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name
-        })
-      elseif symbol.selectionRange then -- DocumentSymbol type
-        local kind = util._get_symbol_kind_name(symbol.kind)
-        local maybe_detail = symbol.detail and '  ' .. symbol.detail or ''
-        table.insert(_items, { -- bufnr = _bufnr,
-          filename = vim.api.nvim_buf_get_name(_bufnr),
-          lnum = lnum,
-          col = symbol.selectionRange.start.character + 1,
-          kind = kind,
-          -- text = '[' .. kind .. '] ' .. symbol.name
-          text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name .. maybe_detail
-        })
-
-        -- Don't go for children
-        -- if symbol.children then
-        --   for _, v in ipairs(
-        --                 _symbols_to_items(symbol.children, _items, _bufnr)) do
-        --     vim.list_extend(_items, v)
-        --   end
-        -- end
+  function DocumentSymbol.get_deepest_children(symbols, cursor_pos)
+    -- deepest children under cursor
+    local function get_deepest_parent(_items)
+      -- deepest parent - i.e. symbol with non-empty children symbols
+      local uc_idx = tablex.find_if(_items, function(item)
+        return is_pos_in_range(item.range, cursor_pos)
+      end)
+      if uc_idx and _items[uc_idx].children then
+        return get_deepest_parent(_items[uc_idx].children) or _items[uc_idx]
       end
     end
-    return _items
+    return get_deepest_parent(symbols)
   end
-  return _symbols_to_items(symbols, {}, bufnr)
 end
 
--- Render only line num and text in the list, don't show file names
-local function loclist_set(title, items)
+--
+-- SymbolInformation
+--
+local SymbolInformation = {}
+
+do
+  function SymbolInformation.make_loclist_item(symbol)
+    local start = symbol.location.range.start
+    local kind = util._get_symbol_kind_name(symbol.kind)
+    return {
+      filename = vim.uri_to_fname(symbol.location.uri),
+      lnum = start.line + 1,
+      col = start.character + 1,
+      text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name
+    }
+  end
+
+  function SymbolInformation.is_pos_in_symbol_range(symbol, pos)
+    return is_pos_in_range(symbol.location.range, pos)
+  end
+end
+
+--
+-- Helpers 2
+--
+local function get_symbol_handler(symbol)
+  if symbol.selectionRange then
+    return DocumentSymbol
+  end
+  return SymbolInformation
+end
+
+local function make_loclist_item(S, symbol)
+  local item = S.make_loclist_item(symbol)
+  item.symbol = symbol
+  local line = api.nvim_buf_get_lines(0, item.lnum - 1, item.lnum, false)[1]
+  if item.col > #line then
+    item.col = 1
+  end
+  return item
+end
+
+local function make_loclist(S, symbols, predicate)
+  -- Turn symbols into sorted and filtered loclist
+  if #symbols == 0 then
+    return {}
+  end
+  local items = {}
+  for _, symbol in ipairs(symbols) do
+    -- print(not predicate or predicate(symbol))
+    if not predicate or predicate(symbol) then
+      table.insert(items, make_loclist_item(S, symbol))
+    end
+  end
+  table.sort(items, function(a, b)
+    return a.lnum < b.lnum
+  end)
+  return items
+end
+
+local function infer_children_by_range(S, cursor_pos, loclist_items)
+  local siblings = {}
+  -- Previous item
+  local prev_symbol
+  -- The range where the cursor is in
+  local parent_symbol
+  -- The range where the cursor is not in
+  local skip_symbol
+
+  for _, item in ipairs(loclist_items) do
+    local item_pos = get_loclist_item_lsp_pos(item)
+
+    if parent_symbol and not S.is_pos_in_symbol_range(parent_symbol, item_pos) then
+      break
+    end
+
+    if not (skip_symbol and S.is_pos_in_symbol_range(skip_symbol, item_pos)) then
+      skip_symbol = nil
+
+      if prev_symbol and S.is_pos_in_symbol_range(prev_symbol, item_pos) then
+        if S.is_pos_in_symbol_range(prev_symbol, cursor_pos) then
+          -- Either items from the range should be the only content of siblings returned
+          siblings = { item }
+          parent_symbol = prev_symbol
+        else
+          -- or they must be skipped
+          skip_symbol = prev_symbol
+        end
+        prev_symbol = nil
+      else
+        -- Either no prev_range or the current item is not in it
+        prev_symbol = item.symbol
+        table.insert(siblings, item)
+      end
+    end
+  end
+
+  return siblings, parent_symbol and parent_symbol.name
+end
+
+local function set_loclist(title, items)
   local what = {
     title = title,
     items = items
@@ -83,39 +184,14 @@ local function loclist_set(title, items)
   vim.fn.setloclist(0, {}, ' ', what)
 end
 
--- vim.g.igor = ''
-local function parent_symbol_under_cursor(items)
-  local pos = api.nvim_win_get_cursor(0)
-  local cursor_line = pos[1] - 1
-  local cursor_character = pos[2]
-  local function _find_psuc(_items)
-    -- Find if items have symbol under cursor
-    local uc_idx = tablex.find_if(_items, function(item)
-      local sr = item.location and item.location.range or item.range
-      -- vim.g.igor = vim.g.igor ..
-      --                string.format('%s: %d %d %d %d', item.name, sr.start.line,
-      --                              sr.start.character, sr['end'].line, sr['end'].character) ..
-      --                '\n'
-      return (cursor_line > sr.start.line and cursor_line < sr['end'].line) or
-               ((cursor_line == sr.start.line or cursor_line == sr['end'].line) and
-                 (cursor_character >= sr.start.character and cursor_character <= sr['end'].character))
-    end)
-    -- If have and it has children, remember it and check its children
-    -- if uc_idx then
-    --   vim.g.igor = vim.g.igor .. _items[uc_idx].name .. '\n'
-    -- end
-    if uc_idx and _items[uc_idx].children then
-      return _find_psuc(_items[uc_idx].children) or _items[uc_idx]
-    end
-  end
-  return _find_psuc(items)
-end
-
--- handler with filter_sort and on_done
-local function make_symbol_handler(title, filter_sort, on_done)
+--
+-- textDocument/documentSymbol
+--
+local function make_symbol_handler(initial_title, filter_predicate)
   ---@diagnostic disable-next-line: unused-local
   return function(err, request_result, ctx, config)
-    if not request_result or vim.tbl_isempty(request_result) then
+    -- Handle missing result
+    if not request_result or #request_result == 0 then
       local _ = log.info() and log.info(ctx.method, 'No location found')
       if lsp.get_client_by_id(ctx.client_id).name ~= 'null-ls' then
         api.nvim_echo({ { 'No symbols found', 'WarningMsg' } }, true, {})
@@ -123,57 +199,53 @@ local function make_symbol_handler(title, filter_sort, on_done)
       return
     end
 
-    local psuc = parent_symbol_under_cursor(request_result)
-    local a = filter_sort(psuc and psuc.children or request_result)
-    local items = symbols_to_items(a, ctx.bufnr)
-    loclist_set(psuc and psuc.name .. ': ' .. title or title, items)
-    api.nvim_command 'lopen | wincmd p'
-    on_done()
-  end
-end
+    local symbols = request_result
+    -- print(#symbols)
+    local title = initial_title
+    local S = get_symbol_handler(symbols[1])
+    local pos = get_cursor_pos()
+    if S.get_deepest_children then
+      local parent = S.get_deepest_children(symbols, pos)
+      if parent then
+        title = parent.name .. ': ' .. initial_title
+        symbols = parent.children
+      end
+      -- print(#symbols)
+    end
 
-local function loclist_sync()
-  -- vim.cmd('lbefore | normal! \015')
-  vim.cmd 'try | lbefore | catch /E553/ | lafter | endtry'
+    local loclist_items = make_loclist(S, symbols, filter_predicate)
+    -- print(#loclist_items)
+    local loclist_items2, parent_name = infer_children_by_range(S, pos, loclist_items)
+    -- print(#loclist_items2)
+    if parent_name then
+      title = parent_name .. ': ' .. initial_title
+    end
+    set_loclist(title, loclist_items2)
+    vim.fn['lsp#SymbolList']()
+  end
 end
 
 -- Pub selectors
 
-function M.document_list_symbols(title, filter_sort, on_done)
+function M.document_list_symbols(title, filter_predicate)
   title = title or 'all symbols'
-  filter_sort = filter_sort or sort_symbols_by_lnum
-  on_done = on_done or loclist_sync
   local params = {
     textDocument = util.make_text_document_params()
   }
   vim.lsp.buf_request(0, 'textDocument/documentSymbol', params,
-                      make_symbol_handler(title, filter_sort, on_done))
+                      make_symbol_handler(title, filter_predicate))
 end
 
 function M.document_list_functions()
-  local function filter_sort(items)
-    local ret = {}
-    for _, item in ipairs(items) do
-      if vim.lsp.util._get_symbol_kind_name(item.kind) == 'Function' then
-        table.insert(ret, item)
-      end
-    end
-    return sort_symbols_by_lnum(ret)
-  end
-  M.document_list_symbols('functions', filter_sort)
+  M.document_list_symbols('functions', function(symbol)
+    return util._get_completion_item_kind_name(symbol.kind) == 'Function'
+  end)
 end
 
 function M.document_list_non_props()
-  local function filter_sort(items)
-    local ret = {}
-    for _, item in ipairs(items) do
-      if vim.lsp.util._get_symbol_kind_name(item.kind) ~= 'Property' then
-        table.insert(ret, item)
-      end
-    end
-    return sort_symbols_by_lnum(ret)
-  end
-  M.document_list_symbols('symbols', filter_sort)
+  M.document_list_symbols('symbols', function(symbol)
+    return util._get_completion_item_kind_name(symbol.kind) ~= 'Property'
+  end)
 end
 
 return M

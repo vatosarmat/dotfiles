@@ -95,16 +95,22 @@ do
 
   local function map_diagnostic_goto(sev, key)
     key = key or 'g'
-    map('n', '[' .. key, func.bind1(vim.diagnostic.goto_prev, {
-      wrap = false,
-      float = false,
-      severity = vim.diagnostic.severity[sev]
-    }))
-    map('n', ']' .. key, func.bind1(vim.diagnostic.goto_next, {
-      wrap = false,
-      float = false,
-      severity = vim.diagnostic.severity[sev]
-    }))
+    map('n', '[' .. key, function()
+      vim.diagnostic.goto_prev({
+        wrap = false,
+        float = false,
+        severity = vim.diagnostic.severity[sev]
+      })
+      vim.fn['uopts#nzz']()
+    end)
+    map('n', ']' .. key, function()
+      vim.diagnostic.goto_next({
+        wrap = false,
+        float = false,
+        severity = vim.diagnostic.severity[sev]
+      })
+      vim.fn['uopts#nzz']()
+    end)
   end
 
   map('n', '<C-j>', lsp.buf.hover)
@@ -117,8 +123,8 @@ do
   map_diagnostic_goto()
   map_diagnostic_goto('ERROR', 'e')
   map_diagnostic_goto('WARN', 'w')
-  map_diagnostic_goto('INFO', '<M-e>')
-  map_diagnostic_goto('HINT', '<M-w>')
+  map_diagnostic_goto('INFO', 'q')
+  map_diagnostic_goto('HINT', 'r')
 
   -- Refactor
   map('n', '<leader>ln', lsp.buf.rename)
@@ -126,7 +132,7 @@ do
 
   -- Less in use
   map('n', 'gi', lsp.buf.implementation)
-  map('nx', '<M-j>', lsp.buf.signature_help) -- C-;
+  map('ni', '<M-j>', lsp.buf.signature_help) -- C-;
   map('n', 'gD', lsp.buf.declaration)
 
   -- Symbol lists

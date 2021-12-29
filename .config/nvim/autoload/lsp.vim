@@ -47,3 +47,16 @@ function! lsp#DefinitionList(items) abort
   endtry
 
 endfunction
+
+function! lsp#SymbolList() abort
+  lopen
+  wincmd p
+  try
+    lbefore
+  catch /E42/
+    try
+      lafter
+    catch /E42/
+    endtry
+  endtry
+endfunction

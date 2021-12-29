@@ -17,13 +17,13 @@ hi! DiagnosticSignWarn        guifg=#ff8800
 
 hi! link NvimTreeLspDiagnosticsWarning DiagnosticSignWarn
 "Information
-hi! DiagnosticVirtualTextInfo guifg=#4fc1ff
+hi! DiagnosticVirtualTextInfo guifg=#276180
 hi! DiagnosticFloatingInfo    guifg=#4fc1ff
 hi! DiagnosticSignInfo        guifg=#4fc1ff
 
 hi! link NvimTreeLspDiagnosticsInfo DiagnosticSignInfo
 "Hint
-hi! DiagnosticVirtualTextHint guifg=#3bc03d
+hi! DiagnosticVirtualTextHint guifg=#278027
 hi! DiagnosticFloatingHint    guifg=#3bc03d
 hi! DiagnosticSignHint        guifg=#3bc03d
 
