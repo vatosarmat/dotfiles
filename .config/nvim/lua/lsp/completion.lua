@@ -127,13 +127,13 @@ function M.setup()
       },
       {
         name = 'nvim_lua'
-      },
+      }
       -- {
       --   name = 'path'
       -- },
-      {
-        name = 'luasnip'
-      }
+      -- {
+      --   name = 'luasnip'
+      -- }
     },
     formatting = {
       ---@diagnostic disable-next-line: unused-local

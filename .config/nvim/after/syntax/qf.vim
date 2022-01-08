@@ -40,6 +40,7 @@ call s:SymbolItem('namespace', 'SymbolIconClass', 'TSNamespace')
 call s:SymbolItem('interface', 'SymbolIconClass', 'TSType')
 call s:SymbolItem('class', 'SymbolIconClass', 'TSType', 'TSKeyword')
 call s:SymbolItem('struct', 'SymbolIconClass', 'TSType', 'TSKeyword')
+call s:SymbolItem('object', 'SymbolIconClass', 'TSType', 'TSKeyword')
 call s:SymbolItem('enum', 'SymbolIconClass', 'TSType', 'TSKeyword')
 
 hi! def link qfSeparator LineNr

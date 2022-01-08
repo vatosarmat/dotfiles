@@ -42,6 +42,7 @@ M.symbol_icons = {
   Interface = '',
   Constructor = '',
   Class = '',
+  Object = '',
   Struct = '',
   Enum = 'ﴰ',
   EnumMember = '喝'
