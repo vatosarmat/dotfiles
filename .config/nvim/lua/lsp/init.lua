@@ -1,7 +1,7 @@
-local api = vim.api
+-- local api = vim.api
 local lsp = vim.lsp
 local func = require 'pl.func'
-local log = require 'vim.lsp.log'
+-- local log = require 'vim.lsp.log'
 local vim_utils = require 'vim_utils'
 
 -- LSP submodules
@@ -12,6 +12,7 @@ local sym_nav = require 'lsp.symbol_navigation'
 local completion = require 'lsp.completion'
 local diagnostic = require 'lsp.diagnostic'
 local servers = require 'lsp.server_setups'
+local goto = require 'lsp.goto'
 
 completion.setup()
 diagnostic.setup()
@@ -35,50 +36,12 @@ do
 end
 
 --
--- Handlers
---
-do
-  local util = lsp.util
-  lsp.handlers['textDocument/definition'] = function(_, result, ctx, _)
-    if result == nil or vim.tbl_isempty(result) then
-      local _ = log.info() and log.info(ctx.method, 'No location found')
-      if lsp.get_client_by_id(ctx.client_id).name ~= 'null-ls' then
-        api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
-      end
-      return nil
-    end
-
-    -- textDocument/definition can return Location or Location[]
-    -- https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition
-    if vim.tbl_islist(result) then
-      if #result > 1 then
-        -- vim.fn.setloclist(0, {}, ' ', {
-        --   title = 'Definitions',
-        --   items = util.locations_to_items(result)
-        -- })
-        -- api.nvim_command 'lopen | wincmd p | try | lbefore | catch /E553/ | lafter | endtry'
-        -- -- Close loclist when we get back from definition
-        -- local pos = api.nvim_win_get_cursor(0)
-        -- local auto_cmd = 'let b:lsp_gd_pos = | BufWinEnter <buffer> ++once if b:lsp_gd_pos] lclose'
-        -- autocmd('go_to_definition', 'BufWinEnter <buffer> ++once lclose', {
-        --   buffer = true
-        -- })
-        vim.fn['lsp#DefinitionList'](util.locations_to_items(result))
-      else
-        util.jump_to_location(result[1])
-      end
-    else
-      util.jump_to_location(result)
-    end
-  end
-end
-
---
 -- Mappings and (auto)commands
 --
 do
   local map = vim_utils.map
   local autocmd = vim_utils.autocmd
+  local b = func.bind1
 
   local function toggle_option(option)
     vim.fn['uopts#toggle'](option)
@@ -117,8 +80,16 @@ do
   map('n', '<C-k>', vim.diagnostic.open_float)
 
   -- Goto's
-  map('n', 'gd', lsp.buf.definition)
-  map('n', 'gt', lsp.buf.type_definition)
+  map('n', 'gd', goto.definition)
+  map('n', 'g<C-M-d>', b(goto.definition, 'split'))
+  map('n', 'g<M-d>', b(goto.definition, 'vsplit'))
+  map('n', 'g<C-d>', b(goto.definition, 'tab'))
+  map('n', '<M-j>', b(goto.definition, 'preview')) -- C-; - remapped in alacritty
+  map('n', 'gt', goto.type_definition)
+  map('n', 'gT', b(goto.type_definition, 'split'))
+  map('n', 'g<M-t>', b(goto.type_definition, 'vsplit'))
+  map('n', 'g<C-t>', b(goto.type_definition, 'tab'))
+  map('n', 'g<M-j>', b(goto.type_definition, 'preview')) -- C-; - remapped in alacritty
   map('n', 'gr', lsp.buf.references)
   map_diagnostic_goto()
   map_diagnostic_goto('ERROR', 'e')
@@ -132,7 +103,7 @@ do
 
   -- Less in use
   map('n', 'gi', lsp.buf.implementation)
-  map('ni', '<M-j>', lsp.buf.signature_help) -- C-;
+  map('i', '<M-j>', lsp.buf.signature_help) -- C-;
   map('n', 'gD', lsp.buf.declaration)
 
   -- Symbol lists
@@ -142,9 +113,9 @@ do
   map('n', '<leader>lw', lsp.buf.workspace_symbol)
 
   -- Options
-  map('n', '<leader>lv', func.bind1(toggle_option, 'ldv'))
-  map('n', '<leader>l<M-u>', func.bind1(toggle_option, 'ldu'))
-  map('n', '<leader>l<M-f>', func.bind1(toggle_option, 'laf'))
+  map('n', '<leader>lv', b(toggle_option, 'ldv'))
+  map('n', '<leader>l<M-u>', b(toggle_option, 'ldu'))
+  map('n', '<leader>l<M-f>', b(toggle_option, 'laf'))
 
   autocmd('LSP', {
     { 'BufWritePre *', auto_format }, ------------------------------------

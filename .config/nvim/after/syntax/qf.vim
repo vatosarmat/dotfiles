@@ -36,6 +36,7 @@ call s:SymbolItem('property', 'SymbolIconVariable', 'TSProperty', 'TSType')
 call s:SymbolItem('field', 'SymbolIconVariable', 'TSField', 'TSType')
 call s:SymbolItem('enumMember', 'SymbolIconVariable', 'TSProperty')
 
+call s:SymbolItem('module', 'SymbolIconClass', 'TSInclude')
 call s:SymbolItem('namespace', 'SymbolIconClass', 'TSNamespace')
 call s:SymbolItem('interface', 'SymbolIconClass', 'TSType')
 call s:SymbolItem('class', 'SymbolIconClass', 'TSType', 'TSKeyword')

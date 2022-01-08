@@ -4,7 +4,7 @@ noremap X J
 "zt and zb are inconvinient
 nnoremap <M-i> zt
 nnoremap <M-o> zz
-nnoremap <M-[> zb
+nnoremap <C-M-i> zb
 
 "quickfix list mappings
 nnoremap <C-M-N> <cmd>call <sid>QflistStep(1)<cr>
