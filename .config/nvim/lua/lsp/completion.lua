@@ -67,7 +67,7 @@ local kind_icons = {
   Variable = pui.symbol_icons.Variable,
   Class = pui.symbol_icons.Class,
   Interface = pui.symbol_icons.Interface,
-  Module = ' ',
+  Module = pui.symbol_icons.Module,
   Property = pui.symbol_icons.Property,
   Unit = ' ',
   Value = ' ',
@@ -83,7 +83,7 @@ local kind_icons = {
   Struct = pui.symbol_icons.Struct,
   Event = '⌘ ',
   Operator = ' ',
-  TypeParameter = ' '
+  TypeParameter = pui.symbol_icons.TypeParameter
 }
 
 local function is_autocomplete()

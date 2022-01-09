@@ -53,10 +53,7 @@ function! lsp#SymbolList() abort
   wincmd p
   try
     lbefore
-  catch /E42/
-    try
-      lafter
-    catch /E42/
-    endtry
+  catch /E42\|E553/
+    lafter
   endtry
 endfunction

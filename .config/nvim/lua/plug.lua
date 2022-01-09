@@ -20,7 +20,14 @@ local plug = require('packer').startup({
       'neovim/nvim-lspconfig',
       opt = true,
       event = 'VimEnter',
-      wants = { 'lua-dev.nvim', 'null-ls.nvim', 'nvim-lsp-ts-utils', 'nvim-cmp' },
+      wants = {
+        'lua-dev.nvim',
+        'null-ls.nvim',
+        'nvim-lsp-ts-utils',
+        'nvim-cmp',
+        'telescope.nvim',
+        'nvim-treesitter'
+      },
       requires = {
         'folke/lua-dev.nvim',
         'jose-elias-alvarez/null-ls.nvim',
@@ -88,7 +95,18 @@ local plug = require('packer').startup({
       end
     }
 
-    use 'nvim-telescope/telescope.nvim'
+    use {
+      'nvim-telescope/telescope.nvim',
+      requires = {
+        {
+          'nvim-telescope/telescope-fzf-native.nvim',
+          run = 'make'
+        }
+      },
+      config = function()
+        require 'plug-config.telescope'
+      end
+    }
 
     use 'kyazdani42/nvim-web-devicons'
     use {

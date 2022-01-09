@@ -3,6 +3,7 @@ local lsp = vim.lsp
 local func = require 'pl.func'
 -- local log = require 'vim.lsp.log'
 local vim_utils = require 'vim_utils'
+local telescope = require 'telescope.builtin'
 
 -- LSP submodules
 local status_line = require 'lsp.status_line'
@@ -78,6 +79,7 @@ do
 
   map('n', '<C-j>', lsp.buf.hover)
   map('n', '<C-k>', vim.diagnostic.open_float)
+  map('n', '<leader>ld', telescope.diagnostics)
 
   -- Goto's
   map('n', 'gd', goto.definition)
@@ -110,7 +112,7 @@ do
   map('n', '<leader>ls', sym_nav.document_list_non_props)
   map('n', '<leader>lS', sym_nav.document_list_symbols)
   map('n', '<leader>lf', sym_nav.document_list_functions)
-  map('n', '<leader>lw', lsp.buf.workspace_symbol)
+  map('n', '<M-g>', telescope.lsp_workspace_symbols)
 
   -- Options
   map('n', '<leader>lv', b(toggle_option, 'ldv'))
