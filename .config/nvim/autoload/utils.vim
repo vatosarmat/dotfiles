@@ -167,3 +167,7 @@ function! utils#TrimBufLines() abort
     call setpos('.', save_cursor)
   endif
 endfun
+
+function! utils#IsLineEmpty(line) abort
+  return getline(a:line) !~ '\S'
+endfunction

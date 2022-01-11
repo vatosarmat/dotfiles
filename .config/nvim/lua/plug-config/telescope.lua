@@ -1,4 +1,5 @@
-local telescope = require('telescope')
+local telescope = require 'telescope'
+local tactions = require 'telescope.actions'
 
 telescope.setup {
   defaults = {
@@ -9,7 +10,12 @@ telescope.setup {
         -- map actions.which_key to <C-h> (default: <C-/>)
         -- actions.which_key shows the mappings for your picker,
         -- e.g. git_{create, delete, ...}_branch for the git_branches picker
-        ['<C-h>'] = 'which_key'
+        ['<C-h>'] = 'which_key',
+        ['<C-o>'] = {
+          '<esc>',
+          type = 'command'
+        }, -- Use <Control-o> to change to normal mode indefinitely
+        ['<esc>'] = tactions.close -- Close list on first escape keypress
       }
     }
   },

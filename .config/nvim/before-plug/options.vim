@@ -39,6 +39,7 @@ set grepformat=%f:%l:%m
 set tgc
 
 set formatoptions-=o
+set formatoptions-=c
 "Stupidly reindents class::member
 set cinkeys-=:
 

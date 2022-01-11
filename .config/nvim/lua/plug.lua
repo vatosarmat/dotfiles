@@ -181,6 +181,8 @@ local plug = require('packer').startup({
       config = misc.scrollview
     }
 
+    use { 'stevearc/aerial.nvim' }
+
     use {
       'christianchiarulli/nvcode-color-schemes.vim',
       config = function()

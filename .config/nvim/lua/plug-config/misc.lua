@@ -35,6 +35,8 @@ function M.wordmotion()
   local opts = {
     noremap = false
   }
+  map('nxo', 'S', 'gE', opts)
+
   map('nxo', 'w', '<Plug>WordMotion_W', opts)
   map('nxo', 'b', '<Plug>WordMotion_B', opts)
   map('nxo', 'e', '<Plug>WordMotion_E', opts)
