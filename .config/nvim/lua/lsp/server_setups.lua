@@ -206,7 +206,8 @@ function M.setup(capabilities)
               'use_rocks',
               'fnoop',
               'fconst',
-              'pprint'
+              'pprint',
+              'symbol_navigation'
             }
           }
         }

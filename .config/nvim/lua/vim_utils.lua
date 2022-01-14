@@ -79,7 +79,6 @@ end
 
 local map = func.bind1(map_buf, nil)
 
-
 -- cmd is either string or tuple
 -- cmds is either array of string-cmd's and tuple-cmd's or single string-cmd
 local function autocmd(group, cmds, opts)

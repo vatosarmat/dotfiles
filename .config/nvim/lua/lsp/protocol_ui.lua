@@ -47,7 +47,9 @@ M.symbol_icons = {
   Enum = 'ﴰ',
   EnumMember = '喝',
   TypeParameter = 'T',
-  Module = ''
+  Module = '',
+
+  has_children = '契'
 }
 
 function M.setup()

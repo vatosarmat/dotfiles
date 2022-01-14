@@ -13,12 +13,6 @@ local misc = require 'lsp.misc'
 --
 -- Utils
 --
-local function get_bufnr(bufnr)
-  if not bufnr or bufnr == 0 then
-    return vim.api.nvim_get_current_buf()
-  end
-  return bufnr
-end
 
 local function get_source(diagnostic)
   return cext[diagnostic.source].short_name or diagnostic.source or '?'
@@ -200,7 +194,7 @@ function M.setup()
 
   ---@diagnostic disable-next-line: unused-local
   vim.diagnostic.handlers.virtual_text.show = function(namespace, bufnr, diagnostics, opts)
-    bufnr = get_bufnr(bufnr)
+    bufnr = misc.get_bufnr(bufnr)
 
     local ns = vim.diagnostic.get_namespace(namespace)
     if not ns.user_data.virt_text_ns then

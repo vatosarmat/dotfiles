@@ -37,5 +37,9 @@ function _G.fconst(v)
   end
 end
 
+if not symbol_navigation then
+  _G.symbol_navigation = {}
+end
+
 END
 luafile $STD_PATH_CONFIG/lua/plug.lua

@@ -3,6 +3,8 @@ syn match	qfSeparator	"|"
 
 let s:symbol_icons = luaeval('service.lsp.symbol_icons')
 
+execute 'syn' 'match' 'qfHasChildren' '"'.s:symbol_icons['has_children'].'"'
+
 function! s:SymbolItem(kind, iconHl, nameHl, detailHl = 'Normal') abort
   let icon = s:symbol_icons[toupper(a:kind[0]).a:kind[1:]]
   let iconPat = printf('"\(| \)\@<=%s"', icon)
@@ -13,7 +15,7 @@ function! s:SymbolItem(kind, iconHl, nameHl, detailHl = 'Normal') abort
   execute
     \ 'syn' 'region' detailSyn
     \ 'matchgroup='.a:iconHl 'start='.iconPat 'end="$"'
-    \ 'oneline' 'contains='.nameSyn 'keepend'
+    \ 'oneline' 'contains='.nameSyn.',qfHasChildren' 'keepend'
 
   execute 'syn' 'match' nameSyn namePat
   execute 'hi' 'def' 'link' nameSyn a:nameHl
@@ -43,5 +45,7 @@ call s:SymbolItem('class', 'SymbolIconClass', 'TSType', 'TSKeyword')
 call s:SymbolItem('struct', 'SymbolIconClass', 'TSType', 'TSKeyword')
 call s:SymbolItem('object', 'SymbolIconClass', 'TSType', 'TSKeyword')
 call s:SymbolItem('enum', 'SymbolIconClass', 'TSType', 'TSKeyword')
+call s:SymbolItem('typeParameter', 'SymbolIconClass', 'TSType', 'TSType')
 
 hi! def link qfSeparator LineNr
+hi! qfHasChildren guifg=#3bc03d

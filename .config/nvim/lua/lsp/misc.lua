@@ -14,4 +14,11 @@ function M.diagnostic_get_code(diagnostic)
   return diagnostic.severity
 end
 
+function M.get_bufnr(bufnr)
+  if not bufnr or bufnr == 0 then
+    return vim.api.nvim_get_current_buf()
+  end
+  return bufnr
+end
+
 return M

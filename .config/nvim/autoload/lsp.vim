@@ -2,7 +2,7 @@ function! s:Foo() abort
   function! Handler(...) abort
     let lc = utils#LineCol()
     if b:lsp_definition_pos == lc
-      lclose
+      cclose
     endif
     unlet b:lsp_definition_pos
   endfunction
@@ -14,43 +14,46 @@ endfunction
 
 function! lsp#DefinitionList(items) abort
 
-  call setloclist(0, [], ' ', #{
+  call setqflist([], ' ', #{
     \title: 'Definitions',
     \items: a:items
     \})
 
-  lopen
+  copen
   wincmd p
 
   try
-    lbefore
+    cbefore
   catch /E553/
     try
-      lafter
+      cafter
     catch /E553/
       let b:lsp_definition_pos = utils#LineCol()
       autocmd BufWinEnter <buffer> ++once call s:Foo()
-      lfirst
+      cfirst
     endtry
   catch /E42/
     try
-      lafter
+      cafter
     catch /E553/
       let b:lsp_definition_pos = utils#LineCol()
       autocmd BufWinEnter <buffer> ++once call s:Foo()
-      lfirst
+      cfirst
     catch /E42/
       let b:lsp_definition_pos = utils#LineCol()
       autocmd BufWinEnter <buffer> ++once call s:Foo()
-      lfirst
+      cfirst
     endtry
   endtry
 
 endfunction
 
-function! lsp#SymbolList() abort
+function! lsp#SymbolListOpen() abort
   lopen
   wincmd p
+endfunction
+
+function! lsp#SymbolListSync() abort
   try
     lbefore
   catch /E42\|E553/

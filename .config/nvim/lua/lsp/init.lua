@@ -109,9 +109,9 @@ do
   map('n', 'gD', lsp.buf.declaration)
 
   -- Symbol lists
-  map('n', '<leader>ls', sym_nav.document_list_non_props)
-  map('n', '<leader>lS', sym_nav.document_list_symbols)
-  map('n', '<leader>lf', sym_nav.document_list_functions)
+  map('n', '<leader>ls', sym_nav.document_symbol_request)
+  map('n', '<C-M-h>', sym_nav.loclist_depth_up)
+  map('n', '<C-M-l>', sym_nav.loclist_depth_down)
   map('n', '<M-g>', telescope.lsp_workspace_symbols)
 
   -- Options

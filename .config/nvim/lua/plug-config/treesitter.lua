@@ -13,7 +13,8 @@ require'nvim-treesitter.configs'.setup {
     -- },
   },
   indent = {
-    enable = true
+    enable = true,
+    disable = { 'lua' }
   },
   playground = {
     enable = true,
@@ -34,7 +35,7 @@ require'nvim-treesitter.configs'.setup {
     keymaps = {
       init_selection = '<M-d>',
       node_incremental = '<M-d>',
-      node_decremental = '<M-s>'
+      node_decremental = '<M-a>'
       -- scope_incremental = 'grc'
     }
   },
