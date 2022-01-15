@@ -1,10 +1,10 @@
 local api = vim.api
 local lsp = vim.lsp
+local tablex = require 'pl.tablex'
 local log = require 'vim.lsp.log'
-local pui = require 'lsp.protocol_ui'
+local ui_symbol = require'lsp.ui'.symbol
 local misc = require 'lsp.misc'
 
-local symbol_icons = pui.symbol_icons
 local util = lsp.util
 
 --
@@ -36,6 +36,11 @@ local function make_loclist_item(S, symbol)
   return item
 end
 
+local function item_with_children(item)
+  item.children = {}
+  item.text = item.text .. ' ' .. ui_symbol.has_children.icon
+end
+
 -- DocumentSymbol: name:string, detail?:string, kind:SymbolKind, range:Range(body), selectionRange:Range(function name), children:DocumentSymbol[]
 -- SymbolInformation: name:string, kind:SymbolKind, location:Location{uri:DocumentUri, range:Range}
 -- Range{start:{line, character}, end{line, character}}
@@ -56,7 +61,7 @@ do
       filename = vim.api.nvim_buf_get_name(0),
       lnum = start.line + 1,
       col = start.character + 1,
-      text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name .. maybe_detail
+      text = (ui_symbol[kind].icon or kind) .. '  ' .. symbol.name .. maybe_detail
     }
   end
 
@@ -94,8 +99,7 @@ do
 
           if item.parent then
             if not item.parent.children then
-              item.parent.children = {}
-              item.parent.text = item.parent.text .. ' ' .. pui.symbol_icons.has_children
+              item_with_children(item.parent)
             end
             table.insert(item.parent.children, item)
           else
@@ -149,7 +153,7 @@ do
       filename = vim.uri_to_fname(symbol.location.uri),
       lnum = start.line + 1,
       col = start.character + 1,
-      text = (symbol_icons[kind] or kind) .. '  ' .. symbol.name
+      text = (ui_symbol[kind].icon or kind) .. '  ' .. symbol.name
     }
   end
 
@@ -193,8 +197,7 @@ do
         -- new parent, save it onto stack
 
         parent = prev_item
-        prev_item.children = {}
-        prev_item.text = prev_item.text .. ' ' .. pui.symbol_icons.has_children
+        item_with_children(prev_item)
         where_to_add = prev_item.children
         table.insert(parent_stack, prev_item)
       else
@@ -234,9 +237,6 @@ local SymbolHandler = {
   ['DocumentSymbol'] = DocumentSymbol
 }
 
---
--- Helpers 2
---
 local function get_symbol_handler(symbol)
   if symbol.selectionRange then
     return DocumentSymbol
@@ -244,26 +244,126 @@ local function get_symbol_handler(symbol)
   return SymbolInformation
 end
 
-local function set_loclist(title, items)
-  local what = {
-    title = title,
-    items = items
+local function SymbolNavigation(initial_symbols)
+  -- const
+  local top_level_title = 'Top level'
+  local S = get_symbol_handler(initial_symbols[1])
+
+  -- priv
+  local state = {
+    tree = S.make_loclist_tree(initial_symbols),
+    loclist_node = nil,
+    loclist_node_path = {},
+
+    get_loclist_items = function(self)
+      return self.loclist_node and self.loclist_node.children or self.tree
+    end
   }
 
-  function what.quickfixtextfunc(info)
-    return vim.tbl_map(function(item)
-      return string.format('|%-5d| %s', item.lnum, item.text)
-    end, vim.list_slice(items, info.start_idx, info.end_idx))
+  local function set_loclist()
+    local items = state:get_loclist_items()
+    local path = state.loclist_node_path
+
+    local what = {
+      items = items,
+      title = #path > 0 and nil or top_level_title
+    }
+
+    function what.quickfixtextfunc(info)
+      return vim.tbl_map(function(item)
+        return string.format('|%-5d| %s', item.lnum, item.text)
+      end, vim.list_slice(items, info.start_idx, info.end_idx))
+    end
+
+    vim.fn.setloclist(0, {}, ' ', what)
+    vim.fn['lsp#SymbolListOpen'](path)
   end
 
-  vim.fn.setloclist(0, {}, ' ', what)
-  vim.fn['lsp#SymbolListOpen']()
+  local function sync_loclist(after_or_before)
+    local items = state:get_loclist_items()
+    local sync_fn = {
+      after = 'lsp#Lafter',
+      before = 'lsp#Lbefore'
+    }
+
+    local cursor = api.nvim_win_get_cursor(0)
+    if cursor[1] < items[1].lnum then
+      -- cursor is above the first item, move it forward
+      vim.fn['lsp#Lafter']()
+    elseif cursor[1] > items[#items].lnum then
+      -- cursor is below the last item, move it backward
+      vim.fn['lsp#Lbefore']()
+    else
+      -- cursor may be on one of the list items, select that item in list
+      local index = tablex.find_if(items, function(item)
+        return item.lnum == cursor[1] and item.lnum or nil
+      end)
+      if index then
+        vim.cmd('ll ' .. index)
+      else
+        vim.fn[sync_fn[after_or_before]]()
+      end
+      api.nvim_win_set_cursor(0, cursor)
+    end
+  end
+
+  -- constructor
+  set_loclist()
+
+  -- pub
+  local pub = {}
+
+  function pub.update(symbols)
+    state.tree = S.make_loclist_tree(symbols)
+    set_loclist()
+  end
+
+  function pub.up()
+    if state.loclist_node then
+      state.loclist_node = state.loclist_node.parent
+      -- remove last element
+      state.loclist_node_path = vim.list_slice(state.loclist_node_path, 1,
+                                               #state.loclist_node_path - 1)
+      set_loclist()
+      sync_loclist('before')
+    else
+      api.nvim_echo({ { 'These symbols are top-level', 'WarningMsg' } }, true, {})
+    end
+  end
+
+  function pub.down()
+    local items = state:get_loclist_items()
+
+    -- find node/item under cursor
+    local node_at_cursor = nil
+    for _, node in ipairs(items) do
+      if S.is_cursor_on_symbol(node.symbol) then
+        node_at_cursor = node
+        break
+      end
+    end
+
+    -- if it has children, populate loclist with them
+    if node_at_cursor and node_at_cursor.children then
+      state.loclist_node = node_at_cursor
+      table.insert(state.loclist_node_path, {
+        util._get_symbol_kind_name(node_at_cursor.symbol.kind),
+        node_at_cursor.symbol.name
+      })
+      set_loclist()
+      sync_loclist('after')
+    else
+      api.nvim_echo({ { 'Symbol under cursor has no children', 'WarningMsg' } }, true, {})
+    end
+
+  end
+
+  return pub
 end
 
 --
 -- textDocument/documentSymbol handler and request
 --
-local top_level_title = 'Top level'
 ---@diagnostic disable-next-line: unused-local
 local function document_symbol_handler(err, request_result, ctx, config)
   -- Handle missing result
@@ -276,20 +376,12 @@ local function document_symbol_handler(err, request_result, ctx, config)
   end
 
   local symbols = request_result
-  local S = get_symbol_handler(symbols[1])
-
   local bufnr = misc.get_bufnr(ctx.bufnr)
   if not symbol_navigation[bufnr] then
-    symbol_navigation[bufnr] = {
-      S = S,
-      tree = nil, -- items array
-      loclist_depth = 0,
-      loclist_root = nil -- item, its children currently in loclist
-    }
+    symbol_navigation[bufnr] = SymbolNavigation(symbols)
+  else
+    symbol_navigation[bufnr].update(symbols)
   end
-  symbol_navigation[bufnr].tree = S.make_loclist_tree(symbols)
-  set_loclist(top_level_title, symbol_navigation[bufnr].tree)
-  vim.fn['lsp#SymbolListSync']()
 end
 
 local M = {}
@@ -306,48 +398,11 @@ end
 --
 function M.loclist_depth_down()
   -- set children of the symbol under cursor into the loclist
-  local sn = symbol_navigation[misc.get_bufnr()]
-  local depth_nodes = sn.loclist_root and sn.loclist_root.children or sn.tree
-
-  local node_at_pos = nil
-  for _, node in ipairs(depth_nodes) do
-    if sn.S.is_cursor_on_symbol(node.symbol) then
-      node_at_pos = node
-      break
-    end
-  end
-
-  if node_at_pos and node_at_pos.children then
-    -- if children present it is not empty
-    set_loclist(node_at_pos.symbol.name, node_at_pos.children)
-    sn.loclist_root = node_at_pos
-    sn.loclist_depth = sn.loclist_depth + 1
-    vim.cmd('lafter')
-  else
-    api.nvim_echo({ { 'Symbol under cursor has no children', 'WarningMsg' } }, true, {})
-  end
+  symbol_navigation[misc.get_bufnr()].down()
 end
 
 function M.loclist_depth_up()
-  local sn = symbol_navigation[misc.get_bufnr()]
-
-  if sn.loclist_root then
-    local new_root = sn.loclist_root.parent
-    local title, items
-    if new_root then
-      title = new_root.symbol.name
-      items = new_root.children
-    else
-      title = top_level_title
-      items = sn.tree
-    end
-    set_loclist(title, items)
-    sn.loclist_root = new_root
-    sn.loclist_depth = sn.loclist_depth - 1
-    vim.cmd('lbefore')
-  else
-    api.nvim_echo({ { 'These symbols are top-level', 'WarningMsg' } }, true, {})
-  end
+  symbol_navigation[misc.get_bufnr()].up()
 end
 
 return M

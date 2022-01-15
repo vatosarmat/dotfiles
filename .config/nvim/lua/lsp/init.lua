@@ -7,23 +7,25 @@ local telescope = require 'telescope.builtin'
 
 -- LSP submodules
 local status_line = require 'lsp.status_line'
-local pui = require 'lsp.protocol_ui'
+local ui = require 'lsp.ui'
 local lsp_flags = require 'lsp.flags'
 local sym_nav = require 'lsp.symbol_navigation'
 local completion = require 'lsp.completion'
 local diagnostic = require 'lsp.diagnostic'
 local servers = require 'lsp.server_setups'
-local goto = require 'lsp.goto'
+local lookup = require 'lsp.lookup'
 
 completion.setup()
 diagnostic.setup()
 servers.setup(completion.capabilities(lsp.protocol.make_client_capabilities()))
 
 do
-  pui.setup()
+  ui.setup()
 
   local lsp_service = {
-    symbol_icons = pui.symbol_icons,
+    ui = {
+      symbol = ui.symbol
+    },
     flags = lsp_flags,
     status_line = status_line
   }
@@ -82,16 +84,16 @@ do
   map('n', '<leader>ld', telescope.diagnostics)
 
   -- Goto's
-  map('n', 'gd', goto.definition)
-  map('n', 'g<C-M-d>', b(goto.definition, 'split'))
-  map('n', 'g<M-d>', b(goto.definition, 'vsplit'))
-  map('n', 'g<C-d>', b(goto.definition, 'tab'))
-  map('n', '<M-j>', b(goto.definition, 'preview')) -- C-; - remapped in alacritty
-  map('n', 'gt', goto.type_definition)
-  map('n', 'gT', b(goto.type_definition, 'split'))
-  map('n', 'g<M-t>', b(goto.type_definition, 'vsplit'))
-  map('n', 'g<C-t>', b(goto.type_definition, 'tab'))
-  map('n', 'g<M-j>', b(goto.type_definition, 'preview')) -- C-; - remapped in alacritty
+  map('n', 'gd', lookup.definition)
+  map('n', 'g<C-M-d>', b(lookup.definition, 'split'))
+  map('n', 'g<M-d>', b(lookup.definition, 'vsplit'))
+  map('n', 'g<C-d>', b(lookup.definition, 'tab'))
+  map('n', '<M-j>', b(lookup.definition, 'preview')) -- C-; - remapped in alacritty
+  map('n', 'gt', lookup.type_definition)
+  map('n', 'gT', b(lookup.type_definition, 'split'))
+  map('n', 'g<M-t>', b(lookup.type_definition, 'vsplit'))
+  map('n', 'g<C-t>', b(lookup.type_definition, 'tab'))
+  map('n', 'g<M-j>', b(lookup.type_definition, 'preview')) -- C-; - remapped in alacritty
   map('n', 'gr', lsp.buf.references)
   map_diagnostic_goto()
   map_diagnostic_goto('ERROR', 'e')

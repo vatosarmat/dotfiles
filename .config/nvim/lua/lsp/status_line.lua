@@ -3,7 +3,7 @@ local lsp = vim.lsp
 -- local null_ls = require 'null-ls'
 local null_ls_namespace = require'null-ls.diagnostics'.get_namespace
 local null_ls_available_sources = require'null-ls.sources'.get_available
-local pui = require 'lsp.protocol_ui'
+local ui = require 'lsp.ui'
 local cext = require 'lsp.client_ext'
 
 local separator = {
@@ -29,7 +29,7 @@ local function diagnostic_lines(_, namespace)
     }
     local count = #vim.diagnostic.get(0, opts)
     if count > 0 then
-      table.insert(diagnostics, '%' .. i .. '*' .. pui.severities[i].sign .. ' %*' .. count)
+      table.insert(diagnostics, '%' .. i .. '*' .. ui.severity[i].sign .. ' %*' .. count)
     end
     i = i + 1
   end

@@ -7,7 +7,7 @@ local map_buf = require'vim_utils'.map_buf
 
 -- LSP submodules
 local cext = require 'lsp.client_ext'
-local pui = require 'lsp.protocol_ui'
+local ui = require 'lsp.ui'
 local misc = require 'lsp.misc'
 
 --
@@ -40,7 +40,7 @@ local function diagnostic_vim_to_lsp(d)
         character = d.end_col
       }
     },
-    severity = pui.severity_vim_to_lsp(d.severity),
+    severity = ui.severity_vim_to_lsp(d.severity),
     message = d.message,
     source = d.source
   }, d.user_data and (d.user_data.lsp or {}) or {})
@@ -68,7 +68,7 @@ local function show_line_diagnostics()
   for diag_idx, diagnostic in ipairs(line_diagnostics) do
     local name = get_source(diagnostic)
     local code = get_code(diagnostic)
-    local hiname = pui.severities[diagnostic.severity].hl_float
+    local hiname = ui.severity[diagnostic.severity].hl_float
     assert(hiname, 'unknown severity: ' .. tostring(diagnostic.severity))
     text:append(name .. '_' .. code .. ': ', hiname)
     local lines = vim.fn.split(diagnostic.message, '\n', true)
@@ -235,7 +235,7 @@ function M.setup()
         hl_mode = 'combine',
         -- make list of {str, hl} chunks
         virt_text = vim.tbl_map(function(item)
-          return { item .. ' ', pui.severities[virt_text.severity[item]].hl_virt }
+          return { item .. ' ', ui.severity[virt_text.severity[item]].hl_virt }
         end, virt_text.order),
         virt_text_pos = 'right_align',
         virt_text_hide = true

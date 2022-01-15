@@ -48,15 +48,25 @@ function! lsp#DefinitionList(items) abort
 
 endfunction
 
-function! lsp#SymbolListOpen() abort
+function! lsp#SymbolListOpen(path) abort
   lopen
+  let w:symbol_navigation_path = a:path
   wincmd p
 endfunction
 
-function! lsp#SymbolListSync() abort
+function! lsp#Lbefore() abort
   try
     lbefore
   catch /E42\|E553/
     lafter
   endtry
 endfunction
+
+function! lsp#Lafter() abort
+  try
+    lafter
+  catch /E42\|E553/
+    lbefore
+  endtry
+endfunction
+

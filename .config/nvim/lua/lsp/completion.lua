@@ -1,4 +1,4 @@
-local pui = require 'lsp.protocol_ui'
+local ui = require 'lsp.ui'
 local map = require'vim_utils'.map
 local luasnip = require 'luasnip'
 local cmp = require 'cmp'
@@ -60,30 +60,30 @@ local mapping = {
 
 local kind_icons = {
   Text = ' ',
-  Method = pui.symbol_icons.Method,
-  Function = pui.symbol_icons.Function,
-  Constructor = pui.symbol_icons.Constructor,
-  Field = pui.symbol_icons.Field,
-  Variable = pui.symbol_icons.Variable,
-  Class = pui.symbol_icons.Class,
-  Interface = pui.symbol_icons.Interface,
-  Module = pui.symbol_icons.Module,
-  Property = pui.symbol_icons.Property,
+  Method = ui.symbol.Method.icon,
+  Function = ui.symbol.Function.icon,
+  Constructor = ui.symbol.Constructor.icon,
+  Field = ui.symbol.Field.icon,
+  Variable = ui.symbol.Variable.icon,
+  Class = ui.symbol.Class.icon,
+  Interface = ui.symbol.Interface.icon,
+  Module = ui.symbol.Module.icon,
+  Property = ui.symbol.Property.icon,
   Unit = ' ',
   Value = ' ',
-  Enum = pui.symbol_icons.Enum,
+  Enum = ui.symbol.Enum.icon,
   Keyword = ' ',
   Snippet = '﬌ ',
   Color = ' ',
   File = ' ',
   Reference = ' ',
   Folder = ' ',
-  EnumMember = pui.symbol_icons.EnumMember,
-  Constant = pui.symbol_icons.Constant,
-  Struct = pui.symbol_icons.Struct,
+  EnumMember = ui.symbol.EnumMember.icon,
+  Constant = ui.symbol.Constant.icon,
+  Struct = ui.symbol.Struct.icon,
   Event = '⌘ ',
   Operator = ' ',
-  TypeParameter = pui.symbol_icons.TypeParameter
+  TypeParameter = ui.symbol.TypeParameter.icon
 }
 
 local function is_autocomplete()

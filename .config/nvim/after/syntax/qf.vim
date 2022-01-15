@@ -1,25 +1,42 @@
 syn clear qfSeparator
 syn match	qfSeparator	"|"
 
-let s:symbol_icons = luaeval('service.lsp.symbol_icons')
+let s:lsp_ui_symbol = luaeval('service.lsp.ui.symbol')
 
-execute 'syn' 'match' 'qfHasChildren' '"'.s:symbol_icons['has_children'].'"'
+execute 'syn' 'match' 'qfHasChildren' '"'.s:lsp_ui_symbol['has_children']['icon'].'"'
 
-function! s:SymbolItem(kind, iconHl, nameHl, detailHl = 'Normal') abort
-  let icon = s:symbol_icons[toupper(a:kind[0]).a:kind[1:]]
-  let iconPat = printf('"\(| \)\@<=%s"', icon)
-  let namePat = printf('"\(| %s\)\@<=\s\+\S\+"', icon)
+function! s:SymbolItem(kind) abort
+  let item = s:lsp_ui_symbol[a:kind]
+  let iconPat = printf('"\(| \)\@<=%s"', item.icon)
+  let namePat = printf('"\(| %s\)\@<=\s\+\S\+"', item.icon)
   let nameSyn = a:kind.'Name'
   let detailSyn = a:kind.'Detail'
 
   execute
     \ 'syn' 'region' detailSyn
-    \ 'matchgroup='.a:iconHl 'start='.iconPat 'end="$"'
+    \ 'matchgroup='.item['hl_icon'] 'start='.iconPat 'end="$"'
     \ 'oneline' 'contains='.nameSyn.',qfHasChildren' 'keepend'
 
   execute 'syn' 'match' nameSyn namePat
-  execute 'hi' 'def' 'link' nameSyn a:nameHl
-  execute 'hi' 'def' 'link' detailSyn a:detailHl
+  execute 'hi!' 'def' 'link' nameSyn item['hl_name']
+  execute 'hi!' 'def' 'link' detailSyn has_key(item, 'hl_detail') ? item['hl_detail'] : 'Normal'
+
+  "Get 'fg' from hl_xxx, 'bg' from StatusLine
+  execute 'hi!' 'StatusLine'.item['hl_icon']
+    \ 'guifg='.utils#GetHlAttr(item['hl_icon'], 'fg')
+    \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+
+  execute 'hi!' 'StatusLine'.item['hl_name']
+    \ 'guifg='.utils#GetHlAttr(item['hl_name'], 'fg')
+    \ 'guibg='.utils#GetHlAttr('StatusLine', 'bg')
+
+  execute 'hi!' 'StatusLineNC'.item['hl_icon']
+    \ 'guifg='.utils#GetHlAttr(item['hl_icon'], 'fg')
+    \ 'guibg='.utils#GetHlAttr('StatusLineNC', 'bg')
+
+  execute 'hi!' 'StatusLineNC'.item['hl_name']
+    \ 'guifg='.utils#GetHlAttr(item['hl_name'], 'fg')
+    \ 'guibg='.utils#GetHlAttr('StatusLineNC', 'bg')
 endfunction
 
 " syn match functionIcon "\(| \)\@<=F"
@@ -28,24 +45,24 @@ endfunction
 " hi def link functionName TSFunction
 " hi def link functionDetail Normal
 
-call s:SymbolItem('function', 'SymbolIconFunction', 'TSMethod', 'TSType')
-call s:SymbolItem('method', 'SymbolIconFunction', 'TSFunction', 'TSType')
-call s:SymbolItem('constructor', 'SymbolIconFunction', 'TSConstructor', 'TSType')
+call s:SymbolItem('Function')
+call s:SymbolItem('Method')
+call s:SymbolItem('Constructor')
 
-call s:SymbolItem('variable', 'SymbolIconVariable', 'TSVariable', 'TSType')
-call s:SymbolItem('constant', 'SymbolIconVariable', 'TSVariable', 'TSType')
-call s:SymbolItem('property', 'SymbolIconVariable', 'TSProperty', 'TSType')
-call s:SymbolItem('field', 'SymbolIconVariable', 'TSField', 'TSType')
-call s:SymbolItem('enumMember', 'SymbolIconVariable', 'TSProperty')
+call s:SymbolItem('Variable')
+call s:SymbolItem('Constant')
+call s:SymbolItem('Property')
+call s:SymbolItem('Field')
+call s:SymbolItem('EnumMember')
 
-call s:SymbolItem('module', 'SymbolIconClass', 'TSInclude')
-call s:SymbolItem('namespace', 'SymbolIconClass', 'TSNamespace')
-call s:SymbolItem('interface', 'SymbolIconClass', 'TSType')
-call s:SymbolItem('class', 'SymbolIconClass', 'TSType', 'TSKeyword')
-call s:SymbolItem('struct', 'SymbolIconClass', 'TSType', 'TSKeyword')
-call s:SymbolItem('object', 'SymbolIconClass', 'TSType', 'TSKeyword')
-call s:SymbolItem('enum', 'SymbolIconClass', 'TSType', 'TSKeyword')
-call s:SymbolItem('typeParameter', 'SymbolIconClass', 'TSType', 'TSType')
+call s:SymbolItem('Module')
+call s:SymbolItem('Namespace')
+call s:SymbolItem('Interface')
+call s:SymbolItem('Class')
+call s:SymbolItem('Struct')
+call s:SymbolItem('Object')
+call s:SymbolItem('Enum')
+call s:SymbolItem('TypeParameter')
 
 hi! def link qfSeparator LineNr
 hi! qfHasChildren guifg=#3bc03d
