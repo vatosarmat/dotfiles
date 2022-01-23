@@ -1,3 +1,4 @@
+
 let s:Paragraph_opers = #{
   \ forward: #{
     \ move_offset: 1,
@@ -7,7 +8,7 @@ let s:Paragraph_opers = #{
     \ fold_mstart: function('foldclosed'),
     \ fold_mend: function('foldclosedend'),
     \ is_pos_beyond_mfend: { x -> x > line('$') },
-    \ mnextnonblank: function('nextnonblank'),
+    \ mnextnonblank: function('utils#NextNonBlank'),
     \ mfend: {  -> line('$') },
   \ },
   \ backward: #{
@@ -18,14 +19,14 @@ let s:Paragraph_opers = #{
     \ fold_mstart: function('foldclosedend'),
     \ fold_mend: function('foldclosed'),
     \ is_pos_beyond_mfend: { x -> x < 1 },
-    \ mnextnonblank: function('prevnonblank'),
+    \ mnextnonblank: function('utils#PrevNonBlank'),
     \ mfend: {  -> 1 },
   \ }
   \}
 
 function! s:to_parend_or_mfend(op, lnum) abort
   while 1
-    let blank_lnum = search('^\s*$', a:op['search_dirflag'].'Wn')
+    let blank_lnum = search('^[[:space:]]*$', a:op['search_dirflag'].'Wn')
     if blank_lnum == 0
       "No parend, mfend
       execute 'normal!' a:op.to_mfend
@@ -43,7 +44,7 @@ function! s:to_parend_or_mfend(op, lnum) abort
         execute 'normal!' a:op.to_mfend
         return
       else
-        if getline(pos) !~ '\S'
+        if utils#IsLineBlank(pos)
           "This fold is parend, stop
           call cursor(fend, 0)
           return
@@ -69,7 +70,7 @@ endfunction
 function! s:is_blank_and_mnext(op, lnum) abort
   let fend = a:op.fold_mend(a:lnum)
   if fend == -1
-    let is_blank = getline(a:lnum) !~ '\S'
+    let is_blank = utils#IsLineBlank(a:lnum)
     let mnext = a:lnum + a:op.move_offset
   else
     "Fold is always assumed to be non blank

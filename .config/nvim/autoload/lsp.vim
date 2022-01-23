@@ -49,9 +49,11 @@ function! lsp#DefinitionList(items) abort
 endfunction
 
 function! lsp#SymbolListOpen(path) abort
-  lopen
-  let w:symbol_navigation_path = a:path
-  wincmd p
+  if g:UOPTS.lsl
+    lopen
+    let w:symbol_navigation_path = a:path
+    wincmd p
+  endif
 endfunction
 
 function! lsp#Lbefore() abort

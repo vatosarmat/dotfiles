@@ -92,6 +92,12 @@ do
       -- print('Depth ' .. depth)
 
       for _, parent_entry in ipairs(current_depth) do
+        table.sort(parent_entry.children, function(a, b)
+          -- sort by selectionRange start
+          a = a.selectionRange.start
+          b = b.selectionRange.start
+          return a.line < b.line or a.line == b.line and a.character < b.character
+        end)
         for _, symbol in ipairs(parent_entry.children) do
           local item = make_loclist_item(DocumentSymbol, symbol)
           -- print(item.symbol.name)

@@ -168,6 +168,23 @@ function! utils#TrimBufLines() abort
   endif
 endfun
 
-function! utils#IsLineEmpty(line) abort
-  return getline(a:line) !~ '\S'
+function! utils#IsLineBlank(line) abort
+  return getline(a:line) !~ '[^[:space:]]'
 endfunction
+
+function! utils#NextNonBlank(line) abort
+  let n = a:line
+  while n && utils#IsLineBlank(n)
+    let n = nextnonblank(n+1)
+  endwhile
+  return n
+endfunction
+
+function! utils#PrevNonBlank(line) abort
+  let n = a:line
+  while n && utils#IsLineBlank(n)
+    let n = prevnonblank(n-1)
+  endwhile
+  return n
+endfunction
+

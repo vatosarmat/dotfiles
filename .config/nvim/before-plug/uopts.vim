@@ -16,6 +16,7 @@ let s:lsp_flags = #{
  \ ldv: 0,
  \ laf: 1,
  \ lac: 0,
+ \ lsl: 0,
  \ }
 
 function! uopts#toggle(flag) abort
