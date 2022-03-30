@@ -1,5 +1,5 @@
 let g:UOPTS = #{
-  \ print_duration: 5000,
+  \ print_duration: 3000,
   \ }
 
 "sv

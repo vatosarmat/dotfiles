@@ -240,7 +240,8 @@ endfunction
 
 "Wipe buffer or close its window - all via 'q'
 nnoremap <silent>Q <cmd>q<cr>
-nnoremap <silent><C-q> <cmd>call <SID>Wipe()<cr>
+nnoremap <silent><C-M-Q> <cmd>call <SID>Wipe()<cr>
+nnoremap <silent><C-q> <cmd>call jumplist#Exclude()<cr>
 
 function! s:Wipe()
   let cnr = bufnr()
@@ -271,8 +272,8 @@ function! s:Wipe()
   "      bw #
   "    endif
   "  else
-      if !s:BufJump('NEXT', 1)
-        call s:BufJump('PREV', 1)
+      if !jumplist#NextBuf(1)
+        call jumplist#PrevBuf(1)
       endif
       execute 'bwipe' cnr
     " endif
@@ -372,65 +373,24 @@ nnoremap <leader>gmr <cmd>diffget REMOTE<cr>
 " nmap ]w ]czz
 
 "Comfy buffer switching
-nnoremap <silent> <M-n> <cmd>call <sid>Next()<cr>
-nnoremap <silent> <M-p> <cmd>call <sid>Prev()<cr>
+nnoremap <silent> <M-n> <cmd>call <sid>Mn()<cr>
+nnoremap <silent> <M-p> <cmd>call <sid>Mp()<cr>
 
-function! s:BufJump(dir, quiet = 0) abort
-  let [jumps, pos] = getjumplist()
-  let current_buf = bufnr()
-  let cmd = ''
-
-  function! Oper(a, jmp_item, offset) closure
-    let nr = a:jmp_item.bufnr
-    "If it is there maybe we should jumpt to it instead of exclude?
-    "No, it is <Buf>Jump after all
-    if nr != current_buf && bufexists(nr) && getbufvar(nr, '&buftype') == ''
-      let a:a[nr] = a:offset
-    endif
-    return a:a
-  endfunction
-  ""Max offset of each buffer after current in jumplist
-  let after_bufs = utils#Reduce(jumps[pos+1:], function('Oper'), #{})
-
-  if a:dir == 'NEXT' && len(after_bufs) > 0
-    let count = min(values(after_bufs))
-    let cmd = string(count+1)."\<C-i>"
-  elseif a:dir == 'PREV' && pos > 0
-    let after_bufs[current_buf] = 0
-    " echo after_bufs
-    let [_, found] =  utils#FindLast(jumps[:pos-1], {v,_ -> bufexists(v.bufnr) && !has_key(after_bufs, v.bufnr)} )
-    if found >= 0
-      let cmd = string(pos-found)."\<C-o>"
-    endif
-  endif
-  if cmd != ''
-    "Clear 'No buf to jump' message
-    execute 'normal!' cmd
-    return 1
-  else
-    if !a:quiet
-      call utils#Print('WarningMsg', 'No ', [a:dir, 'LspDiagnosticsSignInformation'], ' buf to jump')
-    endif
-    return 0
-  endif
-endfunction
-
-"Use jumps list or record history in ustate instead of dummy bnext bprev
-function! s:Next() abort
+function! s:Mn() abort
   if &diff
     keepjumps normal! ]c
     call uopts#nzz()
   else
-    call s:BufJump('NEXT')
+    call jumplist#NextBuf()
   endif
 endfunction
 
-function! s:Prev() abort
+function! s:Mp() abort
   if &diff
     keepjumps normal! [c
     call uopts#nzz()
   else
-    call s:BufJump('PREV')
+    call jumplist#PrevBuf()
   endif
 endfunction
 

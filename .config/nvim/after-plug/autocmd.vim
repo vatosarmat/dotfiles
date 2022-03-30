@@ -1,6 +1,6 @@
 let g:autocmd#last_win_new = -1
 
-augroup BeforePlug
+augroup ConfigMain
   autocmd!
   autocmd TextYankPost * call s:TextYankPost()
 
@@ -9,21 +9,35 @@ augroup BeforePlug
   autocmd FileType qf setlocal norelativenumber | call mappings#FtQf()
   autocmd FileType help call docfavs#Init()
 
-  "Move help window right
   autocmd WinNew * call s:OnWinNew()
   autocmd BufWinEnter *.txt call s:OnBufWinEnterTxt()
+  autocmd BufWinEnter * call s:OnBufWinEnter()
 
   autocmd DiffUpdated * call s:HighlightDiffConflictMarker()
   autocmd DirChanged * call s:OnDirChanged()
   "C-x C-e
-  autocmd VimEnter /tmp/bash-* exe "normal!" "ggO#shellcheck shell=bash\<cr>" | startinsert
-  autocmd VimEnter * call s:OnVimEnter()
+  autocmd VimEnter /tmp/bash-* ++once exe "normal!" "ggO#shellcheck shell=bash\<cr>" | startinsert
+  autocmd VimEnter * ++once call s:OnVimEnter()
 
   autocmd BufRead,BufNewFile *.json,.prettierrc set filetype=jsonc
 
-  autocmd BufWinEnter * call s:UserStateWinEnter()
   autocmd WinClosed * diffupdate! | call s:UserStateWinClosed(expand('<afile>'))
 augroup END
+
+function! s:OnBufWinEnter() abort
+  "...
+  if &buftype == 'quickfix'
+    let id = win_getid()
+    if getcurrent_bufwininfo(id)[0].loclist == 1
+      let g:ustate.loclist_windows[id] = 1
+    else
+      let g:ustate.qf_window = id
+    endif
+  endif
+
+  "...
+  call jumplist#BufWinEnter()
+endfunction
 
 function! s:OnBufAdd() abort
   if !empty(&buftype)
@@ -36,8 +50,6 @@ endfunction
 function! s:OnVimEnter() abort
   call s:HighlightDiffConflictMarker()
   lua require 'project'.detect_type()
-  "M-n M-p navigate through jump-list
-  clearjumps
 endfunction
 
 function! s:OnDirChanged() abort
@@ -51,17 +63,6 @@ function! s:UserStateWinClosed(winid) abort
     let g:ustate.qf_window = 0
   elseif has_key(g:ustate.loclist_windows, a:winid)
     call remove(g:ustate.loclist_windows, a:winid)
-  endif
-endfunction
-
-function! s:UserStateWinEnter() abort
-  if &buftype == 'quickfix'
-    let id = win_getid()
-    if getwininfo(id)[0].loclist == 1
-      let g:ustate.loclist_windows[id] = 1
-    else
-      let g:ustate.qf_window = id
-    endif
   endif
 endfunction
 
@@ -85,9 +86,10 @@ function! s:OnBufWinEnterTxt() abort
 endfunction
 
 function! s:OnWinNew() abort
-  "M-n M-p navigate through jump-list
-  clearjumps
+  "...
+  call jumplist#InitWindow()
 
+  "...
   let g:autocmd#last_win_new = win_getid()
 endfunction
 
