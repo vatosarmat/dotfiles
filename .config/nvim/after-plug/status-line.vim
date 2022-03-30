@@ -16,7 +16,8 @@ let s:ft_ext = #{
   \ go: ['go'],
   \ c: ['c'],
   \ cpp: ['cpp'],
-  \ html: ['html']
+  \ html: ['html'],
+  \ css: ['css']
   \ }
 
 function! IsFtUnordinary(ft, ext) abort

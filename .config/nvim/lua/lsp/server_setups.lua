@@ -219,8 +219,8 @@ function M.setup(capabilities)
   lspconfig.bashls.setup {}
   lspconfig.pyright.setup {}
   lspconfig.cmake.setup {}
-  -- lspconfig.html.setup {}
-  -- lspconfig.cssls.setup {}
+  lspconfig.html.setup {}
+  lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {
     filetypes = { 'jsonc' },
     init_options = {
