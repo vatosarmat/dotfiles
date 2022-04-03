@@ -1,6 +1,6 @@
 nnoremap <silent><leader>gs <cmd>G \| execute "resize" string(&lines * 0.3)<cr>
 nnoremap <silent><leader>gdi <cmd>:Gvdiffsplit! :%<cr>
-nnoremap <silent><C-M-d> :Gvdiffsplit! HEAD<cr>
+nnoremap <silent><C-M-d> <cmd>call <sid>Cmd()<cr>
 nnoremap <silent><leader>gdt <cmd>Gvdiffsplit! HEAD \| Gvdiffsplit! :%<cr>
 
 cnoreabbrev hg h fugitive
@@ -36,4 +36,11 @@ endfunction
 
 function! s:IndexBufUnload() abort
   echom "UNLOAD index buf"
+endfunction
+
+function! s:Cmd() abort
+  if !&buftype
+    Gvdiffsplit! HEAD
+  endif
+  call utils#Warning('No DIFF for non-file buf')
 endfunction

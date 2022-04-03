@@ -28,7 +28,7 @@ function! s:OnBufWinEnter() abort
   "...
   if &buftype == 'quickfix'
     let id = win_getid()
-    if getcurrent_bufwininfo(id)[0].loclist == 1
+    if getwininfo(id)[0].loclist == 1
       let g:ustate.loclist_windows[id] = 1
     else
       let g:ustate.qf_window = id
@@ -40,9 +40,6 @@ function! s:OnBufWinEnter() abort
 endfunction
 
 function! s:OnBufAdd() abort
-  if !empty(&buftype)
-    call mappings#NopDiff()
-  endif
   "Force buffer names to be relative paths
   execute 'cd' getcwd()
 endfunction

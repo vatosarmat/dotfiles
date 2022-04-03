@@ -22,7 +22,6 @@ function! jumplist#Exclude() abort
   endif
 
   if getbufvar(bnr, '&buftype') == ''
-    echom w:jumplist_exclude bnr
     let w:jumplist_exclude[bnr] = 1
   endif
 endfunction
