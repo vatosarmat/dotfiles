@@ -44,6 +44,10 @@ function! qflist#Step(next, loc = 0) abort
 endfunction
 
 function! qflist#RemoveCurrentItem() abort
+  if &filetype != 'qf'
+    return
+  endif
+
   let qf_info = getqflist(#{items: 0, idx: 0, context: 0})
   let prev_pos = getpos('.')
   if type(qf_info.context) == v:t_dict
@@ -87,6 +91,10 @@ function! qflist#RemoveCurrentItem() abort
 endfunction
 
 function! qflist#Restore() abort
+  if &filetype != 'qf'
+    return
+  endif
+
   let qf_info = getqflist(#{items: 0, idx: 0, context: 0})
   let prev_pos = getpos('.')
   let context = qf_info.context

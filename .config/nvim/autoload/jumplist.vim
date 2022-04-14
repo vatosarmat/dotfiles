@@ -3,6 +3,7 @@
 
 function! jumplist#InitWindow() abort
   let w:jumplist_exclude = #{}
+  let w:jumplist_last_buf_jump_dir = 'PREV'
   clearjumps
 endfunction
 
@@ -14,12 +15,17 @@ function! jumplist#PrevBuf(quiet = 0) abort
   return s:BufJump('PREV', a:quiet)
 endfunction
 
+function! jumplist#AnotherBuf(quiet = 0) abort
+  if !s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
+    let w:jumplist_last_buf_jump_dir = a:dir == 'NEXP' ? 'PREV' : 'NEXT'
+    call s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
+  endif
+endfunction
+
 function! jumplist#Exclude() abort
   let bnr = bufnr()
 
-  if !s:BufJump('NEXT')
-    call s:BufJump('PREV')
-  endif
+  call jumplist#AnotherBuf()
 
   if getbufvar(bnr, '&buftype') == ''
     let w:jumplist_exclude[bnr] = 1
@@ -27,13 +33,13 @@ function! jumplist#Exclude() abort
 endfunction
 
 function! jumplist#BufWinEnter() abort
-  if v:vim_did_enter
-    let bnr = bufnr()
-    if has_key(w:jumplist_exclude, bnr)
-      call remove(w:jumplist_exclude, bnr)
-    endif
-  else
+  if !exists('w:jumplist_exclude')
     call jumplist#InitWindow()
+  endif
+
+  let bnr = bufnr()
+  if has_key(w:jumplist_exclude, bnr)
+    call remove(w:jumplist_exclude, bnr)
   endif
 endfunction
 
@@ -74,6 +80,7 @@ function! s:BufJump(dir, quiet = 0) abort
   if cmd != ''
     "Clear 'No buf to jump' message
     execute 'normal!' cmd
+    let w:jumplist_last_buf_jump_dir = a:dir
     return 1
   else
     if !a:quiet

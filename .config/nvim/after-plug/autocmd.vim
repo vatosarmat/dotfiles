@@ -6,7 +6,7 @@ augroup ConfigMain
 
   autocmd BufAdd * call s:OnBufAdd()
 
-  autocmd FileType qf setlocal norelativenumber | call mappings#FtQf()
+  autocmd FileType qf setlocal norelativenumber
   autocmd FileType help call docfavs#Init()
 
   autocmd WinNew * call s:OnWinNew()

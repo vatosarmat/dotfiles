@@ -244,9 +244,7 @@ function! s:BufferNavigation() abort
 
   function! s:Wipe()
     let cnr = bufnr()
-    if !jumplist#NextBuf(1)
-      call jumplist#PrevBuf(1)
-    endif
+    call jumplist#AnotherBuf(1)
     execute 'bwipe' cnr
   endfunction
 endfunction

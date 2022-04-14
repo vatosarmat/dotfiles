@@ -2,21 +2,29 @@ local api = vim.api
 local lsp = vim.lsp
 local log = require 'vim.lsp.log'
 local util = lsp.util
+local cext = require 'lsp.client_ext'
 
 local M = {}
 
 local function make_definition_handler(ui_func)
   return function(_, result, ctx, _)
+    -- Handle "not-found"
+    local client_name = lsp.get_client_by_id(ctx.client_id).name
     if result == nil or vim.tbl_isempty(result) then
       local _ = log.info() and log.info(ctx.method, 'No location found')
-      if lsp.get_client_by_id(ctx.client_id).name ~= 'null-ls' then
+      if client_name ~= 'null-ls' then
         api.nvim_echo({ { 'No definition found', 'WarningMsg' } }, true, {})
       end
       return nil
     end
 
+    -- call ui_func if single result, otherwise open list
     local jump_location
     if vim.tbl_islist(result) then
+      local filter = cext[client_name].definition_filter
+      if filter then
+        result = filter(ctx.method, result)
+      end
       if #result > 1 then
         vim.fn['lsp#DefinitionList'](util.locations_to_items(result))
         return
