@@ -3,10 +3,10 @@ local api = vim.api
 local M = {}
 
 local function read_basename_mates()
-  local basename = vim.fn.expand('%:t:r')
+  local basename = string.match(vim.fn.expand('%:t'), '^[^.]+')
   local dir = vim.fn.expand('%:p:h')
   local mate_file_names = vim.fn.readdir(dir, function(node)
-    if vim.startswith(node, basename) then
+    if vim.startswith(node, basename .. '.') then
       return 1
     end
     return 0
@@ -33,12 +33,33 @@ function M.cycle_mate_bufs()
     return
   end
 
+  local exclude = vim.w.jumplist_exclude
   local current = vim.fn.expand('%:p')
-  for idx, path in ipairs(mate_bufs) do
+  for current_idx, path in ipairs(mate_bufs) do
     if current == path then
-      local target_name = mate_bufs[(idx - 1 + 1) % #mate_bufs + 1]
-      local target_nr = vim.uri_to_bufnr(vim.uri_from_fname(target_name))
+      local target_nr
+      if #mate_bufs == 2 then
+        local target_name = mate_bufs[current_idx % #mate_bufs + 1]
+        target_nr = vim.uri_to_bufnr(vim.uri_from_fname(target_name))
+      else
+        local idx = current_idx
+        local go = true
+        repeat
+          idx = idx % #mate_bufs + 1
+          if idx == current_idx then
+            -- all bufs are excluded, so take the first next
+            idx = idx % #mate_bufs + 1
+            go = false
+          end
+          local target_name = mate_bufs[idx]
+          target_nr = vim.uri_to_bufnr(vim.uri_from_fname(target_name))
+        until not (go and exclude[tostring(target_nr)])
+      end
+
       api.nvim_set_current_buf(target_nr)
+      if not vim.b.mate_bufs then
+        vim.b.mate_bufs = mate_bufs
+      end
       return
     end
   end
