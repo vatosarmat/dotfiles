@@ -57,6 +57,7 @@ function M.surround()
   }
   map('n', ',', '<Plug>Ysurround', opts)
   map('x', ',', '<Plug>VSurround', opts)
+  map('nxo', 'S', 'gE', opts)
 end
 
 function M.scrollview()

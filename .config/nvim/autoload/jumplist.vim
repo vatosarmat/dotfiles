@@ -17,7 +17,7 @@ endfunction
 
 function! jumplist#AnotherBuf(quiet = 0) abort
   if !s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
-    let w:jumplist_last_buf_jump_dir = a:dir == 'NEXP' ? 'PREV' : 'NEXT'
+    let w:jumplist_last_buf_jump_dir = w:jumplist_last_buf_jump_dir == 'NEXP' ? 'PREV' : 'NEXT'
     call s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
   endif
 endfunction
