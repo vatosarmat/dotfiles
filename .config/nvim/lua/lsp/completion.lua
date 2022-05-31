@@ -15,7 +15,7 @@ end
 local M = {}
 
 local mapping = {
-  ['<C-i>'] = function(fallback)
+  ['<Tab>'] = function(fallback)
     if cmp.visible() then
       return cmp.mapping.select_next_item {
         behavior = cmp.SelectBehavior.Insert
@@ -28,7 +28,7 @@ local mapping = {
       return cmp.mapping.complete()(fallback)
     end
   end,
-  ['<M-C-i>'] = cmp.mapping.complete(),
+  ['<M-Tab>'] = cmp.mapping.complete(),
   ['<C-f>'] = cmp.mapping.scroll_docs(2),
   ['<C-b>'] = cmp.mapping.scroll_docs(-2),
   ['<M-C-y>'] = cmp.mapping.close(),
@@ -49,13 +49,12 @@ local mapping = {
     else
       fallback()
     end
-  end, { 'i', 's' })
+  end, { 'i', 's' }),
 
-  -- Default
-  -- ['<C-y>'] = mapping.confirm({
-  --   select = false
-  -- }),
-  -- ['<C-e>'] = mapping.abort()
+  ['<C-y>'] = cmp.mapping.confirm({
+    select = false
+  }),
+  ['<C-e>'] = cmp.mapping.abort()
 }
 
 local kind_icons = {

@@ -1,12 +1,15 @@
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = 'maintained', -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ensure_installed = 'all',
   context_commentstring = {
     enable = true,
     enable_autocmd = false
   },
   highlight = {
     enable = true,
-    disable = {} -- list of language that will be disabled
+    disable = {
+      'help',
+      'markdown'
+    } -- list of language that will be disabled
     -- custom_captures = {
     --   -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
     --   ["magenta"] = "TSInclude",
@@ -80,9 +83,9 @@ require'nvim-treesitter.configs'.setup {
 
   }
 }
-local parser_config = require'nvim-treesitter.parsers'.get_parser_configs()
-parser_config.typescript.used_by = 'javascript'
-parser_config.jsonc.used_by = 'json'
+local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_parsername
+filetype_to_parsername.javascript = 'typescript'
+filetype_to_parsername.jsonc = 'json'
 
 --
 --

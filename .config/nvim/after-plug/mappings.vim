@@ -257,7 +257,9 @@ function s:QfList() abort
   "loclist mappings
   nnoremap <C-M-j> <cmd>call qflist#Step(1, 1)<cr>
   nnoremap <C-M-k> <cmd>call qflist#Step(0, 1)<cr>
+endfunction
 
+function s:QfListBuffer() abort
   nnoremap <buffer> dd <cmd>call qflist#RemoveCurrentItem()<cr>
   xnoremap <buffer> d <cmd>call qflist#RemoveCurrentItem()<cr>
   nnoremap <buffer> u <cmd>call qflist#Restore()<cr>
@@ -270,3 +272,7 @@ call s:InsertLikeEmacs()
 call s:Windows()
 call s:BufferNavigation()
 call s:QfList()
+
+augroup Mappings
+  autocmd FileType qf call s:QfListBuffer()
+augroup END
