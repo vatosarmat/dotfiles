@@ -9,8 +9,26 @@ if fn.empty(fn.glob(install_path)) > 0 then
   execute 'packadd packer.nvim'
 end
 
-local plug = require('packer').startup({
+require('packer').startup({
   function()
+    local r = function(name)
+      local major = { 'lsp' }
+      if vim.endswith(name, '.vim') then
+        return string.format('vim.cmd(\'source $STD_PATH_CONFIG/plug-config/%s\')', name)
+      elseif vim.tbl_contains(major, name) then
+        return string.format('require(\'%s\')', name)
+      else
+        return string.format('require(\'plug-config.%s\')', name)
+      end
+    end
+
+    local usec = function(path, name)
+      use {
+        path,
+        config = r(name)
+      }
+    end
+
     use_rocks 'penlight'
 
     use 'wbthomason/packer.nvim'
@@ -34,9 +52,7 @@ local plug = require('packer').startup({
         'jose-elias-alvarez/nvim-lsp-ts-utils'
       },
       rocks = { 'penlight' },
-      config = function()
-        require 'lsp'
-      end
+      config = r 'lsp'
     }
     use {
       'hrsh7th/nvim-cmp',
@@ -90,9 +106,11 @@ local plug = require('packer').startup({
         'nvim-treesitter/nvim-treesitter-textobjects',
         'JoosepAlviste/nvim-ts-context-commentstring'
       },
-      config = function()
-        require 'plug-config.treesitter'
-      end
+      config = r 'treesitter'
+    }
+    use {
+      'numToStr/Comment.nvim',
+      config = misc.Comment
     }
 
     use {
@@ -103,40 +121,21 @@ local plug = require('packer').startup({
           run = 'make'
         }
       },
-      config = function()
-        require 'plug-config.telescope'
-      end
+      config = r 'telescope'
     }
 
     use 'kyazdani42/nvim-web-devicons'
-    use {
-      'kyazdani42/nvim-tree.lua',
-      config = function()
-        require 'plug-config.nvimtree'
-      end
-    }
+    usec('kyazdani42/nvim-tree.lua', 'nvimtree')
 
     use {
       'mfussenegger/nvim-dap',
       requires = { 'jbyuki/one-small-step-for-vimkind' },
       rocks = { 'penlight' },
-      config = function()
-        require 'plug-config.dap'
-      end
+      config = r 'dap'
     }
 
-    use {
-      'tpope/vim-fugitive',
-      config = function()
-        vim.cmd('source $STD_PATH_CONFIG/plug-config/fugitive.vim')
-      end
-    }
-    use {
-      'lewis6991/gitsigns.nvim',
-      config = function()
-        require 'plug-config.gitsigns'
-      end
-    }
+    usec('tpope/vim-fugitive', 'fugitive.vim')
+    usec('lewis6991/gitsigns.nvim', 'gitsigns')
 
     use {
       '~/.fzf',
@@ -145,9 +144,7 @@ local plug = require('packer').startup({
       opt = true,
       requires = { 'junegunn/fzf.vim' },
       wants = { 'fzf.vim' },
-      config = function()
-        vim.cmd('source $STD_PATH_CONFIG/plug-config/fzf.vim')
-      end
+      config = r 'fzf.vim'
     }
     use 'lambdalisue/suda.vim'
 
@@ -155,11 +152,6 @@ local plug = require('packer').startup({
       'tpope/vim-surround',
       requires = { 'tpope/vim-repeat' },
       config = misc.surround
-    }
-    use {
-      'tpope/vim-commentary',
-      requires = { 'tpope/vim-repeat' },
-      config = misc.commentary
     }
 
     use {
@@ -181,14 +173,9 @@ local plug = require('packer').startup({
       config = misc.scrollview
     }
 
-    use { 'stevearc/aerial.nvim' }
+    use 'stevearc/aerial.nvim'
 
-    use {
-      'christianchiarulli/nvcode-color-schemes.vim',
-      config = function()
-        vim.cmd('source $STD_PATH_CONFIG/plug-config/colors.vim')
-      end
-    }
+    usec('christianchiarulli/nvcode-color-schemes.vim', 'colors.vim')
 
     use 'teal-language/vim-teal'
     use 'chr4/nginx.vim'
@@ -201,5 +188,3 @@ local plug = require('packer').startup({
     }
   }
 })
-
-return plug

@@ -1,4 +1,6 @@
-require'nvim-treesitter.configs'.setup {
+local ts_configs = require 'nvim-treesitter.configs'
+
+ts_configs.setup {
   ensure_installed = 'all',
   context_commentstring = {
     enable = true,
@@ -6,10 +8,7 @@ require'nvim-treesitter.configs'.setup {
   },
   highlight = {
     enable = true,
-    disable = {
-      'help',
-      'markdown'
-    } -- list of language that will be disabled
+    disable = { 'help', 'markdown' } -- list of language that will be disabled
     -- custom_captures = {
     --   -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
     --   ["magenta"] = "TSInclude",

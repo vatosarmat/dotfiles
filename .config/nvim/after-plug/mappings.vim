@@ -71,8 +71,8 @@ function! s:Motions() abort
   nnoremap <silent>{ :<C-u>execute "keepjumps norm! " . v:count1 . "{"<CR>
 
   "Handy line start/end
-  noremap <C-h> _
-  noremap <C-l> g_
+  noremap <C-a> _
+  noremap <C-e> g_
 
   "Handier than ,
   nnoremap <M-;> ,
