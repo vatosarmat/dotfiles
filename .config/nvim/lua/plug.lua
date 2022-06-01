@@ -36,16 +36,6 @@ require('packer').startup({
 
     use {
       'neovim/nvim-lspconfig',
-      opt = true,
-      event = 'VimEnter',
-      wants = {
-        'lua-dev.nvim',
-        'null-ls.nvim',
-        'nvim-lsp-ts-utils',
-        'nvim-cmp',
-        'telescope.nvim',
-        'nvim-treesitter'
-      },
       requires = {
         'folke/lua-dev.nvim',
         'jose-elias-alvarez/null-ls.nvim',
@@ -56,9 +46,6 @@ require('packer').startup({
     }
     use {
       'hrsh7th/nvim-cmp',
-      disable = false,
-      opt = true,
-      wants = { 'LuaSnip' },
       requires = {
         'hrsh7th/cmp-nvim-lsp',
         'hrsh7th/cmp-buffer',
@@ -98,13 +85,12 @@ require('packer').startup({
 
     use {
       'nvim-treesitter/nvim-treesitter',
-      opt = true,
-      event = 'VimEnter',
       run = ':TSUpdate',
       requires = {
         'nvim-treesitter/playground',
         'nvim-treesitter/nvim-treesitter-textobjects',
-        'JoosepAlviste/nvim-ts-context-commentstring'
+        'JoosepAlviste/nvim-ts-context-commentstring',
+        'windwp/nvim-ts-autotag'
       },
       config = r 'treesitter'
     }
@@ -140,10 +126,7 @@ require('packer').startup({
     use {
       '~/.fzf',
       as = 'fzf',
-      event = 'VimEnter',
-      opt = true,
       requires = { 'junegunn/fzf.vim' },
-      wants = { 'fzf.vim' },
       config = r 'fzf.vim'
     }
     use 'lambdalisue/suda.vim'
@@ -172,8 +155,6 @@ require('packer').startup({
       'dstein64/nvim-scrollview',
       config = misc.scrollview
     }
-
-    use 'stevearc/aerial.nvim'
 
     usec('christianchiarulli/nvcode-color-schemes.vim', 'colors.vim')
 

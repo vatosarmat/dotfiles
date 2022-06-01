@@ -79,7 +79,9 @@ ts_configs.setup {
     --     ['g<C-d>'] = '@function.outer'
     --   }
     -- }
-
+  },
+  autotag = {
+    enable = true
   }
 }
 local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_parsername
@@ -96,7 +98,7 @@ local function package_webpage()
   local cache_file = vim.fn.stdpath('cache') .. '/package_webpage.txt'
   local p = vim.g.project
   if p.package_webpage then
-    local maybe_package = ts_utils.get_node_text(ts_utils.get_node_at_cursor(0), 0)[1]
+    local maybe_package = vim.treesitter.query.get_node_text(ts_utils.get_node_at_cursor(0), 0)
     _, maybe_package = maybe_package:match '^%s*([\'"]?)(.*%S)%1'
     local uri = string.gsub(p.package_webpage, '%${package}', maybe_package)
 
