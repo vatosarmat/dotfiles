@@ -1,5 +1,71 @@
 local ts_configs = require 'nvim-treesitter.configs'
 
+function setup_textobject()
+  local ret = {
+    select = {
+      enable = true,
+      lookahead = true,
+      keymaps = {
+        -- ['as'] = '@statement.outer',
+        ['aa'] = '@parameter.outer',
+        ['ac'] = '@call.outer',
+        ['ic'] = '@call.inner',
+        ['ab'] = '@block.outer',
+        ['ib'] = '@block.inner',
+        ['af'] = '@function.outer',
+        ['if'] = '@function.inner'
+        -- ['ac'] = '@class.outer',
+        -- ['ic'] = '@class.inner'
+      }
+    },
+    move = {
+      enable = true,
+      set_jumps = false, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        [']f'] = '@function.outer',
+        [']a'] = '@parameter.outer',
+        [']c'] = '@call.outer',
+        [']b'] = '@block.outer'
+        -- [')'] = '@statement.outer'
+        -- [']]'] = '@class.outer'
+      },
+      goto_next_end = {
+        [']<M-f>'] = '@function.outer',
+        [']<M-a>'] = '@parameter.outer',
+        [']<M-c>'] = '@call.outer',
+        [']<M-b>'] = '@block.outer'
+        -- ['<M-)>'] = '@statement.outer'
+        -- [']['] = '@class.outer'
+      },
+      goto_previous_start = {
+        ['[f'] = '@function.outer',
+        ['[a'] = '@parameter.outer',
+        ['[c'] = '@call.outer',
+        ['[b'] = '@block.outer'
+        -- ['('] = '@statement.outer'
+        -- ['[['] = '@class.outer'
+      },
+      goto_previous_end = {
+        ['[<M-f>'] = '@function.outer',
+        ['[<M-a>'] = '@parameter.outer',
+        ['[<M-c>'] = '@call.outer',
+        ['[<M-b>'] = '@block.outer'
+        -- ['<M-(>'] = '@statement.outer'
+        -- ['[]'] = '@class.outer'
+      }
+    },
+    lsp_interop = {
+      enable = true,
+      border = 'none',
+      peek_definition_code = {
+        ['g<C-d>'] = '@function.outer'
+      }
+    }
+  }
+
+  return ret
+end
+
 ts_configs.setup {
   ensure_installed = 'all',
   context_commentstring = {
@@ -41,47 +107,13 @@ ts_configs.setup {
       -- scope_incremental = 'grc'
     }
   },
-  textobjects = {
-    select = {
-      enable = true,
-      lookahead = true,
-      keymaps = {
-        ['af'] = '@function.outer',
-        ['if'] = '@function.inner',
-        ['ac'] = '@class.outer',
-        ['ic'] = '@class.inner'
-      }
-    },
-    move = {
-      enable = true,
-      set_jumps = true, -- whether to set jumps in the jumplist
-      goto_next_start = {
-        [']f'] = '@function.outer'
-        -- [']]'] = '@class.outer'
-      },
-      goto_next_end = {
-        [']F'] = '@function.outer'
-        -- [']['] = '@class.outer'
-      },
-      goto_previous_start = {
-        ['[f'] = '@function.outer'
-        -- ['[['] = '@class.outer'
-      },
-      goto_previous_end = {
-        ['[F'] = '@function.outer'
-        -- ['[]'] = '@class.outer'
-      }
-    }
-    -- lsp_interop = {
-    --   enable = true,
-    --   border = 'none',
-    --   peek_definition_code = {
-    --     ['g<C-d>'] = '@function.outer'
-    --   }
-    -- }
-  },
+  textobjects = setup_textobject(),
   autotag = {
     enable = true
+  },
+  matchup = {
+    enable = true,
+    include_match_words = true
   }
 }
 local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_parsername

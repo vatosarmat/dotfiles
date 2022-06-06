@@ -17,6 +17,7 @@ local function make_definition_handler(ui_func)
       end
       return nil
     end
+    local client = vim.lsp.get_client_by_id(ctx.client_id)
 
     -- call ui_func if single result, otherwise open list
     local jump_location
@@ -34,7 +35,7 @@ local function make_definition_handler(ui_func)
     else
       jump_location = result
     end
-    ui_func(jump_location)
+    ui_func(jump_location, client.offset_encoding)
   end
 end
 

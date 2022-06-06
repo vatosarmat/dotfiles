@@ -22,10 +22,11 @@ require('packer').startup({
       end
     end
 
-    local usec = function(path, name)
+    local usec = function(path, name, disable)
       use {
         path,
-        config = r(name)
+        config = r(name),
+        disable = disable
       }
     end
 
@@ -132,9 +133,18 @@ require('packer').startup({
     use 'lambdalisue/suda.vim'
 
     use {
-      'tpope/vim-surround',
-      requires = { 'tpope/vim-repeat' },
-      config = misc.surround
+      'machakann/vim-sandwich',
+      config = r 'sandwich'
+    }
+
+    use {
+      'mattn/emmet-vim',
+      config = misc.emmet
+    }
+
+    use {
+      'andymass/vim-matchup',
+      config = misc.matchup
     }
 
     use {

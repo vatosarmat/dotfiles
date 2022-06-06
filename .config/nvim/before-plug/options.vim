@@ -62,4 +62,4 @@ let g:markdown_fenced_languages = [
   \'shell=sh', 'python', 'sh', 'console=sh',
   \]
 
-
+let g:loaded_matchit = 1

@@ -1,6 +1,8 @@
 local M = {}
 
 function M.Comment()
+  local set = vim.keymap.set
+
   require('Comment').setup({
     pre_hook = function(ctx)
       -- Only calculate commentstring for tsx filetypes
@@ -25,6 +27,8 @@ function M.Comment()
       end
     end
   })
+  set('n', '<C-_>', '<Plug>(comment_toggle_current_linewise)')
+  set('x', '<C-_>', '<Plug>(comment_toggle_linewise_visual)')
 end
 
 function M.asterisk()
@@ -59,15 +63,19 @@ function M.wordmotion()
   map('o', 'i<M-w>', '<Plug>WordMotion_iw', opts)
 end
 
-function M.surround()
-  local map = require'vim_utils'.map
-  vim.g.surround_indent = 1
-  local opts = {
-    noremap = false
-  }
-  map('n', ',', '<Plug>Ysurround', opts)
-  map('x', ',', '<Plug>VSurround', opts)
-  map('nxo', 'S', 'gE', opts)
+function M.emmet()
+  -- Hello world
+end
+
+function M.matchup()
+  local set = vim.keymap.set
+
+  vim.g.matchup_matchparen_offscreen = vim.empty_dict()
+  vim.g.matchup_surround_enabled = nil
+  vim.g.matchup_transmute_enabled = nil
+  vim.g.matchup_motion_keepjumps = true
+
+  set({ 'n', 'x', 'o' }, '<M-%>', '<plug>(matchup-g%)')
 end
 
 function M.scrollview()

@@ -52,7 +52,7 @@ function! s:Motions() abort
   "zt and zb are inconvinient
   nnoremap <M-i> zt
   nnoremap <M-o> zz
-  nnoremap <C-M-i> zb
+  nnoremap <M-Tab> zb
 
   "
   nnoremap <M-C-y> <C-y>
@@ -61,10 +61,10 @@ function! s:Motions() abort
   xnoremap <M-C-e> <C-e>
 
   "Handy paragraph movements
-  nnoremap <silent>K <cmd>call motion#Paragraph('backward')<cr>
-  xnoremap <silent>K <cmd>call motion#Paragraph('backward')<cr>
-  nnoremap <silent>J <cmd>call motion#Paragraph('forward')<cr>
-  xnoremap <silent>J <cmd>call motion#Paragraph('forward')<cr>
+  noremap <silent>K <cmd>call motion#Paragraph('backward')<cr>
+  " xnoremap <silent>K <cmd>call motion#Paragraph('backward')<cr>
+  " nnoremap <silent>J <cmd>call motion#Paragraph('forward')<cr>
+  noremap <silent>J <cmd>call motion#Paragraph('forward')<cr>
 
   "Builtin sentence and paragraph motions shouldn't be tossed jump stack
   nnoremap <silent>} :<C-u>execute "keepjumps norm! " . v:count1 . "}"<CR>
