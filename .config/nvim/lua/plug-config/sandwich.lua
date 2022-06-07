@@ -1,4 +1,4 @@
-function setup()
+local function setup()
   local set = vim.keymap.set
 
   vim.fn['operator#sandwich#set']('all', 'all', 'hi_duration', 0)

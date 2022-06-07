@@ -51,6 +51,8 @@ set omnifunc=v:lua.service.lsp.omnifunc
 
 set inccommand=
 
+set notimeout
+
 let mapleader = " "
 nnoremap <Space> <Nop>
 

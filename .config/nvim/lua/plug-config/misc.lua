@@ -64,7 +64,13 @@ function M.wordmotion()
 end
 
 function M.emmet()
-  -- Hello world
+  -- <Home> is C-m
+  local set = vim.keymap.set
+
+  set('i', '<Home>', '<Nop>')
+  vim.g.user_emmet_leader_key = '<Home>'
+  vim.g.user_emmet_complete_tag = nil
+  vim.g.user_emmet_expandabbr_key = '<Home><Home>'
 end
 
 function M.matchup()

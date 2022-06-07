@@ -14,49 +14,6 @@ end
 
 local M = {}
 
-local mapping = {
-  ['<Tab>'] = function(fallback)
-    if cmp.visible() then
-      return cmp.mapping.select_next_item {
-        behavior = cmp.SelectBehavior.Insert
-      }(fallback)
-    elseif luasnip.expandable() then
-      luasnip.expand()
-    elseif is_space_before() then
-      return fallback()
-    else
-      return cmp.mapping.complete()(fallback)
-    end
-  end,
-  ['<M-Tab>'] = cmp.mapping.complete(),
-  ['<C-f>'] = cmp.mapping.scroll_docs(2),
-  ['<C-b>'] = cmp.mapping.scroll_docs(-2),
-  ['<M-C-y>'] = cmp.mapping.close(),
-  ['<C-n>'] = cmp.mapping(function(fallback)
-    if cmp.visible() then
-      cmp.select_next_item()
-    elseif luasnip.jumpable(1) then
-      luasnip.jump(1)
-    else
-      fallback()
-    end
-  end, { 'i', 's' }),
-  ['<C-p>'] = cmp.mapping(function(fallback)
-    if cmp.visible() then
-      cmp.select_prev_item()
-    elseif luasnip.jumpable(-1) then
-      luasnip.jump(-1)
-    else
-      fallback()
-    end
-  end, { 'i', 's' }),
-
-  ['<C-y>'] = cmp.mapping.confirm({
-    select = false
-  }),
-  ['<C-e>'] = cmp.mapping.abort()
-}
-
 local kind_icons = {
   Text = ' ',
   Method = ui.symbol.Method.icon,
@@ -115,7 +72,6 @@ function M.setup()
       autocomplete = is_autocomplete(),
       completeopt = 'menu,menuone,noselect'
     },
-    mapping = mapping,
     -- why 2 arrays?
     sources = {
       -- {

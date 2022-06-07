@@ -43,4 +43,3 @@ end
 
 END
 luafile $STD_PATH_CONFIG/lua/plug.lua
-luafile $STD_PATH_CONFIG/lua/mappings.lua

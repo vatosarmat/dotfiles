@@ -7,13 +7,6 @@ function setup_textobject()
       lookahead = true,
       keymaps = {
         -- ['as'] = '@statement.outer',
-        ['aa'] = '@parameter.outer',
-        ['ac'] = '@call.outer',
-        ['ic'] = '@call.inner',
-        ['ab'] = '@block.outer',
-        ['ib'] = '@block.inner',
-        ['af'] = '@function.outer',
-        ['if'] = '@function.inner'
         -- ['ac'] = '@class.outer',
         -- ['ic'] = '@class.inner'
       }
@@ -22,34 +15,18 @@ function setup_textobject()
       enable = true,
       set_jumps = false, -- whether to set jumps in the jumplist
       goto_next_start = {
-        [']f'] = '@function.outer',
-        [']a'] = '@parameter.outer',
-        [']c'] = '@call.outer',
-        [']b'] = '@block.outer'
         -- [')'] = '@statement.outer'
         -- [']]'] = '@class.outer'
       },
       goto_next_end = {
-        [']<M-f>'] = '@function.outer',
-        [']<M-a>'] = '@parameter.outer',
-        [']<M-c>'] = '@call.outer',
-        [']<M-b>'] = '@block.outer'
         -- ['<M-)>'] = '@statement.outer'
         -- [']['] = '@class.outer'
       },
       goto_previous_start = {
-        ['[f'] = '@function.outer',
-        ['[a'] = '@parameter.outer',
-        ['[c'] = '@call.outer',
-        ['[b'] = '@block.outer'
         -- ['('] = '@statement.outer'
         -- ['[['] = '@class.outer'
       },
       goto_previous_end = {
-        ['[<M-f>'] = '@function.outer',
-        ['[<M-a>'] = '@parameter.outer',
-        ['[<M-c>'] = '@call.outer',
-        ['[<M-b>'] = '@block.outer'
         -- ['<M-(>'] = '@statement.outer'
         -- ['[]'] = '@class.outer'
       }
@@ -62,6 +39,27 @@ function setup_textobject()
       }
     }
   }
+  local select_maps = ret.select.keymaps
+  local moves = ret.move
+
+  local inner_outer = {
+    f = 'function',
+    c = 'call',
+    a = 'parameter',
+    b = 'block',
+    i = 'conditional',
+    l = 'loop'
+  }
+  for letter, obj in pairs(inner_outer) do
+    local outer = '@' .. obj .. '.outer'
+    local inner = '@' .. obj .. '.inner'
+    select_maps['a' .. letter] = outer
+    select_maps['i' .. letter] = inner
+    moves.goto_next_start[']' .. letter] = outer
+    moves.goto_next_end[string.format(']<M-%s>', letter)] = outer
+    moves.goto_previous_start['[' .. letter] = outer
+    moves.goto_previous_end[string.format('[<M-%s>', letter)] = outer
+  end
 
   return ret
 end
