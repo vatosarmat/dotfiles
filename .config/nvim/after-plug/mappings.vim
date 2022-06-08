@@ -228,7 +228,7 @@ function! s:BufferNavigation() abort
     if &diff
       keepjumps normal! ]c
       call uopts#nzz()
-    elseif &buftype == '' 
+    elseif &buftype == ''
       call jumplist#NextBuf()
     endif
   endfunction
@@ -237,7 +237,7 @@ function! s:BufferNavigation() abort
     if &diff
       keepjumps normal! [c
       call uopts#nzz()
-    elseif &buftype == '' 
+    elseif &buftype == ''
       call jumplist#PrevBuf()
     endif
   endfunction

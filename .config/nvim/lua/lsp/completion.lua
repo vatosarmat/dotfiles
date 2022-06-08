@@ -7,11 +7,6 @@ local cmp_nvim_lsp = require 'cmp_nvim_lsp'
 local autopairs = require 'nvim-autopairs'
 -- local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 
-local function is_space_before()
-  local col = vim.fn.col '.' - 1
-  return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
-end
-
 local M = {}
 
 local kind_icons = {
@@ -48,6 +43,13 @@ end
 
 function M.setup()
   luasnip.config.setup {}
+  require('luasnip/loaders/from_vscode').load({
+    paths = './snippets/vscode'
+  })
+  require('luasnip/loaders/from_snipmate').load({
+    paths = './snippets/snipmate'
+  })
+
   autopairs.setup({
     check_ts = true,
     ts_config = {
@@ -71,24 +73,6 @@ function M.setup()
     completion = {
       autocomplete = is_autocomplete(),
       completeopt = 'menu,menuone,noselect'
-    },
-    -- why 2 arrays?
-    sources = {
-      -- {
-      --   name = 'buffer'
-      -- },
-      {
-        name = 'nvim_lsp'
-      },
-      {
-        name = 'nvim_lua'
-      }
-      -- {
-      --   name = 'path'
-      -- },
-      -- {
-      --   name = 'luasnip'
-      -- }
     },
     formatting = {
       ---@diagnostic disable-next-line: unused-local

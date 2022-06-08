@@ -1,5 +1,6 @@
 local api = vim.api
 local bind1 = require'pl.func'.bind1
+local bind = require'pl.func'.bind
 
 local function is_space_before()
   local col = vim.fn.col '.' - 1
@@ -17,20 +18,38 @@ local function map_completion()
   local set = vim.keymap.set
   local iset = bind1(set, 'i')
 
+  local function complete_sources(...)
+    return cmp.complete {
+      config = {
+        sources = vim.tbl_map(function(v)
+          return {
+            name = v
+          }
+        end, pack(...))
+      }
+    }
+  end
+
   iset('<Tab>', function()
     if cmp.visible() then
       cmp.select_next_item()
-    elseif luasnip.expandable() then
-      luasnip.expand()
     else
       if is_space_before() then
         feed_keys '<Tab>'
       else
-        cmp.complete()
+        complete_sources('nvim_lsp', 'nvim_lua')
       end
     end
   end)
-  iset('<M-Tab>', cmp.complete)
+  iset('<M-Tab>', bind(complete_sources, 'nvim_lsp', 'nvim_lua'))
+  iset('<M-i>', function()
+    if cmp.visible() then
+      cmp.select_next_item()
+    else
+      complete_sources('luasnip')
+    end
+  end)
+  iset('<C-j>', luasnip.expand)
   iset('<C-y>', cmp.confirm)
   iset('<C-M-y>', cmp.close)
   iset('<C-e>', function()
