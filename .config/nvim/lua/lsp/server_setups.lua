@@ -129,8 +129,10 @@ local function setup_null_ls()
     }),
     f.lua_format,
     lsp_flags.prettier_with_d and f.prettierd.with({
-      filetypes = prettier_filetype
-      -- command = 'PRETTIERD_LOCAL_PRETTIER_ONLY=true prettierd'
+      filetypes = prettier_filetype,
+      env = {
+        PRETTIERD_DEFAULT_CONFIG = os.getenv('HOME') .. '/.config/.prettier.json'
+      }
     }) or f.prettier.with({
       filetypes = prettier_filetype,
       only_local = 'node_modules/.bin'
