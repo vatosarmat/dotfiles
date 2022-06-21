@@ -1,6 +1,8 @@
 let s:ft_ext = #{
   \ sh: ['sh', 'bash', 'bashrc'],
   \ vim: ['vim'],
+  \ ruby: ['rb'],
+  \ scheme: ['scm'],
   \ lua: ['lua'],
   \ json: ['json'],
   \ jsonc: ['json'],

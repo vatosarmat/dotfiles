@@ -244,6 +244,7 @@ function M.setup(capabilities)
     },
     root_dir = lspconfig_util.find_git_ancestor
   }
+  lspconfig.solargraph.setup {}
 
   setup_cpp()
   setup_ts_flow_volar()

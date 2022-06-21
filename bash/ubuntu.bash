@@ -1,4 +1,3 @@
-alias apt_lsppa="apt policy"
 alias upa='update-alternatives'
 alias supa='sudo update-alternatives'
 
