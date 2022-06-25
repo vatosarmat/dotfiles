@@ -7,7 +7,7 @@ local buf_del_map = func.bind(vim.api.nvim_buf_del_keymap, 0, func._1, func._2)
 local M = {}
 
 local function assert_defined(name)
-  local shortmap = _shortmap[name]
+  local shortmap = _U.shortmap[name]
   assert(shortmap, 'Shortmap \'' .. name .. '\' not defined')
   return shortmap
 end
@@ -36,7 +36,7 @@ end
 -- lhs supposed to be short, while rhs supposed to be <leader><prefix><op-key>
 -- it is all remap-based
 function M.define(name, mappings)
-  assert(not _shortmap[name], 'Shortmap \'' .. name .. '\' already defined')
+  assert(not _U.shortmap[name], 'Shortmap \'' .. name .. '\' already defined')
   local function f(full_mappings, abbreved_mapping)
     local modes, lhs, rhs = unpack(abbreved_mapping)
     modes:gsub('.', function(m)
@@ -51,7 +51,7 @@ function M.define(name, mappings)
     return full_mappings
   end
 
-  _shortmap[name] = { name, reduce(f, mappings, {}) }
+  _U.shortmap[name] = { name, reduce(f, mappings, {}) }
 end
 
 -- Do actual mapping, if something overwritten, save it

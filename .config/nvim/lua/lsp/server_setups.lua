@@ -21,7 +21,7 @@ local jsts_filetype = {
   'typescriptreact',
   'typescript.jsx'
 }
-local prettier_filetype = vim.list_extend({ 'html', 'css', 'json', 'jsonc', 'vue' }, jsts_filetype)
+local prettier_filetype = vim.list_extend({ 'css', 'json', 'jsonc', 'vue' }, jsts_filetype)
 -- local eslint_filetype = jsts_filetype
 
 local function document_highlight()
@@ -134,8 +134,8 @@ local function setup_null_ls()
         PRETTIERD_DEFAULT_CONFIG = os.getenv('HOME') .. '/.config/.prettier.json'
       }
     }) or f.prettier.with({
-      filetypes = prettier_filetype,
-      only_local = 'node_modules/.bin'
+      filetypes = prettier_filetype
+      -- only_local = 'node_modules/.bin'
     })
   }
 
@@ -197,20 +197,7 @@ function M.setup(capabilities)
             callSnipper = 'Replace'
           },
           diagnostics = {
-            globals = {
-              'vim',
-              'service',
-              '_map',
-              '_augroup',
-              '_shortmap',
-              'use',
-              'pack',
-              'use_rocks',
-              'fnoop',
-              'fconst',
-              'pprint',
-              'symbol_navigation'
-            }
+            globals = { 'vim', '_U', 'use', 'pack', 'use_rocks', 'fnoop', 'fconst' }
           }
         }
       }
@@ -221,7 +208,11 @@ function M.setup(capabilities)
   lspconfig.bashls.setup {}
   lspconfig.pyright.setup {}
   lspconfig.cmake.setup {}
-  lspconfig.html.setup {}
+  lspconfig.html.setup {
+    -- init_options = {
+    --   provideFormatter = false
+    -- }
+  }
   lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {
     filetypes = { 'jsonc' },

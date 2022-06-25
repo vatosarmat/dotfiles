@@ -6,6 +6,7 @@ local ui_symbol = require'lsp.ui'.symbol
 local misc = require 'lsp.misc'
 
 local util = lsp.util
+local symbol_navigation = _U.symbol_navigation
 
 --
 -- Helpers 1

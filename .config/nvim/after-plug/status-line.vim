@@ -82,7 +82,7 @@ function! StatusQf(focus_win_id) abort
   let winid = win_getid()
   if getwininfo(winid)[0].loclist
     if exists('w:symbol_navigation_path') && len(w:symbol_navigation_path) > 0
-      let lsp_ui_symbol = luaeval('service.lsp.ui.symbol')
+      let lsp_ui_symbol = luaeval('_U.lsp.ui.symbol')
       let nc = winid == a:focus_win_id ? '' : 'NC'
       " let nc = a:nc
       let content = ''
@@ -147,7 +147,7 @@ endfunction
 
 function! StatusLSP() abort
   if winwidth(0) < 70 | return '' | endif
-  let str = luaeval('service.lsp.status_line()')
+  let str = luaeval('_U.lsp.status_line()')
   if str == ''
     let str = 'No LSP'
   endif

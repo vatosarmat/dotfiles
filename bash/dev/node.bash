@@ -1,5 +1,9 @@
 #shellcheck disable=2155
 
+function node__ng_completion {
+  source <(ng completion script)
+}
+
 function node__fd_modules_with_submodules {
   fd -p -g "$PWD/*/node_modules/*" -x dirname '{//}' | sort -u
 }

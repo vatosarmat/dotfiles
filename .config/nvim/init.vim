@@ -7,39 +7,23 @@ source $STD_PATH_CONFIG/before-plug/uopts.vim
 packadd cfilter
 
 lua << END
+
+if not _U then
+  _G._U = {
+    lsp = {},
+    augroup = {},
+	    map = { global = {} },
+    shortmap = {},
+    symbol_navigation = {},
+    buffer_navigation = {}
+    }
+else
+  print('_U already defined!')
+end
+
 _G.pack = function(...) return { ... } end
-if not service then
-  _G.service = {}
-end
-if not _augroup then
-  _G._augroup = {}
-end
-if not _map then
-  _G._map = {
-    global = {}
-  }
-end
-if not _shortmap then
-  _G._shortmap = {}
-end
-
-function _G.fnoop(...)
-  return ...
-end
-
-function _G.pprint(value)
-  print(vim.inspect(value))
-end
-
-function _G.fconst(v)
-  return function()
-    return v
-  end
-end
-
-if not symbol_navigation then
-  _G.symbol_navigation = {}
-end
+_G.fnoop = function(...) return ... end
+_G.fconst = function (v)  return function() return v end end
 
 END
 luafile $STD_PATH_CONFIG/lua/plug.lua

@@ -47,7 +47,7 @@ set cinkeys-=:
 set diffopt+=vertical,context:10000,foldcolumn:0,indent-heuristic,algorithm:patience,hiddenoff
 
 "set shortmess+=c
-set omnifunc=v:lua.service.lsp.omnifunc
+set omnifunc=v:lua._U.lsp.omnifunc
 
 set inccommand=
 

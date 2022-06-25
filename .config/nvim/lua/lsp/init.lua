@@ -35,7 +35,7 @@ do
     return lsp.omnifunc(unpack { ... })
   end
 
-  service.lsp = lsp_service
+  _U.lsp = lsp_service
 end
 
 --

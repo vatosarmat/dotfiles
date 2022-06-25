@@ -47,22 +47,22 @@ local function map_buf(bufnr, modes, lhs, rhs, opts)
     local store_key = 'global'
     if bufnr then
       store_key = 'bufnr_' .. tostring(bufnr)
-      if not _map[store_key] then
-        _map[store_key] = {}
+      if not _U.map[store_key] then
+        _U.map[store_key] = {}
       end
     end
     setter = function(mode)
       assert_key_mode(mode)
-      if _map[store_key][mode] == nil then
-        _map[store_key][mode] = {}
+      if _U.map[store_key][mode] == nil then
+        _U.map[store_key][mode] = {}
       end
-      _map[store_key][mode][lhs] = rhs
+      _U.map[store_key][mode][lhs] = rhs
       local rhs_str
       if opts.expr then
-        rhs_str = string.format('luaeval(\'_map[\'\'%s\'\'][\'\'%s\'\'][\'\'%s\'\']()\')',
+        rhs_str = string.format('luaeval(\'_U.map[\'\'%s\'\'][\'\'%s\'\'][\'\'%s\'\']()\')',
                                 store_key, mode, string.gsub(lhs, '<', '<lt>'))
       else
-        rhs_str = string.format('<cmd>lua _map[\'%s\'][\'%s\'][\'%s\']()<cr>', store_key, mode,
+        rhs_str = string.format('<cmd>lua _U.map[\'%s\'][\'%s\'][\'%s\']()<cr>', store_key, mode,
                                 string.gsub(lhs, '<', '<lt>'))
       end
       set_keymap(mode, lhs, rhs_str, opts)
@@ -99,11 +99,11 @@ local function autocmd(group, cmds, opts)
       local event = vim.split(event_pat, ' ', true)[1]
       local handler = cmd[2]
       if type(handler) == 'function' then
-        if _augroup[group] == nil then
-          _augroup[group] = {}
+        if _U.augroup[group] == nil then
+          _U.augroup[group] = {}
         end
-        _augroup[group][event] = handler
-        handler = string.format('lua _augroup[\'%s\'][\'%s\']()', group, event)
+        _U.augroup[group][event] = handler
+        handler = string.format('lua _U.augroup[\'%s\'][\'%s\']()', group, event)
       end
       cmd = event_pat .. maybe_buffer .. ' ' .. handler
     end

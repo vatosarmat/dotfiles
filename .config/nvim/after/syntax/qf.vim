@@ -1,7 +1,7 @@
 syn clear qfSeparator
 syn match	qfSeparator	"|"
 
-let s:lsp_ui_symbol = luaeval('service.lsp.ui.symbol')
+let s:lsp_ui_symbol = luaeval('_U.lsp.ui.symbol')
 
 execute 'syn' 'match' 'qfHasChildren' '"'.s:lsp_ui_symbol['has_children']['icon'].'"'
 

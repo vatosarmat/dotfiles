@@ -15,20 +15,32 @@ function! jumplist#PrevBuf(quiet = 0) abort
   return s:BufJump('PREV', a:quiet)
 endfunction
 
+function! jumplist#MateBuf(quiet = 0) abort
+  let w:jumplist_last_buf_jump_dir = 'MATE'
+endfunction
+
 function! jumplist#AnotherBuf(quiet = 0) abort
-  if !s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
-    let w:jumplist_last_buf_jump_dir = w:jumplist_last_buf_jump_dir == 'NEXP' ? 'PREV' : 'NEXT'
-    call s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
+  if w:jumplist_last_buf_jump_dir == 'MATE'
+    lua require 'buffer_navigation'.cycle_mate_bufs()
+  else
+    if !s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
+      let w:jumplist_last_buf_jump_dir = w:jumplist_last_buf_jump_dir == 'NEXP' ? 'PREV' : 'NEXT'
+      call s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
+    endif
   endif
 endfunction
 
-function! jumplist#Exclude() abort
-  let bnr = bufnr()
-
-  call jumplist#AnotherBuf()
-
-  if getbufvar(bnr, '&buftype') == ''
-    let w:jumplist_exclude[bnr] = 1
+function! jumplist#Exclude(buf_name = 0) abort
+  "exclude file by name
+  if a:buf_name
+    let w:jumplist_exclude[a:buf_name] = 1
+  else
+    "exclude currently opened file
+    if getbufvar(bufnr(), '&buftype') == ''
+      let buf_name = expand('%:p')
+      let w:jumplist_exclude[buf_name] = 1
+      call jumplist#AnotherBuf()
+    endif
   endif
 endfunction
 
@@ -37,9 +49,9 @@ function! jumplist#BufWinEnter() abort
     call jumplist#InitWindow()
   endif
 
-  let bnr = bufnr()
-  if has_key(w:jumplist_exclude, bnr)
-    call remove(w:jumplist_exclude, bnr)
+  let buf_name = expand('%:p')
+  if has_key(w:jumplist_exclude, buf_name)
+    call remove(w:jumplist_exclude, buf_name)
   endif
 endfunction
 
@@ -51,7 +63,7 @@ function! s:BufJump(dir, quiet = 0) abort
   function! IsJumpable(bnr)
     return bufexists(a:bnr) &&
       \ getbufvar(a:bnr, '&buftype') == '' &&
-      \ !has_key(w:jumplist_exclude, a:bnr)
+      \ !has_key(w:jumplist_exclude, fnamemodify(bufname(a:bnr), ':p'))
   endfunction
 
   function! Fatherst(a, jmp_item, offset) closure

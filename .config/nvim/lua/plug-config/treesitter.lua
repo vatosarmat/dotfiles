@@ -80,7 +80,7 @@ ts_configs.setup {
   },
   indent = {
     enable = true,
-    disable = { 'lua' }
+    disable = { 'lua', 'ruby' }
   },
   playground = {
     enable = true,
