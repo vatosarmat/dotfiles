@@ -50,11 +50,13 @@ function! qflist#RemoveCurrentItem() abort
 
   let qf_info = getqflist(#{items: 0, idx: 0, context: 0})
   let prev_pos = getpos('.')
+  " echom qf_info
   if type(qf_info.context) == v:t_dict
-    let context = qf_info.context
+    let context = extend(qf_info.context, #{ change_list: [] })
   else
     let context = #{ change_list: [] }
   endif
+  " echom context
 
   if mode() == 'V'
     let start_idx = line('v')
@@ -74,7 +76,6 @@ function! qflist#RemoveCurrentItem() abort
     \ start_idx: start_idx,
     \ end_idx: end_idx}
 
-  echom context
   let context.change_list = add(context.change_list, new_change)
 
   let list_cursor = qf_info.idx

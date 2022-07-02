@@ -47,7 +47,7 @@ function M.detect_type()
       project.kind = 'angular'
       vim.list_extend(project.exclude_files, { '.angular' })
       vim.list_extend(project.mate_bufs_exclude,
-                      { '.component.spec.ts', '.module.ts', '.component.css' })
+                      { '.component.spec.ts', '.module.ts', '.component.css', '.component.scss' })
     end
     vim.g.project = project
   elseif vim.fn.filereadable('./pyproject.toml') == 1 then

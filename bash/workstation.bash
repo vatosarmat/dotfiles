@@ -2,7 +2,7 @@
 
 function tmux__zs {
   tmux \
-    new-session -s 0 -n dotfiles \; send-keys vimd C-j \; new-window -n main
+    new-session -s 0 -n d \; send-keys vimd C-j \; new-window -n m
 }
 
 source "$HOME/dotfiles/bash/gh/lib.bash"

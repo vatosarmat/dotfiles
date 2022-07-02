@@ -235,6 +235,7 @@ function M.setup(capabilities)
     },
     root_dir = lspconfig_util.find_git_ancestor
   }
+  lspconfig.angularls.setup {}
   lspconfig.solargraph.setup {}
 
   setup_cpp()

@@ -199,6 +199,9 @@ local client_ext = {
   },
   ['css'] = {
     diagnostic_virtual_text = diagnostic_get_code
+  },
+  ['angularls'] = {
+    short_name = 'NG'
   }
 }
 

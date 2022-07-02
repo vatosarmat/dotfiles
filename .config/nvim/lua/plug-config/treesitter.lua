@@ -30,14 +30,14 @@ function setup_textobject()
         -- ['<M-(>'] = '@statement.outer'
         -- ['[]'] = '@class.outer'
       }
-    },
-    lsp_interop = {
-      enable = true,
-      border = 'none',
-      peek_definition_code = {
-        ['g<C-d>'] = '@function.outer'
-      }
     }
+    -- lsp_interop = {
+    --   enable = true,
+    --   border = 'none',
+    --   peek_definition_code = {
+    --     ['<M-j>'] = '@function.outer'
+    --   }
+    -- }
   }
   local select_maps = ret.select.keymaps
   local moves = ret.move

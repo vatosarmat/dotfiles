@@ -254,6 +254,7 @@ end
 local function SymbolNavigation(initial_symbols)
   -- const
   local top_level_title = 'Top level'
+  local path_sep = '.'
   local S = get_symbol_handler(initial_symbols[1])
 
   -- priv
@@ -273,7 +274,7 @@ local function SymbolNavigation(initial_symbols)
 
     local what = {
       items = items,
-      title = #path > 0 and nil or top_level_title
+      title = #path > 0 and table.concat(path, path_sep) or top_level_title
     }
 
     function what.quickfixtextfunc(info)
@@ -353,10 +354,11 @@ local function SymbolNavigation(initial_symbols)
     -- if it has children, populate loclist with them
     if node_at_cursor and node_at_cursor.children then
       state.loclist_node = node_at_cursor
-      table.insert(state.loclist_node_path, {
-        util._get_symbol_kind_name(node_at_cursor.symbol.kind),
-        node_at_cursor.symbol.name
-      })
+      -- table.insert(state.loclist_node_path, {
+      --   util._get_symbol_kind_name(node_at_cursor.symbol.kind),
+      --   node_at_cursor.symbol.name
+      -- })
+      table.insert(state.loclist_node_path, node_at_cursor.symbol.name)
       set_loclist()
       sync_loclist('after')
     else

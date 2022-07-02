@@ -8,7 +8,7 @@ set cpoptions-=_
 
 set cdpath=.,,,
 
-set switchbuf=usetab
+" set switchbuf=usetab
 
 set scrolloff=5
 

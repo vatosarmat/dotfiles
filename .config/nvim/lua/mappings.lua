@@ -37,19 +37,18 @@ local function map_completion()
       if is_space_before() then
         feed_keys '<Tab>'
       else
-        complete_sources('nvim_lsp', 'nvim_lua')
+        complete_sources('luasnip')
       end
     end
   end)
-  iset('<M-Tab>', bind(complete_sources, 'nvim_lsp', 'nvim_lua'))
-  iset('<M-i>', function()
+  iset('<M-i>', luasnip.expand)
+  iset('<C-j>', function()
     if cmp.visible() then
       cmp.select_next_item()
     else
-      complete_sources('luasnip')
+      complete_sources('nvim_lsp', 'nvim_lua')
     end
   end)
-  iset('<C-j>', luasnip.expand)
   iset('<C-y>', cmp.confirm)
   iset('<C-M-y>', cmp.close)
   iset('<C-e>', function()
