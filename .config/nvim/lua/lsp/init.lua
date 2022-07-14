@@ -17,7 +17,15 @@ local lookup = require 'lsp.lookup'
 
 completion.setup()
 diagnostic.setup()
-servers.setup(completion.capabilities(lsp.protocol.make_client_capabilities()))
+servers.setup(completion.capabilities(vim.tbl_deep_extend('force',
+                                                          lsp.protocol.make_client_capabilities(), {
+  textDocument = {
+    foldingRange = {
+      dynamicRegistration = false,
+      lineFoldingOnly = true
+    }
+  }
+})))
 
 do
   ui.setup()
@@ -87,12 +95,12 @@ do
   map('n', 'gd', lookup.definition)
   map('n', 'g<C-M-d>', b(lookup.definition, 'split'))
   map('n', 'g<M-d>', b(lookup.definition, 'vsplit'))
-  map('n', 'g<C-d>', b(lookup.definition, 'tab'))
+  map('n', 'g<C-d>', b(lookup.definition, 'tabe'))
   map('n', '<M-j>', b(lookup.definition, 'preview')) -- C-; - remapped in alacritty
   map('n', 'gt', lookup.type_definition)
   map('n', 'gT', b(lookup.type_definition, 'split'))
   map('n', 'g<M-t>', b(lookup.type_definition, 'vsplit'))
-  map('n', 'g<C-t>', b(lookup.type_definition, 'tab'))
+  map('n', 'g<C-t>', b(lookup.type_definition, 'tabe'))
   map('n', 'g<M-j>', b(lookup.type_definition, 'preview')) -- C-; - remapped in alacritty
   map('n', 'gr', lsp.buf.references)
   map_diagnostic_goto()

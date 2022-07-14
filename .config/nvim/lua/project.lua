@@ -50,10 +50,11 @@ function M.detect_type()
                       { '.component.spec.ts', '.module.ts', '.component.css', '.component.scss' })
     end
     vim.g.project = project
-  elseif vim.fn.filereadable('./pyproject.toml') == 1 then
+  elseif vim.fn.filereadable('./pyproject.toml') == 1 or vim.fn.filereadable('./pyrightconfig.json') ==
+    1 then
     vim.g.project = {
       kind = 'python',
-      exclude_files = vim.list_extend(common_exclude_files, { '.venv', ' __pycache__' })
+      exclude_files = vim.list_extend(common_exclude_files, { '.venv', '__pycache__' })
     }
   end
 end

@@ -77,8 +77,8 @@ function M.matchup()
   local set = vim.keymap.set
 
   vim.g.matchup_matchparen_offscreen = vim.empty_dict()
-  vim.g.matchup_surround_enabled = nil
-  vim.g.matchup_transmute_enabled = nil
+  vim.g.matchup_surround_enabled = false
+  vim.g.matchup_transmute_enabled = false
   vim.g.matchup_motion_keepjumps = true
 
   set({ 'n', 'x', 'o' }, '<M-%>', '<plug>(matchup-g%)')

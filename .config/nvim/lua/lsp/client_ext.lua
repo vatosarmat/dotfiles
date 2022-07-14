@@ -202,6 +202,12 @@ local client_ext = {
   },
   ['angularls'] = {
     short_name = 'NG'
+  },
+  ['pyright'] = {
+    short_name = 'PR'
+  },
+  ['autopep8'] = {
+    short_name = 'A8'
   }
 }
 

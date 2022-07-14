@@ -55,7 +55,6 @@ hi CursorColumn guibg=#2b2b2b
 hi CursorLine guibg=#2b2b2b
 hi Visual guibg=#264f78
 hi Search guibg=#613214
-hi CocHighlightText guibg=#3a3a3a
 hi YankHighlight guibg=#1d3a3a
 
 hi DiffAdd guifg=NONE guibg=#151e00
@@ -104,3 +103,5 @@ hi! link TSText Normal
 hi! TSStrong guifg=#e6eeff
 hi! TSEmphasis guifg=#e6eeff
 hi! TSTitle guifg=#e6eeff
+
+hi! link UfoFoldedBg CursorLine

@@ -136,7 +136,8 @@ local function setup_null_ls()
     }) or f.prettier.with({
       filetypes = prettier_filetype
       -- only_local = 'node_modules/.bin'
-    })
+    }),
+    f.autopep8
   }
 
   null_ls.setup {

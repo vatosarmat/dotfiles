@@ -79,33 +79,34 @@ endfunction
 
 function! StatusQf(focus_win_id) abort
   "For loclist, check whether it is symbol_navigation
-  let winid = win_getid()
-  if getwininfo(winid)[0].loclist
-    if exists('w:symbol_navigation_path') && len(w:symbol_navigation_path) > 0
-      let lsp_ui_symbol = luaeval('_U.lsp.ui.symbol')
-      let nc = winid == a:focus_win_id ? '' : 'NC'
-      " let nc = a:nc
-      let content = ''
-      for i in range(len(w:symbol_navigation_path))
-        let [kind, name] = w:symbol_navigation_path[i]
-        let icon = lsp_ui_symbol[kind].icon
-        let hl_icon = lsp_ui_symbol[kind].hl_icon
-        let hl_name = lsp_ui_symbol[kind].hl_name
-
-        if i > 0
-          let content .= '.'
-        endif
-        let content .=  '%#StatusLine'.nc.hl_icon.'#'.icon
-        let content .= ' %#StatusLine'.nc.hl_name.'#'.name
-        let content .= '%0*'
-      endfor
-    else
-      let content = '%3*'.get(w:, 'quickfix_title', 'LOC').'%0*'
-    endif
-    return content.' %<'. bufname(winbufnr(getloclist(0, #{filewinid: 0}).filewinid))
-  else
-    return '%3*'.get(w:, 'quickfix_title', 'QF').'%0*'
-  endif
+  " let winid = win_getid()
+  " if getwininfo(winid)[0].loclist
+  "   if exists('w:symbol_navigation_path') && len(w:symbol_navigation_path) > 0
+  "     let lsp_ui_symbol = luaeval('_U.lsp.ui.symbol')
+  "     let nc = winid == a:focus_win_id ? '' : 'NC'
+  "     " let nc = a:nc
+  "     let content = ''
+  "     for i in range(len(w:symbol_navigation_path))
+  "       let [kind, name] = w:symbol_navigation_path[i]
+  "       let icon = lsp_ui_symbol[kind].icon
+  "       let hl_icon = lsp_ui_symbol[kind].hl_icon
+  "       let hl_name = lsp_ui_symbol[kind].hl_name
+  "
+  "       if i > 0
+  "         let content .= '.'
+  "       endif
+  "       let content .=  '%#StatusLine'.nc.hl_icon.'#'.icon
+  "       let content .= ' %#StatusLine'.nc.hl_name.'#'.name
+  "       let content .= '%0*'
+  "     endfor
+  "   else
+  "     let content = '%3*'.get(w:, 'quickfix_title', 'LOC').'%0*'
+  "   endif
+  "   return content.' %<'. bufname(winbufnr(getloclist(0, #{filewinid: 0}).filewinid))
+  " else
+  "   return '%3*'.get(w:, 'quickfix_title', 'QF').'%0*'
+  " endif
+  return '%3*'.get(w:, 'quickfix_title', 'QF').'%0*'
 endfunction
 
 function! StatusTreesitter() abort

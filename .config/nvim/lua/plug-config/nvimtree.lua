@@ -5,10 +5,10 @@ require'nvim-tree'.setup {
   hijack_netrw = true,
   open_on_setup = false,
   ignore_ft_on_setup = {},
-  update_to_buf_dir = {
-    enable = true,
-    auto_open = true
-  },
+  -- update_to_buf_dir = {
+  --   enable = true,
+  --   auto_open = true
+  -- },
   open_on_tab = false,
   hijack_cursor = false,
   update_cwd = false,
@@ -33,7 +33,7 @@ require'nvim-tree'.setup {
   view = {
     width = 30,
     side = 'left',
-    auto_resize = false,
+    -- auto_resize = false,
     mappings = {
       custom_only = false,
       list = {}
@@ -41,7 +41,10 @@ require'nvim-tree'.setup {
   },
   git = {
     ignore = false
-  }  ,
+  },
+  filters = {
+    -- custom = { '__pycache__' }
+  },
   renderer = {
     root_folder_modifier = ':t',
     group_empty = true,

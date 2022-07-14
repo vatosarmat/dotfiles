@@ -48,7 +48,7 @@ local function make_definition_handler(ui)
     end
 
     local win_cmd = {
-      tab = 'tab',
+      tabe = 'tabe',
       split = 'split',
       vsplit = 'vsplit'
     }

@@ -150,6 +150,12 @@ require('packer').startup({
     use 'lambdalisue/suda.vim'
 
     use {
+      'kevinhwang91/nvim-ufo',
+      requires = 'kevinhwang91/promise-async',
+      config = r 'ufo'
+    }
+
+    use {
       'machakann/vim-sandwich',
       config = r 'sandwich'
     }
