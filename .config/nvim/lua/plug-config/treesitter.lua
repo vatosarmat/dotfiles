@@ -115,7 +115,7 @@ ts_configs.setup {
   }
 }
 local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_parsername
-filetype_to_parsername.javascript = 'typescript'
+filetype_to_parsername.javascript = 'tsx'
 filetype_to_parsername.jsonc = 'json'
 
 --

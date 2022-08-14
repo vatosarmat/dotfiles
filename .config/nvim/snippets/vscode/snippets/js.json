@@ -2,5 +2,9 @@
   "console.log": {
     "prefix": "cl",
     "body": "console.log(${0})"
+  },
+  "arrow_function": {
+    "prefix": "af",
+    "body": "const ${1} = (${2}) => ${0}"
   }
 }

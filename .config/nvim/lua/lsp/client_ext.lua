@@ -208,6 +208,9 @@ local client_ext = {
   },
   ['autopep8'] = {
     short_name = 'A8'
+  },
+  ['volar'] = {
+    short_name = 'VU'
   }
 }
 

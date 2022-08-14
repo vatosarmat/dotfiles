@@ -46,17 +46,30 @@ local function default_on_attach(client, _bufnr)
   end
 end
 
-local function setup_ts_flow_volar()
-  local flow = lspconfig.flow
-  flow.setup {}
-  local flow_add = flow.manager.add
-  flow.manager.add = function(...)
-    local res = flow_add(...)
-    if res then
+local function setup_tsserver()
+
+  local function setup(pp, server_name, setup_params)
+    local server_config = lspconfig[server_name]
+    -- vim.pretty_print(server_config)
+    server_config.setup(setup_params or {})
+    local server_manager_add = server_config.manager.add
+    server_config.manager.add = function(...)
+      local res
+      if not pp.predicate or (pp.predicate and pp.predicate()) then
+        res = server_manager_add(...)
+      end
+      if pp.post then
+        pp.post(res)
+      end
+      return res
+    end
+  end
+
+  setup({
+    post = function()
       vim.b.flow_active = 1
     end
-    return res
-  end
+  }, 'flow')
 
   local tsserver = lspconfig.tsserver
   local ts_utils_settings = {
@@ -83,7 +96,13 @@ local function setup_ts_flow_volar()
       80006 -- "This may be converted to an async function."
     }
   }
-  tsserver.setup {
+  setup({
+    predicate = function()
+      return not vim.b.flow_active
+      -- and vim.g.project.kind ~= 'vue'
+    end
+  }, 'tsserver', {
+    -- filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
     on_attach = function(client, bufnr)
       client.resolved_capabilities.document_formatting = false
       -- client.resolved_capabilities.document_range_formatting = false
@@ -98,21 +117,35 @@ local function setup_ts_flow_volar()
       -- map_buf(bufnr, 'n', 'qq', '<cmd>TSLspFixCurrent<CR>')
     end
     -- root_dir = lspconfig_util.find_git_ancestor
-  }
-  local tsserver_add = tsserver.manager.add
-  tsserver.manager.add = function(...)
-    if not vim.b.flow_active then
-      return tsserver_add(...)
-    end
-  end
+  })
 
-  lspconfig.volar.setup {
-    on_attach = function(client, bufnr)
-      client.resolved_capabilities.document_formatting = false
-      -- client.resolved_capabilities.document_range_formatting = false
-      default_on_attach(client, bufnr)
+  -- setup({
+  --   predicate = function()
+  --     return vim.g.project.kind == 'vue'
+  --   end
+  -- }, 'volar', {
+  --   filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
+  --   on_attach = function(client, bufnr)
+  --     client.resolved_capabilities.document_formatting = false
+  --     -- client.resolved_capabilities.document_range_formatting = false
+  --     default_on_attach(client, bufnr)
+  --   end
+  -- })
+
+  setup({
+    predicate = function()
+      return vim.g.project.kind == 'vue'
     end
-  }
+  }, 'vuels', {
+    -- filetypes = vim.list_extend(jsts_filetype, { 'vue' })
+  })
+
+  setup({
+    predicate = function()
+      return vim.g.project.kind == 'angular'
+    end
+  }, 'angularls')
+
 end
 
 local function setup_null_ls()
@@ -228,19 +261,18 @@ function M.setup(capabilities)
   }
   lspconfig.yamlls.setup {}
   lspconfig.eslint.setup {
-    settings = {
-      format = true,
-      workingDirectory = {
-        mode = 'location'
-      }
-    },
-    root_dir = lspconfig_util.find_git_ancestor
+    -- settings = {
+    --   format = true,
+    --   workingDirectory = {
+    --     mode = 'location'
+    --   }
+    -- }
+    -- root_dir = lspconfig_util.find_git_ancestor
   }
-  lspconfig.angularls.setup {}
   lspconfig.solargraph.setup {}
 
   setup_cpp()
-  setup_ts_flow_volar()
+  setup_tsserver()
   setup_null_ls()
 end
 

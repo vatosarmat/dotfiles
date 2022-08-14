@@ -31,7 +31,13 @@ require'nvim-tree'.setup {
     args = {}
   },
   view = {
-    width = 30,
+    width = function()
+      local p = vim.g.project
+      if p then
+        return p.explorer_width
+      end
+      return 30
+    end,
     side = 'left',
     -- auto_resize = false,
     mappings = {
