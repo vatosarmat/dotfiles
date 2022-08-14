@@ -103,9 +103,9 @@ function! s:Motions() abort
     for i in range(char2nr('a'), char2nr('z'))
       let a = nr2char(i)
       let A = toupper(a)
-      execute 'nnoremap' 'm'.a 'm'.A
+      execute 'nnoremap' ','.a 'm'.A
       execute 'nnoremap' ''''.a ''''.A
-      execute 'nnoremap' 'm'.A 'm'.a
+      execute 'nnoremap' ','.A 'm'.a
       execute 'nnoremap' ''''.A ''''.a
     endfor
   endfunction

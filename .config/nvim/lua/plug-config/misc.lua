@@ -70,6 +70,7 @@ function M.emmet()
   set('i', '<Home>', '<Nop>')
   vim.g.user_emmet_leader_key = '<Home>'
   vim.g.user_emmet_complete_tag = nil
+  vim.g.user_emmet_mode = 'i'
   vim.g.user_emmet_expandabbr_key = '<Home><Home>'
 end
 

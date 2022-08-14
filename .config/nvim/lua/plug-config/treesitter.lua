@@ -99,10 +99,10 @@ ts_configs.setup {
   incremental_selection = {
     enable = true,
     keymaps = {
-      init_selection = '<M-d>',
-      node_incremental = '<M-d>',
-      node_decremental = '<M-a>'
-      -- scope_incremental = 'grc'
+      init_selection = 'm',
+      node_incremental = 'm',
+      node_decremental = '<Home>',
+      scope_incremental = 'M'
     }
   },
   textobjects = setup_textobject(),

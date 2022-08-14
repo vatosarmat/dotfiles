@@ -42,7 +42,16 @@ require'nvim-tree'.setup {
     -- auto_resize = false,
     mappings = {
       custom_only = false,
-      list = {}
+      list = {
+        {
+          key = 'f',
+          action = 'preview'
+        },
+        {
+          key = '<C-f>',
+          action = 'live_filter'
+        }
+      }
     }
   },
   git = {

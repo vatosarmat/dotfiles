@@ -3,6 +3,8 @@ local function setup()
   local set = vim.keymap.set
 
   vim.fn['operator#sandwich#set']('all', 'all', 'hi_duration', 0)
+
+  -- Among others, adds recipes for: spaces, new lines
   vim.cmd([[runtime macros/sandwich/keymap/surround.vim]])
 
   set('x', '<C-s>', '<Plug>(sandwich-add)')
@@ -16,6 +18,14 @@ local function setup()
   for _, q in ipairs(shortcut_m) do
     set('x', '<M-' .. q .. '>', '<Plug>(sandwich-add)' .. q)
   end
+
+  vim.g['sandwich#recipes'] = vim.list_extend(vim.g['sandwich#recipes'], {
+    {
+      buns = { '${', '}' },
+      input = { '$' }
+    }
+  })
+  set('x', '<C-d>', '<Plug>(sandwich-add)$')
 
   local augroup = api.nvim_create_augroup('Sandwich', {})
   api.nvim_create_autocmd('FileType', {
