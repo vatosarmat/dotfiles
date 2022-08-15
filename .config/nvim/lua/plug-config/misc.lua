@@ -27,7 +27,7 @@ function M.Comment()
       end
     end
   })
-  set('n', '<C-_>', '<Plug>(comment_toggle_current_linewise)')
+  set('n', '<C-_>', '<Plug>(comment_toggle_linewise_current)')
   set('x', '<C-_>', '<Plug>(comment_toggle_linewise_visual)')
 end
 

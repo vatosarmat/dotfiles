@@ -89,7 +89,19 @@ ts_configs.setup {
     persist_queries = false -- Whether the query persists across vim sessions
   },
   rainbow = {
-    enable = true
+    enable = true,
+    extended_mode = false,
+    colors = {
+      '#abb2bf',
+      '#d79921',
+      '#b16286',
+      '#cc241d',
+      '#ffffff',
+      -- '#a89984',
+      '#539d55',
+      -- '#458588',
+      '#d65d0e'
+    }
   },
   refactor = {
     highlight_definitions = {
