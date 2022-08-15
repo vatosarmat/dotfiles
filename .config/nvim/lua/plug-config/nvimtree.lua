@@ -50,6 +50,10 @@ require'nvim-tree'.setup {
         {
           key = '<C-f>',
           action = 'live_filter'
+        },
+        {
+          key = '<C-l>',
+          action = 'vsplit'
         }
       }
     }

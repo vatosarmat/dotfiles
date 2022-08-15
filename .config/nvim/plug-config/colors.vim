@@ -47,6 +47,11 @@ hi LspReferenceRead guibg=#304030
 hi LspReferenceWrite guibg=#502842
 
 hi! link TSTypeBuiltin TSType
+" my_own, vivid_blue, dark_yellow
+hi TSKeyword guifg=#5580d6
+hi TSVariable guibg=NONE guifg=#4FC1FF
+hi TSAnnotation guibg=NONE guifg=#d7ba7d
+
 hi! link CocErrorSign DiagnosticSignError
 hi Pmenu guifg=#e6eeff
 hi Comment gui=NONE cterm=NONE

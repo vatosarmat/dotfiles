@@ -21,7 +21,7 @@ local jsts_filetype = {
   'typescriptreact',
   'typescript.jsx'
 }
-local prettier_filetype = vim.list_extend({ 'css', 'json', 'jsonc', 'vue' }, jsts_filetype)
+local prettier_filetype = vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue' }, jsts_filetype)
 -- local eslint_filetype = jsts_filetype
 
 local function document_highlight()

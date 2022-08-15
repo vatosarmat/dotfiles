@@ -8,4 +8,7 @@
 (this) @constant.builtin
 (super) @constant.builtin
 
-(shorthand_property_identifier_pattern) @property
+(shorthand_property_identifier_pattern) @variable
+
+(required_parameter
+  pattern: (identifier) @variable)
