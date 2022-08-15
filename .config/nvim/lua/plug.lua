@@ -107,7 +107,8 @@ require('packer').startup({
         'nvim-treesitter/playground',
         'nvim-treesitter/nvim-treesitter-textobjects',
         'JoosepAlviste/nvim-ts-context-commentstring',
-        'windwp/nvim-ts-autotag'
+        'windwp/nvim-ts-autotag',
+        'p00f/nvim-ts-rainbow'
         -- 'nvim-treesitter/nvim-treesitter-angular'
       },
       config = r 'treesitter'
