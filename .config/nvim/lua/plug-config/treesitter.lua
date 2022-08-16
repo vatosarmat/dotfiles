@@ -73,10 +73,6 @@ ts_configs.setup {
   highlight = {
     enable = true,
     disable = { 'help', 'markdown' } -- list of language that will be disabled
-    -- custom_captures = {
-    --   -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
-    --   ["magenta"] = "TSInclude",
-    -- },
   },
   indent = {
     enable = true,
@@ -89,7 +85,7 @@ ts_configs.setup {
     persist_queries = false -- Whether the query persists across vim sessions
   },
   rainbow = {
-    enable = true,
+    enable = false,
     extended_mode = false,
     colors = {
       '#abb2bf',
@@ -129,6 +125,14 @@ ts_configs.setup {
 local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_parsername
 filetype_to_parsername.javascript = 'tsx'
 filetype_to_parsername.jsonc = 'json'
+
+require('nvim-treesitter.highlight').set_custom_captures {
+  -- ['jsx.expression.brace'] = 'JsxExpressionBrace',
+  ['ecma.object.brace'] = 'DeclarationBrace',
+  ['ecma.object_pattern.brace'] = 'CallBrace',
+  ['ecma.formal_parameters.brace'] = 'DeclarationBrace',
+  ['ecma.arguments.brace'] = 'CallBrace'
+}
 
 --
 --

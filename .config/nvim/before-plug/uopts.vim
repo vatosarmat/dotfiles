@@ -2,8 +2,9 @@ let g:UOPTS = #{
   \ print_duration: 3000,
   \ }
 
-"sv
-"cl
+"nz - scroll-center at cursor position after various jumps, mainly nN
+"pz - scroll-center at cursor position after paragraph motions
+"hl - open help-window on right side
 let s:util_flags = #{
   \ nz: 0,
   \ pz: 0,
@@ -11,6 +12,9 @@ let s:util_flags = #{
   \ }
 " fe: 0,
 
+"diagnostic underline, diagnostic virtual, diagnostic auto-format, auto-complete
+"Maybe useless:
+"lsl - auto-open symbol location-list window
 let s:lsp_flags = #{
  \ ldu: 0,
  \ ldv: 0,

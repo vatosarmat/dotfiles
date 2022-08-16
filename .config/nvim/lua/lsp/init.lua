@@ -126,8 +126,8 @@ do
 
   -- Options
   map('n', '<leader>lv', b(toggle_option, 'ldv'))
-  map('n', '<leader>l<M-u>', b(toggle_option, 'ldu'))
-  map('n', '<leader>l<M-f>', b(toggle_option, 'laf'))
+  map('n', '<leader>lu', b(toggle_option, 'ldu'))
+  map('n', '<leader>lf', b(toggle_option, 'laf'))
 
   autocmd('LSP', {
     { 'BufWritePre *', auto_format }, ------------------------------------

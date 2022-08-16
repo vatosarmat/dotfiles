@@ -53,6 +53,9 @@ function! s:Motions() abort
   nnoremap <M-i> zt
   nnoremap <M-o> zz
   nnoremap <M-Tab> zb
+  xnoremap <M-i> zt
+  xnoremap <M-o> zz
+  xnoremap <M-Tab> zb
 
   "
   nnoremap <M-C-y> <C-y>
@@ -123,8 +126,14 @@ function! s:Edit() abort
   nmap q "
   xmap q "
 
+  "Easier paste in insert mode
+  inoremap <C-r>r <C-r>"
+  inoremap <C-r>" <C-r>r
+
   "Paste from vim to system clipboard
   nnoremap <silent> <M-y> <cmd>let @+=@" \| let g:ustate.yank_clipboard = 1<cr>
+
+  "Charwise-linewise
   nnoremap <M-q> <cmd>call <sid>ToggleRegtype()<cr>
   function! s:ToggleRegtype() abort
     let urt = getregtype('"')

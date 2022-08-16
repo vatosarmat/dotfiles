@@ -46,12 +46,6 @@ hi LspReferenceText guibg=#3a3a3a
 hi LspReferenceRead guibg=#304030
 hi LspReferenceWrite guibg=#502842
 
-hi! link TSTypeBuiltin TSType
-" my_own, vivid_blue, dark_yellow
-hi TSKeyword guifg=#5580d6
-hi TSVariable guibg=NONE guifg=#4FC1FF
-hi TSAnnotation guibg=NONE guifg=#d7ba7d
-
 hi! link CocErrorSign DiagnosticSignError
 hi Pmenu guifg=#e6eeff
 hi Comment gui=NONE cterm=NONE
@@ -104,9 +98,21 @@ highlight! CmpItemKindKeyword guibg=NONE guifg=#D4D4D4
 highlight! CmpItemKindProperty guibg=NONE guifg=#D4D4D4
 highlight! CmpItemKindUnit guibg=NONE guifg=#D4D4D4
 
+hi! link UfoFoldedBg CursorLine
+
+" Below my addtions
 hi! link TSText Normal
 hi! TSStrong guifg=#e6eeff
 hi! TSEmphasis guifg=#e6eeff
 hi! TSTitle guifg=#e6eeff
+hi! link TSTypeBuiltin TSType
 
-hi! link UfoFoldedBg CursorLine
+hi TSPunctSpecial guifg=#d7ba7d
+" my_own, vivid_blue, dark_yellow
+hi TSKeyword guifg=#5580d6
+hi TSVariable guibg=NONE guifg=#4FC1FF
+hi TSAnnotation guibg=NONE guifg=#d7ba7d
+
+"Custom TS captures
+hi DeclarationBrace guifg=#5580d6
+hi CallBrace guifg=#d79921
