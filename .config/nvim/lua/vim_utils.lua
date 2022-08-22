@@ -1,6 +1,17 @@
 local tablex = require 'pl.tablex'
 local func = require 'pl.func'
 
+-- local function get_visual_selection()
+--   local bufnr = vim.api.nvim_win_get_buf(0)
+--   local start = vim.fn.getpos('v') -- [bufnum, lnum, col, off]
+--   local _end = vim.fn.getpos('.') -- [bufnum, lnum, col, off]
+--   return {
+--     bufnr = bufnr,
+--     mode = vim.fn.mode(),
+--     pos = { start[2], start[3], _end[2], _end[3] }
+--   }
+-- end
+
 local function buf_append_line(buf_or_line, maybe_line_or_hl_ranges, maybe_hl_ranges)
   local buf, line, hl_ranges
   if type(buf_or_line) == 'number' then

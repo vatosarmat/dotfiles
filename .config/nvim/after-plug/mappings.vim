@@ -170,6 +170,24 @@ function! s:Edit() abort
   "Replace last search pattern, i.e. '/' register content
   nnoremap <M-r> :.,$s//<c-r>=utils#GetSearchPatternWithoutFlags()<cr>/gc<left><left><left>
   xnoremap <M-r> :s//<c-r>=utils#GetSearchPatternWithoutFlags()<cr>/gc<left><left><left>
+
+  "Replace very magic pattern
+  nnoremap <M-/> :.,$s/\v//gc<left><left><left><left>
+  xnoremap <M-/> :s/\v//gc<left><left><left><left>
+
+  function! s:GetVisualSelection() abort
+    let [_, _, start,_] = getpos('v')
+    let [_, _, end,_] = getpos('.')
+
+    return getline('.')[start-1:end-1]
+  endfunction
+
+  function! s:ReplaceSelection() abort
+    let str = s:GetVisualSelection()
+    call feedkeys(":\<C-u>".printf('%%s/\v%s/%s/gc', str, str)."\<left>\<left>\<left>")
+  endfunction
+
+  xnoremap <M-C-r> <cmd>call <sid>ReplaceSelection()<cr>
 endfunction
 
 function s:InsertLikeEmacs() abort

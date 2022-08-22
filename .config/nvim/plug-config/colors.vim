@@ -100,19 +100,38 @@ highlight! CmpItemKindUnit guibg=NONE guifg=#D4D4D4
 
 hi! link UfoFoldedBg CursorLine
 
-" Below my addtions
+"Normal text
 hi! link TSText Normal
 hi! TSStrong guifg=#e6eeff
 hi! TSEmphasis guifg=#e6eeff
 hi! TSTitle guifg=#e6eeff
+
+"Just repeat with nocombine
+hi! TSConstBuiltin guifg=#569cd6 gui=NONE,nocombine
+
+"Just use non-builtin
 hi! link TSTypeBuiltin TSType
 
-hi TSPunctSpecial guifg=#d7ba7d
-" my_own, vivid_blue, dark_yellow
-hi TSKeyword guifg=#5580d6
-hi TSVariable guibg=NONE guifg=#4FC1FF
-hi TSAnnotation guibg=NONE guifg=#d7ba7d
+"""""
+"""""My improvements
+"""""
+" hi TSPunctSpecial guifg=#d7ba7d
+" hi TSKeyword guifg=#5580d6
+" hi TSVariable guibg=NONE guifg=#4FC1FF
+" hi TSAnnotation guibg=NONE guifg=#d7ba7d
+"
+hi! TSProperty guifg=#8fd1cc
+" hi! TSNumber guifg=#f07191
+" hi! TSFunction guifg=#dcdc74
 
-"Custom TS captures
-hi DeclarationBrace guifg=#5580d6
-hi CallBrace guifg=#d79921
+hi! UDeclarationBrace guifg=#4bc3ff
+hi! UPatternBrace guifg=#c552c5
+hi! UCallBrace guifg=#dc7c40
+hi! USubscriptBrace guifg=#83de41
+hi! link UPunctQuote TSPunctBracket
+
+"Keep colors, just add italic
+hi! TSVariableBuiltin guifg=#9cdcfe gui=italic
+hi! TSFuncBuiltin guifg=#dcdcaa gui=italic
+
+

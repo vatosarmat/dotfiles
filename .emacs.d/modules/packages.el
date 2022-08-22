@@ -58,6 +58,15 @@
   (evil-collection-init))
 
 ;; `ivy` and `councel` - tools for better completion in various contexts
+;;KEEP org-mode folded when search with swiper
+(defvar swiper-use-visual-line-p
+  (lambda (n-lines)
+    (and visual-line-mode
+         ;; super-slow otherwise
+         (< (buffer-size) 20)
+         (< n-lines 4)))
+  "A predicate that decides whether `line-move' or `forward-line' is used.
+Note that `line-move' can be very slow.")
 (use-package ivy
   :diminish
   :bind (
@@ -148,6 +157,8 @@
     :global-prefix "C-SPC")
 
   (dotfiles/leader-keys
+    "/" 'swiper
+    "z" 'outline-hide-sublevels
     "t"  '(:ignore t :which-key "toggles")
     "tt" '(counsel-load-theme :which-key "choose theme")
     ;;TODO: Maybe should be better way to do this, maybe without 2 different lambda-commands

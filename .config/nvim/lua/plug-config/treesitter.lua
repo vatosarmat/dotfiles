@@ -127,11 +127,14 @@ filetype_to_parsername.javascript = 'tsx'
 filetype_to_parsername.jsonc = 'json'
 
 require('nvim-treesitter.highlight').set_custom_captures {
+  ['punctuation.quote'] = 'UPunctQuote',
   -- ['jsx.expression.brace'] = 'JsxExpressionBrace',
-  ['ecma.object.brace'] = 'DeclarationBrace',
-  ['ecma.object_pattern.brace'] = 'CallBrace',
-  ['ecma.formal_parameters.brace'] = 'DeclarationBrace',
-  ['ecma.arguments.brace'] = 'CallBrace'
+  ['ecma.formal_parameters.brace'] = 'UDeclarationBrace',
+  ['ecma.object.brace'] = 'UDeclarationBrace',
+  ['ecma.object_pattern.brace'] = 'UPatternBrace',
+  ['ecma.array_pattern.brace'] = 'UPatternBrace',
+  ['ecma.arguments.brace'] = 'UCallBrace',
+  ['ecma.subscript.brace'] = 'USubscriptBrace'
 }
 
 --
