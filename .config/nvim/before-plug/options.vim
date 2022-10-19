@@ -63,5 +63,6 @@ let g:markdown_fenced_languages = [
   \'json', 'typescript', 'javascript', 'js=javascript', 'ts=typescript',
   \'shell=sh', 'python', 'sh', 'console=sh',
   \]
+let g:python_recommended_style = 0
 
 let g:loaded_matchit = 1

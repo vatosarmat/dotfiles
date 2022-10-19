@@ -123,11 +123,12 @@ function! s:Edit() abort
   nnoremap <leader><C-l> ==
 
   "More convinient register selector
-  nmap q "
-  xmap q "
+  nnoremap q "
+  xnoremap q "
 
   "Easier paste in insert mode
   inoremap <C-r>r <C-r>"
+  inoremap <C-r><C-r> <C-r>"
   inoremap <C-r>" <C-r>r
 
   "Paste from vim to system clipboard

@@ -164,7 +164,7 @@ local function setup_null_ls()
     lsp_flags.prettier_with_d and f.prettierd.with({
       filetypes = prettier_filetype,
       env = {
-        PRETTIERD_DEFAULT_CONFIG = os.getenv('HOME') .. '/.config/.prettier.json'
+        PRETTIERD_DEFAULT_CONFIG = os.getenv('HOME') .. '/.config/.prettierrc.json'
       }
     }) or f.prettier.with({
       filetypes = prettier_filetype

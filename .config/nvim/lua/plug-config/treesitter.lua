@@ -65,7 +65,7 @@ function setup_textobject()
 end
 
 ts_configs.setup {
-  ensure_installed = 'all',
+  -- ensure_installed = 'all',
   context_commentstring = {
     enable = true,
     enable_autocmd = false

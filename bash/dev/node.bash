@@ -74,8 +74,8 @@ function node__updeps {
       cmd_install_dev=("yarn" "add" "--dev")
       cmd_install_prod=("yarn" "add")
     else
-      cmd_install_prod=("npm" "install" "--save-prod")
-      cmd_install_dev=("npm" "install" "--save-dev")
+      cmd_install_prod=("npm" "install" "--save-prod" "--force")
+      cmd_install_dev=("npm" "install" "--save-dev" "--force")
     fi
     package_json_path="package.json"
   fi

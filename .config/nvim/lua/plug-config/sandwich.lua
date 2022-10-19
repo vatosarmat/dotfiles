@@ -9,7 +9,7 @@ local function setup()
 
   set('x', '<C-s>', '<Plug>(sandwich-add)')
 
-  local shortcut = { '\'', '"', '$', '(', '{', '`', '<' }
+  local shortcut = { '\'', '"', '$', '(', '{', '`' }
   for _, q in ipairs(shortcut) do
     set('x', q, '<Plug>(sandwich-add)' .. q)
   end

@@ -1,5 +1,7 @@
 colorscheme nvcode
 
+" hi! Normal guifg=#c5c8c6 guibg=#1e1e1e
+
 hi StatusLine guifg=#abb2bf ctermfg=249 guibg=#000000 ctermbg=236 gui=NONE cterm=NONE
 hi StatusLineNC guifg=#5c6370 ctermfg=241 guibg=#191919 ctermbg=NONE gui=NONE cterm=NONE
 hi! link Folded Normal
@@ -115,20 +117,22 @@ hi! link TSTypeBuiltin TSType
 """""
 """""My improvements
 """""
-" hi TSPunctSpecial guifg=#d7ba7d
-" hi TSKeyword guifg=#5580d6
-" hi TSVariable guibg=NONE guifg=#4FC1FF
-" hi TSAnnotation guibg=NONE guifg=#d7ba7d
+hi! TSOperator guifg=#c5c8c6
+hi! link TSPunctBracket TSOperator
+hi! link TSPunctSpecial TSOperator
+"Quotes are lang operators, not part of string
+hi! link UPunctQuote TSPunctBracket
 "
-hi! TSProperty guifg=#8fd1cc
-" hi! TSNumber guifg=#f07191
-" hi! TSFunction guifg=#dcdc74
+" hi! TSProperty guifg=#8fd1cc
+hi! TSProperty guifg=#8abeb7
+hi! TSAttribute guifg=#b9ca4a
+" hi TSAttribute guibg=NONE guifg=#d7ba7d
 
+"Braces. Better than rainbow
 hi! UDeclarationBrace guifg=#4bc3ff
 hi! UPatternBrace guifg=#c552c5
 hi! UCallBrace guifg=#dc7c40
-hi! USubscriptBrace guifg=#83de41
-hi! link UPunctQuote TSPunctBracket
+hi! USubscriptBrace guifg=#85b65f
 
 "Keep colors, just add italic
 hi! TSVariableBuiltin guifg=#9cdcfe gui=italic
