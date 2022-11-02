@@ -84,9 +84,6 @@ endfunction
 
 function! s:OnWinNew() abort
   "...
-  call jumplist#InitWindow()
-
-  "...
   let g:autocmd#last_win_new = win_getid()
 endfunction
 

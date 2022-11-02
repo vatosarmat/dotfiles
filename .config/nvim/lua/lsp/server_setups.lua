@@ -5,7 +5,7 @@ local lspconfig_util = require 'lspconfig.util'
 local autocmd = require'vim_utils'.autocmd
 local lsp_flags = require 'lsp.flags'
 local null_ls = require 'null-ls'
-local luadev = require 'lua-dev'
+local neodev = require 'neodev'
 local ts_utils = require 'nvim-lsp-ts-utils'
 local json_schemas = require 'json_schemas'
 --
@@ -35,7 +35,7 @@ end
 
 ---@diagnostic disable-next-line: unused-local
 local function default_on_attach(client, _bufnr)
-  if client.resolved_capabilities.document_highlight then
+  if client.server_capabilities.documentHighlight then
     autocmd('LSP_buffer', -------------------------------------------------------
     {
       { 'CursorHold', document_highlight }, -----------------------
@@ -104,8 +104,8 @@ local function setup_tsserver()
   }, 'tsserver', {
     -- filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
     on_attach = function(client, bufnr)
-      client.resolved_capabilities.document_formatting = false
-      -- client.resolved_capabilities.document_range_formatting = false
+      client.server_capabilities.Formatting = false
+      -- client.resolved_capabilities.rangeFormatting = false
       default_on_attach(client, bufnr)
 
       ts_utils.setup(ts_utils_settings)
@@ -126,8 +126,8 @@ local function setup_tsserver()
   -- }, 'volar', {
   --   filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
   --   on_attach = function(client, bufnr)
-  --     client.resolved_capabilities.document_formatting = false
-  --     -- client.resolved_capabilities.document_range_formatting = false
+  --     client.resolved_capabilities.formatting = false
+  --     -- client.resolved_capabilities.rangeFormatting = false
   --     default_on_attach(client, bufnr)
   --   end
   -- })
@@ -220,19 +220,19 @@ function M.setup(capabilities)
     on_attach = default_on_attach
   })
 
-  lspconfig.sumneko_lua.setup(luadev.setup {
-    lspconfig = {
-      cmd = { 'sumneko', '2>', vim.fn.stdpath 'cache' .. '/sumneko.log' },
-      settings = {
-        Lua = {
-          completion = {
-            workspaceWord = false,
-            showWord = 'Disable',
-            callSnipper = 'Replace'
-          },
-          diagnostics = {
-            globals = { 'vim', '_U', 'use', 'pack', 'use_rocks', 'fnoop', 'fconst' }
-          }
+  require('neodev').setup({})
+
+  lspconfig.sumneko_lua.setup({
+    cmd = { 'sumneko', '2>', vim.fn.stdpath 'cache' .. '/sumneko.log' },
+    settings = {
+      Lua = {
+        completion = {
+          workspaceWord = false,
+          showWord = 'Disable',
+          callSnippet = 'Replace'
+        },
+        diagnostics = {
+          globals = { 'vim', '_U', 'use', 'pack', 'use_rocks', 'fnoop', 'fconst' }
         }
       }
     }

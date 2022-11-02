@@ -1,12 +1,4 @@
 
-
-
-function! jumplist#InitWindow() abort
-  let w:jumplist_exclude = #{}
-  let w:jumplist_last_buf_jump_dir = 'PREV'
-  clearjumps
-endfunction
-
 function! jumplist#NextBuf(quiet = 0) abort
   return s:BufJump('NEXT', a:quiet)
 endfunction
@@ -46,7 +38,9 @@ endfunction
 
 function! jumplist#BufWinEnter() abort
   if !exists('w:jumplist_exclude')
-    call jumplist#InitWindow()
+    let w:jumplist_exclude = #{}
+    let w:jumplist_last_buf_jump_dir = 'PREV'
+    clearjumps
   endif
 
   let buf_name = expand('%:p')

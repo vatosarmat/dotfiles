@@ -94,7 +94,7 @@ function M.setup()
 end
 
 function M.capabilities(client_capabilities)
-  return cmp_nvim_lsp.update_capabilities(client_capabilities)
+	return vim.tbl_deep_extend('force', client_capabilities, cmp_nvim_lsp.default_capabilities())
 end
 
 return M
