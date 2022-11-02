@@ -1,6 +1,6 @@
 local ts_configs = require 'nvim-treesitter.configs'
 
-function setup_textobject()
+local function setup_textobject()
   local ret = {
     select = {
       enable = true,
@@ -65,14 +65,14 @@ function setup_textobject()
 end
 
 ts_configs.setup {
-  -- ensure_installed = 'all',
+  ensure_installed = 'all',
   context_commentstring = {
     enable = true,
     enable_autocmd = false
   },
   highlight = {
     enable = true,
-    disable = { 'help', 'markdown' } -- list of language that will be disabled
+    disable = { 'help' } -- list of language that will be disabled
   },
   indent = {
     enable = true,
@@ -125,17 +125,6 @@ ts_configs.setup {
 local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_parsername
 filetype_to_parsername.javascript = 'tsx'
 filetype_to_parsername.jsonc = 'json'
-
-require('nvim-treesitter.highlight').set_custom_captures {
-  ['punctuation.quote'] = 'UPunctQuote',
-  -- ['jsx.expression.brace'] = 'JsxExpressionBrace',
-  ['ecma.formal_parameters.brace'] = 'UDeclarationBrace',
-  ['ecma.object.brace'] = 'UDeclarationBrace',
-  ['ecma.object_pattern.brace'] = 'UPatternBrace',
-  ['ecma.array_pattern.brace'] = 'UPatternBrace',
-  ['ecma.arguments.brace'] = 'UCallBrace',
-  ['ecma.subscript.brace'] = 'USubscriptBrace'
-}
 
 --
 --

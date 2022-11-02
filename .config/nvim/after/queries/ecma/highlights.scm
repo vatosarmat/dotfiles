@@ -1,30 +1,45 @@
+; extends
+
 [
- "return"
- "await"
  "export"
+ "default"
 ] @include
 
+[
+ "await"
+] @keyword.return
 
-((identifier) @function
-              (#match? @function "^[A-Z]"))
+[
+ "as"
+] @keyword
 
-((identifier) @variable.builtin (#any-of? @variable.builtin "Object" "Array" "Math" "Date" "Function" "Number"))
+((identifier) @variable.builtin (#any-of? @variable.builtin "Object" "Array" "Math" "Date" "Function" "Number" "JSON"))
 
 ((identifier) @function.builtin (#any-of? @function.builtin "parseInt" "parseFloat" "isNaN" "eval"))
 
-(this) @constant.builtin
-(super) @constant.builtin
+[
+  (this)
+  (super)
+] @variable.special
 
+[
+ (undefined)
+ (null)
+] @null
+
+(shorthand_property_identifier) @variable
 (shorthand_property_identifier_pattern) @variable
 
-(required_parameter
-  pattern: (identifier) @variable)
+; (format_parameter
+;   pattern: (identifier) @variable)
 
 (object ["{" "}"] @ecma.object.brace)
-(object_type ["{" "}"] @ecma.object.brace)
 (object_pattern ["{" "}"] @ecma.object_pattern.brace)
+
 (array_pattern ["[" "]"] @ecma.array_pattern.brace)
+(array ["[" "]"] @ecma.array.brace)
 (subscript_expression ["[" "]"] @ecma.subscript.brace)
+
 (formal_parameters ["(" ")"] @ecma.formal_parameters.brace)
 (arguments ["(" ")"] @ecma.arguments.brace)
 

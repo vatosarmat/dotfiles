@@ -54,7 +54,7 @@ require('packer').startup({
     use {
       'neovim/nvim-lspconfig',
       requires = {
-        'folke/lua-dev.nvim',
+        'folke/neodev.nvim',
         'jose-elias-alvarez/null-ls.nvim',
         'jose-elias-alvarez/nvim-lsp-ts-utils'
       },
@@ -189,8 +189,6 @@ require('packer').startup({
       'dstein64/nvim-scrollview',
       config = misc.scrollview
     }
-
-    usec('christianchiarulli/nvcode-color-schemes.vim', 'colors.vim')
 
     use 'teal-language/vim-teal'
     use 'chr4/nginx.vim'
