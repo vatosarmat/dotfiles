@@ -35,7 +35,7 @@ end
 
 ---@diagnostic disable-next-line: unused-local
 local function default_on_attach(client, _bufnr)
-  if client.server_capabilities.documentHighlight then
+  if client.server_capabilities.documentHighlightProvider then
     autocmd('LSP_buffer', -------------------------------------------------------
     {
       { 'CursorHold', document_highlight }, -----------------------
@@ -104,7 +104,7 @@ local function setup_tsserver()
   }, 'tsserver', {
     -- filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
     on_attach = function(client, bufnr)
-      client.server_capabilities.Formatting = false
+      client.server_capabilities.documentFormattingProvider = false
       -- client.resolved_capabilities.rangeFormatting = false
       default_on_attach(client, bufnr)
 
@@ -153,6 +153,10 @@ local function setup_null_ls()
   local d = null_ls.builtins.diagnostics
   local sources = {
     d.shellcheck.with({
+      runtime_condition = function(params)
+        return not vim.endswith(params.bufname, '.env')
+      end,
+
       extra_args = function(params)
         return vim.endswith(params.bufname, '.bash') and { '--shell=bash' } or {}
       end

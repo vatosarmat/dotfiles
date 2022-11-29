@@ -28,5 +28,10 @@ return {
     description = 'Prettier config',
     fileMatch = { '.prettierrc', '.prettierrc.json', 'prettier.config.json' },
     url = 'https://json.schemastore.org/prettierrc'
+  },
+  {
+    description = 'Typedoc config',
+    fileMatch = { 'typedoc.json' },
+    url = 'https://typedoc.org/schema.json'
   }
 }

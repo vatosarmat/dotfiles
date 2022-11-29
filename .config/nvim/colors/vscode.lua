@@ -96,17 +96,83 @@ local function make_colorscheme()
       ['red'] = '#f44747',
       ['orange'] = '#ffc66d'
     },
+    Winter = {
+      -- '#00bff9',
+      -- '#4fb4d8',
+      -- '#57cdff',
+      -- '#5abeb0',
+      -- '#6bff81',
+      -- '#6dbdfa',
+      -- '#78bd65',
+      -- '#7fdbca',
+      -- '#80cbc4',
+      -- '#82aaff', --
+      -- '#87aff4', --
+      -- '#8dec95',
+      -- '#91dacd',
+      -- '#92b6f4', --
+      -- '#99d0f7',
+      -- '#a170c6',
+      -- ['215_weak'] = '#a1bde6' --
+      -- '#a4ceee',
+      -- '#addb67',
+      -- '#bce7ff',
+      -- '#bcf0c0',
+      -- '#c63ed3',
+      -- '#c792ea',
+      -- '#cbcdd2',
+      -- '#d29ffc',
+      -- '#d3eed6',
+      -- '#d6deeb',
+      -- '#d7dbe0',
+      -- '#e0aff5',
+      -- '#ec9cd2',
+      -- '#ece7cd',
+      -- '#eeffff',
+      -- '#f29fd8',
+      -- '#f3b8c2',
+      -- '#f7ecb5'
+    },
+    Nord = {
+      '#5e81ac',
+      '#616e88',
+      '#81a1c1',
+      '#88c0d0',
+      '#8fbcbb',
+      '#a3be8c',
+      '#b48ead',
+      '#bf616a',
+      '#d08770',
+      '#d8dee9',
+      '#ebcb8b',
+      '#eceff4'
+    },
+    OneDarkPro = {
+      '#56b6c2',
+      '#5c6370',
+      '#61afef',
+      '#7f848e',
+      '#98c379',
+      '#abb2bf',
+      '#be5046',
+      '#c678dd',
+      '#d19a66',
+      '#e06c75',
+      '#e5c07b',
+      '#f44747'
+    },
     Self = {
       comment = '#777777',
       operator = '#e6d0d0',
       bracket = '#d0d0d0',
-      constant = '#8ebebb'
+      property = '#83ccd2',
+      constant = '#90c0fe'
     },
     Brace = {
       declaration = '#4bc3ff',
-      pattern = '#c552c5',
-      -- call = '#dc7c40'
-      call = '#afff69'
+      -- call = '#c552c5',
+      call = '#dc7c40',
+      pattern = '#afff69'
     }
   }
 
@@ -125,7 +191,7 @@ local function make_colorscheme()
 
   local function common()
     -- Free
-    -- Darcula.weak
+    -- Darcula.weak, Darcula.gold
 
     -- Syntax palette
     C.Vscode = fg(P.Vscode, 'Vscode_')
@@ -162,7 +228,7 @@ local function make_colorscheme()
       ['@boolean'] = P.Darcula.brown,
 
       Type = P.Vscode.type,
-      ['@property'] = P.Darcula.gold,
+      ['@property'] = P.Self.property,
       ['@constructor'] = P.Darcula.orange,
 
       --

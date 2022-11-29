@@ -1,3 +1,4 @@
+local bind1 = require'pl.func'.bind1
 local ts_configs = require 'nvim-treesitter.configs'
 
 local function setup_textobject()
@@ -72,6 +73,7 @@ ts_configs.setup {
   },
   highlight = {
     enable = true,
+    -- additional_vim_regex_highlighting = true,
     disable = { 'help' } -- list of language that will be disabled
   },
   indent = {
@@ -167,3 +169,25 @@ local function package_webpage()
 end
 
 map('n', '<leader>np', package_webpage)
+
+--
+--
+--
+local neogen = require('neogen')
+neogen.setup {
+  snippet_engine = 'luasnip',
+  placeholders_hl = 'None'
+}
+
+map('n', '<leader>af', bind1(neogen.generate, {
+  type = 'func'
+}))
+map('n', '<leader>ac', bind1(neogen.generate, {
+  type = 'class'
+}))
+map('n', '<leader>at', bind1(neogen.generate, {
+  type = 'type'
+}))
+map('n', '<leader>aF', bind1(neogen.generate, {
+  type = 'file'
+}))

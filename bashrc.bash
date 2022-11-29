@@ -14,9 +14,10 @@ bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  xsel -ib'
 source "$HOME/dotfiles/bash/history.bash"
 history_config
 
-### LS_COLORS
+### LS_COLORS and other colors
 eval "$(dircolors -b)"
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+export JQ_COLORS='0;31:0;39:0;39:0;39:0;32:1;39:1;39'
 
 ### prompt
 if "$HOME/dotfiles/bin/is_workstation"; then

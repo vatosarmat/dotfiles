@@ -108,7 +108,8 @@ require('packer').startup({
         'nvim-treesitter/nvim-treesitter-textobjects',
         'JoosepAlviste/nvim-ts-context-commentstring',
         'windwp/nvim-ts-autotag',
-        'p00f/nvim-ts-rainbow'
+        'p00f/nvim-ts-rainbow',
+        'danymat/neogen'
         -- 'nvim-treesitter/nvim-treesitter-angular'
       },
       config = r 'treesitter'
@@ -134,7 +135,7 @@ require('packer').startup({
 
     use {
       'mfussenegger/nvim-dap',
-      requires = { 'jbyuki/one-small-step-for-vimkind' },
+      requires = { 'jbyuki/one-small-step-for-vimkind', 'mxsdev/nvim-dap-vscode-js' },
       rocks = { 'penlight' },
       config = r 'dap'
     }

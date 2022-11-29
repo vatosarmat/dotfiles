@@ -16,7 +16,7 @@ local project_kind_node = {
   marker = 'package.json',
   exclude_files = node_exclude_files,
   package_webpage = 'https://www.npmjs.com/package/${package}',
-  mate_bufs_exclude = {},
+  exclude_mate_bufs = {},
   explorer_width = 30,
   subkinds = {
     {
@@ -52,7 +52,7 @@ local project_kind_generic = {
   kind = 'generic',
   exclude_files = generic_exclude_files,
   package_webpage = 'https://github.com/${package}',
-  mate_bufs_exclude = {},
+  exclude_mate_bufs = {},
   explorer_width = 30,
   subkinds = {
     {

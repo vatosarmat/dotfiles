@@ -38,5 +38,5 @@
   si = status --ignored
   smu = submodule update --init --recursive
   ss = status
-  tl = tag -l
+  tl = tag -l --sort=-creatordate --format='%(creatordate:short):  %(refname:short)'
   w = worktree

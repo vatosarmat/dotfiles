@@ -8,14 +8,14 @@ local M = {}
 local function read_basename_mates(current_bufname)
   local basename = string.match(vim.fn.fnamemodify(current_bufname, ':t'), '^[^.]+')
   local dir = vim.fn.fnamemodify(current_bufname, ':p:h')
-  local mate_bufs_exclude = vim.g.project.mate_bufs_exclude
+  local exclude_mate_bufs = vim.g.project.exclude_mate_bufs
   local mate_bufs = {}
   local exclude_bufs = {}
   vim.fn.readdir(dir, function(node)
     if vim.startswith(node, basename .. '.') then
       local full = dir .. '/' .. node
       table.insert(mate_bufs, full)
-      for _, suf in ipairs(mate_bufs_exclude) do
+      for _, suf in ipairs(exclude_mate_bufs) do
         if vim.endswith(node, suf) then
           table.insert(exclude_bufs, full)
           break
