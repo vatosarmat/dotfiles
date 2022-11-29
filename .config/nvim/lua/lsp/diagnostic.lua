@@ -1,6 +1,5 @@
 local api = vim.api
 local lsp = vim.lsp
-local find_if = require'pl.tablex'.find_if
 local reduce = require'pl.tablex'.reduce
 local Text = require'vim_utils'.Text
 local map_buf = require'vim_utils'.map_buf
@@ -19,14 +18,6 @@ local function get_source(diagnostic)
 end
 
 local get_code = misc.diagnostic_get_code
-
-local function lookup_client_by_name(name, bufnr)
-  local clients = lsp.buf_get_clients(bufnr)
-  local idx = find_if(clients, function(client)
-    return client.name == name
-  end)
-  return clients[idx]
-end
 
 local function diagnostic_vim_to_lsp(d)
   return vim.tbl_extend('error', {
@@ -124,7 +115,10 @@ local function show_line_diagnostics()
     local fix_action_selector = cext[source].diagnostic_fix_action_selector
     if fix_action_selector then
       api.nvim_buf_delete(float_bufnr, {})
-      local client = lookup_client_by_name(source, bufnr)
+      local client = lsp.get_active_clients({
+        name = source,
+        bufnr = bufnr
+      })[1]
       -- There must be a client. If no, let error message
       range_params.context = {
         diagnostics = { diagnostic_vim_to_lsp(line_diagnostics[idx]) },
@@ -259,6 +253,20 @@ function M.setup()
   })
 
   vim.diagnostic.open_float = show_line_diagnostics
+
+  lsp.handlers['textDocument/publishDiagnostics'] =
+    function(_, result, ctx, ...)
+      -- result: diagnostics, uri
+      -- ctx: clinet_id, method
+      local client = lsp.get_client_by_id(ctx.client_id)
+      local filter = cext[client.name].diagnostic_filter
+
+      if filter then
+        result.diagnostics = filter(result.diagnostics)
+      end
+
+      return lsp.diagnostic.on_publish_diagnostics(_, result, ctx, ...)
+    end
 
 end
 

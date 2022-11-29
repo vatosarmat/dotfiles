@@ -13,6 +13,7 @@ local M = {}
 --   return res
 -- end
 
+-- penlight index_by??
 function M.pick(tbl, keys)
   local res = {}
 

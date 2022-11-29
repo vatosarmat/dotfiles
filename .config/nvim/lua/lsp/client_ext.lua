@@ -1,4 +1,5 @@
 local find_if = require'pl.tablex'.find_if
+local makeset = require'pl.tablex'.makeset
 
 local diagnostic_get_code = require'lsp.misc'.diagnostic_get_code
 
@@ -121,6 +122,7 @@ end
 -- diagnostic_disable_line: string
 -- diagnostic_virtual_text: function
 -- diagnostic_highlight: function
+-- diagnostic_filter: function(???)
 -- definition_filter: function(method, Lsp#Location)
 
 local client_ext = {
@@ -150,6 +152,12 @@ local client_ext = {
     diagnostic_highlight = tsserver_diagnostic_highlight,
     diagnostic_disable_line = '//@ts-expect-error',
     diagnostic_virtual_text = tsserver_diagnostic_virtual_text,
+    diagnostic_filter = function(diagnostic_list)
+      local exclude_codes = makeset({ 6133, 6196, 80001, 80006 })
+      return vim.tbl_filter(function(item)
+        return not exclude_codes[item.code]
+      end, diagnostic_list)
+    end,
     definition_filter = function(method, items)
       if method == 'textDocument/definition' and #items == 2 then
         local react_types = 'node_modules/%40types/react/index.d.ts'

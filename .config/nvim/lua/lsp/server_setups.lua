@@ -1,5 +1,5 @@
 local lsp = vim.lsp
--- local tablex = require 'pl.tablex'
+local bind1 = require'pl.func'.bind1
 local lspconfig = require 'lspconfig'
 local lspconfig_util = require 'lspconfig.util'
 local autocmd = require'vim_utils'.autocmd
@@ -7,6 +7,9 @@ local lsp_flags = require 'lsp.flags'
 local null_ls = require 'null-ls'
 local neodev = require 'neodev'
 local ts_utils = require 'nvim-lsp-ts-utils'
+local typescript = require 'typescript'
+local typescript_null_ls = require('typescript.extensions.null-ls.code-actions')
+
 local json_schemas = require 'json_schemas'
 --
 --
@@ -51,7 +54,11 @@ local function setup_tsserver()
   local function setup(pp, server_name, setup_params)
     local server_config = lspconfig[server_name]
     -- vim.pretty_print(server_config)
-    server_config.setup(setup_params or {})
+    if type(setup_params) == 'function' then
+      setup_params()
+    else
+      server_config.setup(setup_params or {})
+    end
     local server_manager_add = server_config.manager.add
     server_config.manager.add = function(...)
       local res
@@ -71,53 +78,73 @@ local function setup_tsserver()
     end
   }, 'flow')
 
-  local tsserver = lspconfig.tsserver
-  local ts_utils_settings = {
-    -- debug = true,
-    -- import_all_scan_buffers = 100
-    -- I really need this?
-    -- eslint_bin = 'eslint_d',
-    -- eslint_enable_diagnostics = true,
-    -- eslint_opts = {
-    --   condition = function(utils)
-    --     return utils.root_has_file('.eslintrc.js')
-    --   end,
-    --   diagnostics_format = '#{m} [#{c}]'
-    -- },
-    -- enable_formatting = true,
-    -- formatter = 'eslint_d',
-    -- update_imports_on_move = true,
-    -- filter out dumb module warning
-    -- https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
-    filter_out_diagnostics_by_code = {
-      6133, -- '{0}' is declared but its value is never read.
-      6196, -- '{0}' is declared but never used.
-      80001, -- "File is a CommonJS module; it may be converted to an ES module."
-      80006 -- "This may be converted to an async function."
-    }
-  }
+  -- local tsserver = lspconfig.tsserver
+  -- local ts_utils_settings = {
+  --   -- debug = true,
+  --   -- import_all_scan_buffers = 100
+  --   -- I really need this?
+  --   -- eslint_bin = 'eslint_d',
+  --   -- eslint_enable_diagnostics = true,
+  --   -- eslint_opts = {
+  --   --   condition = function(utils)
+  --   --     return utils.root_has_file('.eslintrc.js')
+  --   --   end,
+  --   --   diagnostics_format = '#{m} [#{c}]'
+  --   -- },
+  --   -- enable_formatting = true,
+  --   -- formatter = 'eslint_d',
+  --   -- update_imports_on_move = true,
+  --   -- filter out dumb module warning
+  --   -- https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
+  --   filter_out_diagnostics_by_code = {
+  --     6133, -- '{0}' is declared but its value is never read.
+  --     6196, -- '{0}' is declared but never used.
+  --     80001, -- "File is a CommonJS module; it may be converted to an ES module."
+  --     80006 -- "This may be converted to an async function."
+  --   }
+  -- }
+  -- setup({
+  --   predicate = function()
+  --     return not vim.b.flow_active
+  --     -- and vim.g.project.kind ~= 'vue'
+  --   end
+  -- }, 'tsserver', {
+  --   -- filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
+  --   on_attach = function(client, bufnr)
+  --     client.server_capabilities.documentFormattingProvider = false
+  --     -- client.resolved_capabilities.rangeFormatting = false
+  --     default_on_attach(client, bufnr)
+  --
+  --     ts_utils.setup(ts_utils_settings)
+  --     ts_utils.setup_client(client)
+  --
+  --     -- map_buf(bufnr, 'n', 'gs', '<cmd>TSLspOrganize<CR>')
+  --     -- map_buf(bufnr, 'n', 'gI', '<cmd>TSLspRenameFile<CR>')
+  --     -- map_buf(bufnr, 'n', 'go', '<cmd>TSLspImportAll<CR>')
+  --     -- map_buf(bufnr, 'n', 'qq', '<cmd>TSLspFixCurrent<CR>')
+  --   end
+  --   -- root_dir = lspconfig_util.find_git_ancestor
+  -- })
+
   setup({
     predicate = function()
       return not vim.b.flow_active
       -- and vim.g.project.kind ~= 'vue'
     end
-  }, 'tsserver', {
-    -- filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
-    on_attach = function(client, bufnr)
-      client.server_capabilities.documentFormattingProvider = false
-      -- client.resolved_capabilities.rangeFormatting = false
-      default_on_attach(client, bufnr)
-
-      ts_utils.setup(ts_utils_settings)
-      ts_utils.setup_client(client)
-
-      -- map_buf(bufnr, 'n', 'gs', '<cmd>TSLspOrganize<CR>')
-      -- map_buf(bufnr, 'n', 'gI', '<cmd>TSLspRenameFile<CR>')
-      -- map_buf(bufnr, 'n', 'go', '<cmd>TSLspImportAll<CR>')
-      -- map_buf(bufnr, 'n', 'qq', '<cmd>TSLspFixCurrent<CR>')
-    end
-    -- root_dir = lspconfig_util.find_git_ancestor
-  })
+  }, 'tsserver', bind1(typescript.setup, {
+    disable_commands = false, -- prevent the plugin from creating Vim commands
+    debug = false, -- enable debug logging for commands
+    go_to_source_definition = {
+      fallback = true -- fall back to standard LSP definition on failure
+    },
+    server = { -- pass options to lspconfig's setup method
+      on_attach = function(client, bufnr)
+        client.server_capabilities.documentFormattingProvider = false
+        -- client.resolved_capabilities.rangeFormatting = false
+        default_on_attach(client, bufnr)
+      end
+    }
+  }))
 
   -- setup({
   --   predicate = function()
@@ -174,7 +201,8 @@ local function setup_null_ls()
       filetypes = prettier_filetype
       -- only_local = 'node_modules/.bin'
     }),
-    f.autopep8
+    f.autopep8,
+    typescript_null_ls
   }
 
   null_ls.setup {
@@ -224,8 +252,9 @@ function M.setup(capabilities)
     on_attach = default_on_attach
   })
 
-  require('neodev').setup({})
+  neodev.setup({})
 
+  local cache = vim.fn.stdpath('cache')
   lspconfig.sumneko_lua.setup({
     cmd = { 'sumneko', '2>', vim.fn.stdpath 'cache' .. '/sumneko.log' },
     settings = {
@@ -237,6 +266,9 @@ function M.setup(capabilities)
         },
         diagnostics = {
           globals = { 'vim', '_U', 'use', 'pack', 'use_rocks', 'fnoop', 'fconst' }
+        },
+        workspace = {
+          library = { cache .. '/rocks' }
         }
       }
     }
