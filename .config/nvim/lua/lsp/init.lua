@@ -101,7 +101,7 @@ do
   map('n', 'gT', b(lookup.type_definition, 'split'))
   map('n', 'g<M-t>', b(lookup.type_definition, 'vsplit'))
   map('n', 'g<C-t>', b(lookup.type_definition, 'tabe'))
-  map('n', 'g<M-j>', b(lookup.type_definition, 'preview')) -- C-; - remapped in alacritty
+  map('n', '<M-k>', b(lookup.type_definition, 'preview')) -- C-' - remapped in alacritty
   map('n', 'gr', lsp.buf.references)
   map_diagnostic_goto()
   map_diagnostic_goto('ERROR', 'e')
@@ -122,7 +122,7 @@ do
   map('n', '<leader>ls', sym_nav.document_symbol_request)
   map('n', '<C-M-h>', sym_nav.loclist_depth_up)
   map('n', '<C-M-l>', sym_nav.loclist_depth_down)
-  map('n', '<M-g>', telescope.lsp_workspace_symbols)
+  map('n', '<M-g>', telescope.lsp_dynamic_workspace_symbols)
 
   -- Options
   map('n', '<leader>lv', b(toggle_option, 'ldv'))

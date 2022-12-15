@@ -9,6 +9,7 @@ local neodev = require 'neodev'
 local ts_utils = require 'nvim-lsp-ts-utils'
 local typescript = require 'typescript'
 local typescript_null_ls = require('typescript.extensions.null-ls.code-actions')
+local schemastore = require('schemastore')
 
 local json_schemas = require 'json_schemas'
 --
@@ -24,7 +25,8 @@ local jsts_filetype = {
   'typescriptreact',
   'typescript.jsx'
 }
-local prettier_filetype = vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue' }, jsts_filetype)
+local prettier_filetype = vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue', 'handlebars' },
+                                          jsts_filetype)
 -- local eslint_filetype = jsts_filetype
 
 local function document_highlight()
@@ -181,7 +183,7 @@ local function setup_null_ls()
   local sources = {
     d.shellcheck.with({
       runtime_condition = function(params)
-        return not vim.endswith(params.bufname, '.env')
+        return not string.match(params.bufname, '%.env%.?%l*$')
       end,
 
       extra_args = function(params)
@@ -202,7 +204,36 @@ local function setup_null_ls()
       -- only_local = 'node_modules/.bin'
     }),
     f.autopep8,
-    typescript_null_ls
+    typescript_null_ls,
+    -- f.phpcsfixer.with {
+    --   env = {
+    --     PHP_CS_FIXER_IGNORE_ENV = 'true'
+    --   }
+    -- },
+    f.pint.with {
+      dynamic_command = function(params)
+        -- {
+        --   bufname = "/home/igor/Code/Playground/php-pg/src/foo.php",
+        --   bufnr = 3,
+        --   client_id = 2,
+        --   col = 0,
+        --   command = "./vendor/bin/pint",
+        --   content = ....
+        --   ft = "php",
+        --   lsp_method = "textDocument/formatting",
+        --   method = "NULL_LS_FORMATTING",
+        --   options = {
+        --     insertSpaces = true,
+        --     tabSize = 4
+        --   },
+        --   root = "/home/igor/Code/Playground/php-pg",
+        --   row = 7
+        -- }
+        --
+        -- vim.pretty_print(params)
+        return vim.g.project.has_local_pint and params.command or 'pint'
+      end
+    }
   }
 
   null_ls.setup {
@@ -291,7 +322,10 @@ function M.setup(capabilities)
     },
     settings = {
       json = {
-        schemas = json_schemas
+        schemas = schemastore.json.schemas(),
+        validate = {
+          enable = true
+        }
       }
     }
   }
@@ -306,6 +340,18 @@ function M.setup(capabilities)
     -- root_dir = lspconfig_util.find_git_ancestor
   }
   lspconfig.solargraph.setup {}
+  lspconfig.intelephense.setup {
+    filetypes = { 'php' },
+    on_attach = function(client, bufnr)
+      -- client.server_capabilities.formatting = false
+      client.server_capabilities.documentFormattingProvider = false
+      -- client.resolved_capabilities.rangeFormatting = false
+      default_on_attach(client, bufnr)
+    end
+  }
+  -- lspconfig.phpactor.setup {
+  --   capabilities = capabilities
+  -- }
 
   setup_cpp()
   setup_tsserver()

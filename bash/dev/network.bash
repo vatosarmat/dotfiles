@@ -36,9 +36,9 @@ function __curl {
   shift
 
   if [[ "$no_jq" ]]; then
-    curl --no-progress-meter --compressd -L -X "$method" "${headers[@]}" "$url" "$@"
+    curl --no-progress-meter --compressed -L -X "$method" "${headers[@]}" "$url" "$@"
   else
-    curl --no-progress-meter --compressd -L -X "$method" "${headers[@]}" "$url" "$@" | jq
+    curl --no-progress-meter --compressed -L -X "$method" "${headers[@]}" "$url" "$@" | jq
   fi
 }
 

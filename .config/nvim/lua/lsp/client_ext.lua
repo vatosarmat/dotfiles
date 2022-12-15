@@ -219,6 +219,15 @@ local client_ext = {
   },
   ['volar'] = {
     short_name = 'VU'
+  },
+  ['intelephense'] = {
+    short_name = 'IP'
+  },
+  ['phpactor'] = {
+    short_name = 'PA'
+  },
+  ['phpcsfixer'] = {
+    short_name = 'PF'
   }
 }
 

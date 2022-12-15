@@ -1,6 +1,14 @@
 ; extends
 
 [
+  "abstract"
+  "private"
+  "protected"
+  "public"
+  "readonly"
+] @keyword
+
+[
  "export"
 ] @include
 

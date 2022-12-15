@@ -17,11 +17,11 @@ return {
   {
     description = 'Babel configuration',
     fileMatch = { '.babelrc.json', '.babelrc', 'babel.config.json' },
-    url = 'https://json.schemastore.org/lerna'
+    url = 'https://json.schemastore.org/babel'
   },
   {
     description = 'ESLint config',
-    fileMatch = { '.eslintrc.json', '.eslintrc' },
+    fileMatch = { '.eslintrc.json', '*.eslintrc.json', '.eslintrc' },
     url = 'https://json.schemastore.org/eslintrc'
   },
   {

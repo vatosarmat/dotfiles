@@ -3,8 +3,34 @@
     "prefix": "cl",
     "body": "console.log(${0})"
   },
+
+  "arrow_const": {
+    "prefix": "ac",
+    "body": "const ${1} = (${2}) => ${0}"
+  },
   "arrow_function": {
     "prefix": "af",
-    "body": "const ${1} = (${2}) => ${0}"
+    "body": "(${1}) => ${0}"
+  },
+  "arrow_block": {
+    "prefix": "ab",
+    "body": "(${1}) => {\n${0}\n}"
+  },
+
+  "import": {
+    "prefix": "im",
+    "body": "import {${0}} from '${1}'"
+  },
+  "import_type": {
+    "prefix": "it",
+    "body": "import type {${0}} from '${1}'"
+  },
+  "import_default": {
+    "prefix": "id",
+    "body": "import ${0} from '${1}'"
+  },
+  "import_star": {
+    "prefix": "is",
+    "body": "import * as ${0} from '${1}'"
   }
 }

@@ -25,5 +25,11 @@ _G.pack = function(...) return { ... } end
 _G.fnoop = function(...) return ... end
 _G.fconst = function (v)  return function() return v end end
 
+vim.filetype.add({
+  pattern = {
+    ['%.env%.%l+'] = 'sh',
+  }
+})
+
 END
 luafile $STD_PATH_CONFIG/lua/plug.lua

@@ -57,7 +57,8 @@ require('packer').startup({
         'folke/neodev.nvim',
         'jose-elias-alvarez/null-ls.nvim',
         -- 'jose-elias-alvarez/nvim-lsp-ts-utils',
-        'jose-elias-alvarez/typescript.nvim'
+        'jose-elias-alvarez/typescript.nvim',
+        'b0o/schemastore.nvim'
       },
       rocks = { 'penlight' },
       config = r 'lsp'

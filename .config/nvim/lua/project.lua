@@ -1,5 +1,17 @@
 local utils = require 'utils'
 
+--[[
+
+kind
+marker
+exclude_files
+package_webpage
+exclude_mate_bufs
+explorer_width
+subkinds
+
+--]]
+
 local generic_exclude_files = { '.git', '.shada', '.staging' }
 local node_exclude_files = vim.list_extend(vim.deepcopy(generic_exclude_files), {
   'node_modules',
@@ -75,6 +87,16 @@ local project_kind_generic = {
       kind = 'python',
       marker = { 'pyrightconfig.json', 'pyproject.toml' },
       exclude_files = { '.venv', '__pycache__', 'build' }
+    },
+    {
+      kind = 'php',
+      marker = { 'composer.json' },
+      exclude_files = { 'vendor' },
+      make_info = function()
+        return {
+          has_local_pint = vim.fn.filereadable('./vendor/bin/pint') == 1
+        }
+      end
     }
   }
 }
@@ -111,6 +133,9 @@ function M.detect_type()
   for _, subkind in ipairs(prototype.subkinds) do
     if is_marker_present(subkind) then
       utils.extend_keys(project, subkind, PROJECT_KEYS)
+      if subkind.make_info then
+        project.info = subkind.make_info()
+      end
       break
     end
   end

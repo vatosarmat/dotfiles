@@ -162,6 +162,26 @@ local function js_ts()
       {
         type = 'pwa-node',
         request = 'launch',
+        name = 'ts-node',
+        --
+        runtimeExecutable = './node_modules/.bin/ts-node',
+        runtimeArgs = { 'src/index.ts' },
+        skipFiles = {},
+        outFiles = {
+          '${workspaceFolder}/**/*.js'
+          -- '!**/node_modules/**',
+          -- '${workspaceFolder}/node_modules/@nestjs'
+        },
+        resolveSourceMapLocations = { '**' },
+        rootPath = '${workspaceFolder}',
+        cwd = '${workspaceFolder}',
+        --
+        console = 'integratedTerminal',
+        internalConsoleOptions = 'neverOpen'
+      },
+      {
+        type = 'pwa-node',
+        request = 'launch',
         name = 'NestJS build',
         --
         runtimeExecutable = './node_modules/.bin/nest',
