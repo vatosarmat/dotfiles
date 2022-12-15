@@ -38,7 +38,7 @@ function lsp_log {
   shift $((OPTIND - 1))
 
   if [[ "$is_reset" ]]; then
-    rm "$HOME/.cache/nvim/lsp.log"
+    rm "$HOME/.local/state/nvim/lsp.log"
     return
   fi
 
@@ -62,7 +62,7 @@ function lsp_log {
     skip_br_args+=('-e' "$b")
   done
 
-  $cmd "$HOME/.cache/nvim/lsp.log" |
+  $cmd "$HOME/.local/state/nvim/lsp.log" |
     grep --line-buffered -Fv "${skip_fixed_args[@]}" |
     grep --line-buffered -Gv "${skip_br_args[@]}" |
     sed --unbuffered -E -f "$HOME/.config/nvim/misc/lsp_log.sed" |
