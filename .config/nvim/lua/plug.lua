@@ -63,6 +63,7 @@ require('packer').startup({
       rocks = { 'penlight' },
       config = r 'lsp'
     }
+
     use {
       'hrsh7th/nvim-cmp',
       requires = {
@@ -72,33 +73,6 @@ require('packer').startup({
         'saadparwaiz1/cmp_luasnip',
         'L3MON4D3/LuaSnip',
         'windwp/nvim-autopairs'
-      }
-    }
-    use {
-      'ms-jpq/coq_nvim',
-      disable = true,
-      branch = 'coq',
-      config = function()
-        vim.g.coq_settings = {
-          keymap = {
-            manual_complete = '<C-space>',
-            pre_select = true
-          },
-          auto_start = true
-        }
-
-        require('coq')
-      end,
-      requires = {
-        {
-          'ms-jpq/coq.artifacts',
-          branch = 'artifacts'
-        },
-        {
-          'ms-jpq/coq.thirdparty',
-          branch = '3p'
-        },
-        'neovim/nvim-lspconfig'
       }
     }
 
@@ -195,6 +169,7 @@ require('packer').startup({
 
     use 'teal-language/vim-teal'
     use 'chr4/nginx.vim'
+    use 'jwalton512/vim-blade'
   end,
   {
     config = {

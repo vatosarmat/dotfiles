@@ -1,9 +1,7 @@
 alias pa="php artisan"
 
-function php__lar_completion {
+function php__completion {
+  source <(composer completion)
   source <(laravel completion)
-}
-
-function php__art_completion {
-  source <(php artisan completion)
+  # source <(php artisan completion)
 }

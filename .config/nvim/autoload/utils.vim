@@ -188,3 +188,7 @@ function! utils#PrevNonBlank(line) abort
   return n
 endfunction
 
+function! utils#Endswith(str, suf) abort
+  return strridx(a:str,a:suf) + strlen(a:suf) == strlen(a:str)
+endfunction
+

@@ -22,11 +22,12 @@ let s:ft_ext = #{
   \ css: ['css'],
   \ scss: ['scss'],
   \ handlebars: ['hbs'],
-  \ php: ['php']
+  \ php: ['php'],
+  \ blade: ['blade.php']
   \ }
 
-function! IsFtUnordinary(ft, ext) abort
-  return index(get(s:ft_ext, a:ft, []), a:ext) == -1
+function! IsFtUnordinary(ft, fname) abort
+  return utils#Find( get(s:ft_ext, a:ft, []), { v -> utils#Endswith(a:fname, v) } )[1] == -1
 endfunction
 
 function! StatusLineFile() abort
@@ -159,7 +160,7 @@ function! StatusLSP() abort
 endfunction
 
 function! StatusFileType() abort
-  return IsFtUnordinary(&filetype, expand("%:e")) && winwidth(0) >= 90 ? '['.&filetype.'] ' : ''
+  return IsFtUnordinary(&filetype, expand("%:t")) && winwidth(0) >= 90 ? '['.&filetype.'] ' : ''
 endfunction
 
 function! StatusRootDir() abort

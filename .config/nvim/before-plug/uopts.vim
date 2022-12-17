@@ -43,7 +43,7 @@ call s:MapAllFlags()
 "results - Vim unfortunately highlights 'current' result and all the others in
 "the same way
 "In routine workflow it distracts
-nnoremap <silent> <leader>ocl :set cul! cuc!<CR>
+nnoremap <silent> <leader>ocl :set cul!<CR>
 
 let s:scroll_view = 1
 function! s:ScrollViewToggle() abort

@@ -220,6 +220,7 @@ local client_ext = {
   ['volar'] = {
     short_name = 'VU'
   },
+  -- PHP
   ['intelephense'] = {
     short_name = 'IP'
   },
@@ -228,6 +229,15 @@ local client_ext = {
   },
   ['phpcsfixer'] = {
     short_name = 'PF'
+  },
+  ['pint'] = {
+    short_name = 'PI'
+  },
+  ['tailwindcss'] = {
+    short_name = 'TWC'
+  },
+  ['blade_formatter'] = {
+    short_name = 'BF'
   }
 }
 

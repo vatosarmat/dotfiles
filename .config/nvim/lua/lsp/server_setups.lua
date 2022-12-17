@@ -233,7 +233,8 @@ local function setup_null_ls()
         -- vim.pretty_print(params)
         return vim.g.project.has_local_pint and params.command or 'pint'
       end
-    }
+    },
+    f.blade_formatter
   }
 
   null_ls.setup {
@@ -341,7 +342,7 @@ function M.setup(capabilities)
   }
   lspconfig.solargraph.setup {}
   lspconfig.intelephense.setup {
-    filetypes = { 'php' },
+    filetypes = { 'php', 'blade' },
     on_attach = function(client, bufnr)
       -- client.server_capabilities.formatting = false
       client.server_capabilities.documentFormattingProvider = false
@@ -352,6 +353,7 @@ function M.setup(capabilities)
   -- lspconfig.phpactor.setup {
   --   capabilities = capabilities
   -- }
+  require'lspconfig'.tailwindcss.setup {}
 
   setup_cpp()
   setup_tsserver()

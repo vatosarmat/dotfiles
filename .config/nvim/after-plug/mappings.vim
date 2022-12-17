@@ -293,6 +293,14 @@ function s:QfListBuffer() abort
   nnoremap <buffer> u <cmd>call qflist#Restore()<cr>
 endfunction
 
+function s:InsertHelpers() abort
+  inoremap <M-.> ->
+endfunction
+
+function s:Treesitter() abort
+  nnoremap <leader>tp TSPlaygroundToggle
+endfunction
+
 call s:Misc()
 call s:Motions()
 call s:Edit()
@@ -300,6 +308,8 @@ call s:InsertLikeEmacs()
 call s:Windows()
 call s:BufferNavigation()
 call s:QfList()
+call s:InsertHelpers()
+call s:Treesitter()
 
 augroup Mappings
   autocmd FileType qf call s:QfListBuffer()
