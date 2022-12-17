@@ -39,7 +39,7 @@ end
 
 local function item_with_children(item)
   item.children = {}
-  item.text = item.text .. ' ' .. ui_symbol.has_children.icon
+  item.text = item.text .. ui_symbol.has_children.icon
 end
 
 -- DocumentSymbol: name:string, detail?:string, kind:SymbolKind, range:Range(body), selectionRange:Range(function name), children:DocumentSymbol[]
@@ -274,15 +274,21 @@ local function SymbolNavigation(initial_symbols)
 
     local what = {
       items = items,
-      title = #path > 0 and table.concat(path, path_sep) or top_level_title
+      title = #path > 0 and table.concat(path, path_sep) or top_level_title,
+      context = {
+        type = 'symbol_list'
+      }
     }
 
     function what.quickfixtextfunc(info)
       return vim.tbl_map(function(item)
-        return string.format('|%-5d| %s', item.lnum, item.text)
+        -- return string.format('|%-5d| %s', item.lnum, item.text)
+        return item.text
       end, vim.list_slice(items, info.start_idx, info.end_idx))
     end
 
+    -- current winodw, {} ignored, ' ' - create new list, what - actual data
+    -- what allows to specify textfunc, so use it instead of the 2 argument
     vim.fn.setloclist(0, {}, ' ', what)
     vim.fn['lsp#SymbolListOpen'](path)
   end

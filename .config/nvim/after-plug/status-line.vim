@@ -66,12 +66,13 @@ function! StatusLineNofile() abort
 endfunction
 
 function! StatusLineQf() abort
-  return "%<"
-    \."%{%StatusQf(".win_getid().")%}"
-    \."%="
-    \." %m"
-    \."%r"
-    \." %L | %l %c%V%  %P"
+  return "%{%StatusQf(".win_getid().")%}"
+  " return "%<"
+  "   \."%{%StatusQf(".win_getid().")%}"
+  "   \."%="
+  "   \." %m"
+  "   \."%r"
+  "   \." %L | %l %c%V%  %P"
 endfunction
 
 function! StatusLineExplorer() abort

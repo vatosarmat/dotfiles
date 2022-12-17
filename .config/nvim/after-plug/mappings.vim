@@ -285,6 +285,8 @@ function s:QfList() abort
   "loclist mappings
   nnoremap <C-M-j> <cmd>call qflist#Step(1, 1)<cr>
   nnoremap <C-M-k> <cmd>call qflist#Step(0, 1)<cr>
+
+  nnoremap <leader>ql <cmd>lopen \| wincmd L \| vertical resize 40 \|wincmd p<CR>
 endfunction
 
 function s:QfListBuffer() abort

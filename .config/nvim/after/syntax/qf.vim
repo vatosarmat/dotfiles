@@ -1,23 +1,35 @@
+if get(get(b:,'loclist_context', #{}), 'type', -1) != 'symbol_list'
+  finish
+end
+
 syn clear qfSeparator
 syn match	qfSeparator	"|"
 
 let s:lsp_ui_symbol = luaeval('_U.lsp.ui.symbol')
 
+"syn-group for has_children-icon
 execute 'syn' 'match' 'qfHasChildren' '"'.s:lsp_ui_symbol['has_children']['icon'].'"'
 
 function! s:SymbolItem(kind) abort
   let item = s:lsp_ui_symbol[a:kind]
-  let iconPat = printf('"\(| \)\@<=%s"', item.icon)
-  let namePat = printf('"\(| %s\)\@<=\s\+\S\+"', item.icon)
+  " let iconPat = printf('"\(| \)\@<=%s"', item.icon)
+  " let namePat = printf('"\(| %s\)\@<=\s\+\S\+"', item.icon)
+  " Icon in the beginning of the line
+  let iconPat = printf('"^%s"', item.icon)
+  " non-space stuff that comes after icon and 1+ space
+  let namePat = printf('"%s\@<=\s\+\S\+"', item.icon)
   let nameSyn = a:kind.'Name'
   let detailSyn = a:kind.'Detail'
 
+  "syn-groupd for whole line except nameSyn and has_children-icon
   execute
     \ 'syn' 'region' detailSyn
     \ 'matchgroup='.item['hl_icon'] 'start='.iconPat 'end="$"'
     \ 'oneline' 'contains='.nameSyn.',qfHasChildren' 'keepend'
 
+  "syn-group for nameSyn
   execute 'syn' 'match' nameSyn namePat
+
   execute 'hi!' 'def' 'link' nameSyn item['hl_name']
   execute 'hi!' 'def' 'link' detailSyn has_key(item, 'hl_detail') ? item['hl_detail'] : 'Normal'
 

@@ -36,94 +36,94 @@ M.symbol = {
   Function = {
     icon = 'F',
     hl_icon = 'SymbolIconFunction',
-    hl_name = 'TSFunction',
-    hl_detail = 'TSType'
+    hl_name = '@function',
+    hl_detail = '@type'
   },
   Method = {
     icon = 'M',
     hl_icon = 'SymbolIconFunction',
-    hl_name = 'TSMethod',
-    hl_detail = 'TSType'
+    hl_name = '@method',
+    hl_detail = '@type'
   },
   Constructor = {
     icon = '',
     hl_icon = 'SymbolIconFunction',
-    hl_name = 'TSConstructor',
-    hl_detail = 'TSType'
+    hl_name = '@constructor',
+    hl_detail = '@type'
   },
 
   -- Value-like
   Variable = {
     icon = 'V',
     hl_icon = 'SymbolIconVariable',
-    hl_name = 'TSVariable',
-    hl_detail = 'TSType'
+    hl_name = '@variable',
+    hl_detail = '@type'
   },
   Constant = {
     icon = 'C',
     hl_icon = 'SymbolIconVariable',
-    hl_name = 'TSVariable',
-    hl_detail = 'TSType'
+    hl_name = '@variable',
+    hl_detail = '@type'
   },
   Property = {
     icon = 'P',
     hl_icon = 'SymbolIconVariable',
-    hl_name = 'TSProperty',
-    hl_detail = 'TSType'
+    hl_name = '@property',
+    hl_detail = '@type'
   },
   Field = {
     icon = '',
     hl_icon = 'SymbolIconVariable',
-    hl_name = 'TSField',
-    hl_detail = 'TSType'
+    hl_name = '@property',
+    hl_detail = '@type'
   },
   EnumMember = {
     icon = '喝',
     hl_icon = 'SymbolIconVariable',
-    hl_name = 'TSProperty',
-    hl_detail = 'TSProperty'
+    hl_name = '@property',
+    hl_detail = '@property'
   },
 
   -- Value-like
   Module = {
     icon = '',
     hl_icon = 'SymbolIconClass',
-    hl_name = 'TSInclude'
+    hl_name = '@include'
   },
   Namespace = {
     icon = '',
     hl_icon = 'SymbolIconClass',
-    hl_name = 'TSNamespace'
+    hl_name = '@namespace'
   },
   Interface = {
     icon = '',
     hl_icon = 'SymbolIconClass',
-    hl_name = 'TSType'
+    hl_name = '@type'
   },
   Class = {
     icon = '',
     hl_icon = 'SymbolIconClass',
-    hl_name = 'TSType'
+    hl_name = '@type'
   },
   Struct = {
     icon = '',
     hl_icon = 'SymbolIconClass',
-    hl_name = 'TSType'
+    hl_name = '@type'
   },
   Object = {
     icon = '',
     hl_icon = 'SymbolIconClass',
-    hl_name = 'TSType'
+    hl_name = '@type'
   },
   Enum = {
     icon = 'ﴰ',
     hl_icon = 'SymbolIconClass',
-    hl_name = 'TSType'
+    hl_name = '@type'
   },
   TypeParameter = {
     icon = 'T',
     hl_icon = 'SymbolIconClass',
-    hl_name = 'TSType'
+    hl_name = '@type'
   },
 
   has_children = {
