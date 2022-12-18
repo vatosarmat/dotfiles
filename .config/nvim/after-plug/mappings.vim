@@ -300,7 +300,7 @@ function s:InsertHelpers() abort
 endfunction
 
 function s:Treesitter() abort
-  nnoremap <leader>tp TSPlaygroundToggle
+  nnoremap <leader>tp <cmd>TSPlaygroundToggle<cr>
 endfunction
 
 call s:Misc()

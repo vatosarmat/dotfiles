@@ -39,7 +39,7 @@ end
 
 local function item_with_children(item)
   item.children = {}
-  item.text = item.text .. ui_symbol.has_children.icon
+  item.text = item.text .. ' ' .. ui_symbol.has_children.icon
 end
 
 -- DocumentSymbol: name:string, detail?:string, kind:SymbolKind, range:Range(body), selectionRange:Range(function name), children:DocumentSymbol[]

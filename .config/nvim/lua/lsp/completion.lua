@@ -77,7 +77,7 @@ function M.setup()
     formatting = {
       ---@diagnostic disable-next-line: unused-local
       format = function(entry, vim_item)
-        print(vim_item.kind)
+        -- print(vim_item.kind)
         vim_item.kind = kind_icons[vim_item.kind]
         return vim_item
       end
@@ -94,7 +94,7 @@ function M.setup()
 end
 
 function M.capabilities(client_capabilities)
-	return vim.tbl_deep_extend('force', client_capabilities, cmp_nvim_lsp.default_capabilities())
+  return vim.tbl_deep_extend('force', client_capabilities, cmp_nvim_lsp.default_capabilities())
 end
 
 return M

@@ -47,7 +47,7 @@ local function setup_textobject()
     f = 'function',
     c = 'call',
     a = 'parameter',
-    b = 'block',
+    k = 'block',
     i = 'conditional',
     l = 'loop'
   }

@@ -1,5 +1,6 @@
 -- local api = vim.api
 local lsp = vim.lsp
+local api = vim.api
 local func = require 'pl.func'
 -- local log = require 'vim.lsp.log'
 local vim_utils = require 'vim_utils'
@@ -87,11 +88,39 @@ do
     end)
   end
 
+  local function signature_help()
+    local file_buf = vim.fn.bufnr()
+    local float_winid = vim.b[file_buf].float_winid
+    if float_winid then
+      vim.api.nvim_win_close(float_winid, true)
+    else
+      local params = lsp.util.make_position_params()
+
+      vim.lsp.buf_request(0, 'textDocument/signatureHelp', params, function(...)
+        local new_float_buf, new_float_winid = lsp.handlers['textDocument/signatureHelp'](...)
+
+        api.nvim_create_autocmd('WinClosed', {
+          callback = function(info)
+            local closed_winid = tonumber(info.match)
+            if closed_winid == new_float_winid then
+              vim.b[file_buf].float_winid = nil
+            end
+            return true
+          end,
+          once = true
+        })
+        vim.b[file_buf].float_winid = new_float_winid
+        return new_float_buf, new_float_winid
+      end)
+    end
+  end
+
   map('n', '<C-j>', lsp.buf.hover)
   map('n', '<C-k>', vim.diagnostic.open_float)
   map('n', '<leader>ld', telescope.diagnostics)
 
   -- Goto's
+  map('i', '<M-j>', signature_help) -- C-;
   map('n', 'gd', lookup.definition)
   map('n', 'g<C-M-d>', b(lookup.definition, 'split'))
   map('n', 'g<M-d>', b(lookup.definition, 'vsplit'))
@@ -115,7 +144,6 @@ do
 
   -- Less in use
   map('n', 'gi', lsp.buf.implementation)
-  map('i', '<M-j>', lsp.buf.signature_help) -- C-;
   map('n', 'gD', lsp.buf.declaration)
 
   -- Symbol lists

@@ -30,18 +30,28 @@ local function map_completion()
     }
   end
 
-  iset('<Tab>', function()
-    if cmp.visible() then
-      cmp.select_next_item()
-    else
-      if is_space_before() then
-        feed_keys '<Tab>'
-      else
-        complete_sources('luasnip')
-      end
-    end
+  -- snippet
+  iset('<M-Tab>', function()
+    cmp.complete({
+      reason = cmp.ContextReason.Manual,
+      config = {
+        sorting = {
+          comparators = {
+            function(a, b)
+              return vim.stricmp(b.completion_item.label, a.completion_item.label) > 0
+            end
+          }
+        },
+        sources = {
+          {
+            name = 'luasnip'
+          }
+        }
+      }
+    })
   end)
   iset('<M-i>', luasnip.expand)
+  -- lsp
   iset('<C-j>', function()
     if cmp.visible() then
       cmp.select_next_item()
