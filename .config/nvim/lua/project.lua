@@ -49,7 +49,7 @@ local project_kind_node = {
     },
     {
       kind = 'vue',
-      marker = { 'vue.config.ts', 'src/App.vue' }
+      marker = { 'vue.config.ts', 'src/App.vue', 'vite.config.ts' }
     },
     {
       kind = 'nest',

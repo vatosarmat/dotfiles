@@ -23,7 +23,8 @@ let s:ft_ext = #{
   \ scss: ['scss'],
   \ handlebars: ['hbs'],
   \ php: ['php'],
-  \ blade: ['blade.php']
+  \ blade: ['blade.php'],
+  \ vue: ['vue'],
   \ }
 
 function! IsFtUnordinary(ft, fname) abort

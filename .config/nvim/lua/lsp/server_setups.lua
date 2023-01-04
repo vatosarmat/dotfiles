@@ -53,6 +53,9 @@ end
 
 local function setup_tsserver()
 
+  -- {predicate, post}
+  -- string
+  --
   local function setup(pp, server_name, setup_params)
     local server_config = lspconfig[server_name]
     -- vim.pretty_print(server_config)
@@ -130,8 +133,23 @@ local function setup_tsserver()
 
   setup({
     predicate = function()
-      return not vim.b.flow_active
-      -- and vim.g.project.kind ~= 'vue'
+      return vim.g.project.kind == 'vue'
+    end,
+    post = function(res)
+      vim.b.volar_active = res and true or false
+    end
+  }, 'volar', {
+    filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
+    on_attach = function(client, bufnr)
+      client.server_capabilities.documentFormattingProvider = false
+      -- client.resolved_capabilities.rangeFormatting = false
+      default_on_attach(client, bufnr)
+    end
+  })
+
+  setup({
+    predicate = function()
+      return not (vim.b.flow_active or vim.b.volar_active)
     end
   }, 'tsserver', bind1(typescript.setup, {
     disable_commands = false, -- prevent the plugin from creating Vim commands
@@ -152,22 +170,9 @@ local function setup_tsserver()
   --   predicate = function()
   --     return vim.g.project.kind == 'vue'
   --   end
-  -- }, 'volar', {
-  --   filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
-  --   on_attach = function(client, bufnr)
-  --     client.resolved_capabilities.formatting = false
-  --     -- client.resolved_capabilities.rangeFormatting = false
-  --     default_on_attach(client, bufnr)
-  --   end
+  -- }, 'vuels', {
+  --   -- filetypes = vim.list_extend(jsts_filetype, { 'vue' })
   -- })
-
-  setup({
-    predicate = function()
-      return vim.g.project.kind == 'vue'
-    end
-  }, 'vuels', {
-    -- filetypes = vim.list_extend(jsts_filetype, { 'vue' })
-  })
 
   setup({
     predicate = function()

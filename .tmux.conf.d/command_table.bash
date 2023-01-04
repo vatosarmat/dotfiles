@@ -79,6 +79,7 @@ bind_command 'C-h' 'display-panes -d 10000 "move-pane -bh -t %%"'
 bind_command 'C-j' 'display-panes -d 10000 "move-pane -v -t %%"'
 bind_command 'C-k' 'display-panes -d 10000 "move-pane -bv -t %%"'
 bind_command 'C-l' 'display-panes -d 10000 "move-pane -h -t %%"'
+#f - span full width or height
 bind_command 'M-C-h' 'display-panes -d 10000 "move-pane -fbh -t %%"'
 bind_command 'M-C-j' 'display-panes -d 10000 "move-pane -fv -t %%"'
 bind_command 'M-C-k' 'display-panes -d 10000 "move-pane -fbv -t %%"'
