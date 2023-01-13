@@ -13,7 +13,8 @@
  "as"
 ] @keyword
 
-((identifier) @variable.builtin (#any-of? @variable.builtin "Object" "Array" "Math" "Date" "Function" "Number" "JSON"))
+((identifier) @variable.builtin (#any-of? @variable.builtin "Object" "Array" "Math" "Date" "Function" "Number" "Boolean" "JSON"))
+(import) @variable.builtin
 
 ((identifier) @function.builtin (#any-of? @function.builtin "parseInt" "parseFloat" "isNaN" "eval"))
 ((property_identifier) @function.builtin (#eq? @function.builtin "constructor"))

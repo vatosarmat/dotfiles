@@ -25,3 +25,6 @@
 )
 
 (object_type ["{" "}"] @ecma.object.brace)
+
+(import_statement "type" @keyword)
+

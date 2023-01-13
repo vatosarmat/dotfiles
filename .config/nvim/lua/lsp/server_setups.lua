@@ -69,9 +69,9 @@ local function setup_tsserver()
       local res
       if not pp.predicate or (pp.predicate and pp.predicate()) then
         res = server_manager_add(...)
-      end
-      if pp.post then
-        pp.post(res)
+        if pp.post then
+          pp.post()
+        end
       end
       return res
     end
@@ -79,7 +79,7 @@ local function setup_tsserver()
 
   setup({
     post = function()
-      vim.b.flow_active = 1
+      vim.b.flow_active = true
     end
   }, 'flow')
 
@@ -135,8 +135,8 @@ local function setup_tsserver()
     predicate = function()
       return vim.g.project.kind == 'vue'
     end,
-    post = function(res)
-      vim.b.volar_active = res and true or false
+    post = function()
+      vim.b.volar_active = true
     end
   }, 'volar', {
     filetypes = vim.list_extend(jsts_filetype, { 'vue' }),

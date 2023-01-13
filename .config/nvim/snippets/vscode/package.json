@@ -6,7 +6,8 @@
         "language": [
           "typescriptreact",
           "javascript",
-          "typescript"
+          "typescript",
+          "vue"
         ],
         "path": "./snippets/js.json"
       }

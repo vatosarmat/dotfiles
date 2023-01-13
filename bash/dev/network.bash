@@ -24,7 +24,7 @@ function __curl {
 
   local -a headers=('-H' 'Content-Type: application/json')
   if [[ -r ".token" ]]; then
-    headers+=('-H' 'Authorization: token '"$(< .token)")
+    headers+=('-H' 'Authorization: Bearer '"$(< .token)")
   fi
 
   local url=

@@ -1,4 +1,6 @@
-[(class_name) (id_name)] @annotation
+; extends
+
+[(class_name) (id_name)] @type
 
 [
  "@media"
