@@ -461,6 +461,7 @@ local function make_colorscheme()
       ['@text.uri'] = P.Vscode.keyword2,
       ['@text.reference'] = P.Vscode.string,
       ['@text.title'] = P.Vscode.saturated_blue,
+      ['@text.literal'] = P.Darcula.brown,
       ['@text'] = 'Normal',
 
       ['@tag'] = 'Tag'

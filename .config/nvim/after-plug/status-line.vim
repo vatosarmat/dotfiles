@@ -25,6 +25,7 @@ let s:ft_ext = #{
   \ php: ['php'],
   \ blade: ['blade.php'],
   \ vue: ['vue'],
+  \ ejs: ['ejs'],
   \ }
 
 function! IsFtUnordinary(ft, fname) abort

@@ -46,6 +46,9 @@ function! s:Misc() abort
   "Easier merging
   nnoremap <leader>gml <cmd>diffget LOCAL<cr>
   nnoremap <leader>gmr <cmd>diffget REMOTE<cr>
+
+  "Toggle fold
+  nnoremap <C-f> za
 endfunction
 
 function! s:Motions() abort
@@ -159,6 +162,8 @@ function! s:Edit() abort
   "No overwrite paste and change
   nnoremap c "_c
   xnoremap c "_c
+  nnoremap C "_C
+  xnoremap C "_C
 
   nnoremap p ]p
   nnoremap P ]P

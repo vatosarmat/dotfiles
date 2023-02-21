@@ -14,7 +14,7 @@ local function setup()
     set('x', q, '<Plug>(sandwich-add)' .. q)
   end
 
-  local shortcut_m = { '[', 't', 'f' }
+  local shortcut_m = { '[', 't', 'f', 'g', 'p', '>' }
   for _, q in ipairs(shortcut_m) do
     set('x', '<M-' .. q .. '>', '<Plug>(sandwich-add)' .. q)
   end
@@ -25,7 +25,24 @@ local function setup()
       input = { '$' }
     }
   })
-  set('x', '<C-d>', '<Plug>(sandwich-add)$')
+
+  -- %() - non-capturing group in Vim regexps, \h - [A-Za-z_], \w - [0-9A-Za-z_]
+  -- vim.g['sandwich#magicchar#f#patterns'] = vim.list_extend(vim.g['sandwich#magicchar#f#patterns'], {
+  --   {
+  --     header = [[\<\%(\h\k*\.\)*\h\k*]],
+  --     bra = '(',
+  --     ket = ')',
+  --     footer = ''
+  --   }
+  -- })
+  vim.g['sandwich#magicchar#f#patterns'] = {
+    {
+      header = [[\<\%(\h\k*\.\)*\h\k*]],
+      bra = '(',
+      ket = ')',
+      footer = ''
+    }
+  }
 
   local augroup = api.nvim_create_augroup('Sandwich', {})
   api.nvim_create_autocmd('FileType', {
@@ -37,6 +54,26 @@ local function setup()
         {
           buns = { '<>', '</>' },
           input = { '<' }
+        }
+      })
+    end
+  })
+  api.nvim_create_autocmd('FileType', {
+    group = augroup,
+    pattern = { 'typescript', 'typescriptreact' },
+    desc = 'Setup sandwich recipes for typescript',
+    callback = function()
+      vim.fn['sandwich#util#addlocal']({
+        {
+          buns = { 'Promise<', '>' },
+          input = { 'p' }
+        },
+        {
+          buns = { 'sandwich#magicchar#f#fname("<")', '">"' },
+          kind = { 'add', 'replace' },
+          action = { 'add' },
+          expr = 1,
+          input = { 'g' }
         }
       })
     end

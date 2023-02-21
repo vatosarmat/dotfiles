@@ -128,6 +128,7 @@ local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_pars
 filetype_to_parsername.javascript = 'tsx'
 filetype_to_parsername.jsonc = 'json'
 filetype_to_parsername.blade = 'vue'
+filetype_to_parsername.ejs = 'embedded_template'
 
 --
 --

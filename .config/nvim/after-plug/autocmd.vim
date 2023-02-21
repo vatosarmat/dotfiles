@@ -37,6 +37,11 @@ function! s:OnBufWinEnter() abort
 
   "...
   call jumplist#BufWinEnter()
+
+  "Get rid of ^M. Other ways doesn't work.
+  if char2nr(getline(1)[-1:-1]) == 13
+    e ++ff=dos
+  endif
 endfunction
 
 function! s:OnBufAdd() abort

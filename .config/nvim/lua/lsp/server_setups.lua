@@ -358,7 +358,7 @@ function M.setup(capabilities)
   -- lspconfig.phpactor.setup {
   --   capabilities = capabilities
   -- }
-  require'lspconfig'.tailwindcss.setup {}
+  -- require'lspconfig'.tailwindcss.setup {}
 
   setup_cpp()
   setup_tsserver()

@@ -265,6 +265,12 @@ local function SymbolNavigation(initial_symbols)
 
     get_loclist_items = function(self)
       return self.loclist_node and self.loclist_node.children or self.tree
+    end,
+
+    reset = function(self, new_tree)
+      self.tree = new_tree
+      self.loclist_node = nil
+      self.loclist_node_path = {}
     end
   }
 
@@ -322,13 +328,15 @@ local function SymbolNavigation(initial_symbols)
   end
 
   -- constructor
+  vim.fn.setloclist(0, {}, 'f')
   set_loclist()
 
   -- pub
   local pub = {}
 
   function pub.update(symbols)
-    state.tree = S.make_loclist_tree(symbols)
+    state:reset(S.make_loclist_tree(symbols))
+    vim.fn.setloclist(0, {}, 'f')
     set_loclist()
   end
 

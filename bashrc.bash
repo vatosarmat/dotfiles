@@ -288,6 +288,14 @@ function is_ubuntu {
   [[ "$(type -t lsb_release > /dev/null && lsb_release -i | cut -f 2-)" = "Ubuntu" ]]
 }
 
+function stopwatch {
+  start=$(date +%s)
+  while true; do
+    time="$(($(date +%s) - start))"
+    printf '%s\r' "$(date -u -d "@$time" +%H:%M:%S)"
+  done
+}
+
 source "$HOME/dotfiles/bash/fancy_tools.bash"
 "$HOME/dotfiles/bin/is_workstation" &&
   source "$HOME/dotfiles/bash/workstation.bash"
