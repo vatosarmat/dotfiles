@@ -140,8 +140,8 @@ local client_ext = {
     diagnostic_disable_line = '// NOLINTNEXTLINE(${code})',
     diagnostic_webpage = 'https://clang.llvm.org/extra/clang-tidy/checks/${code}.html'
   },
-  ['sumneko_lua'] = {
-    short_name = 'SL',
+  ['lua_ls'] = {
+    short_name = 'LLS',
     diagnostic_disable_line = '---@diagnostic disable-next-line: ${code}'
   },
   ['rust_analyzer'] = {
@@ -190,7 +190,7 @@ local client_ext = {
     short_name = 'JSON',
     diagnostic_virtual_text = jsonls_diagnostic_virtual_text
   },
-  ['lua-format'] = {
+  ['lua_format'] = {
     short_name = 'LUAF'
   },
   ['prettierd'] = {

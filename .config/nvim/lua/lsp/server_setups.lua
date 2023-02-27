@@ -292,10 +292,12 @@ function M.setup(capabilities)
   neodev.setup({})
 
   local cache = vim.fn.stdpath('cache')
-  lspconfig.sumneko_lua.setup({
-    cmd = { 'sumneko', '2>', vim.fn.stdpath 'cache' .. '/sumneko.log' },
+  lspconfig.lua_ls.setup({
     settings = {
       Lua = {
+        runtime = {
+          version = 'LuaJIT'
+        },
         completion = {
           workspaceWord = false,
           showWord = 'Disable',
@@ -305,10 +307,18 @@ function M.setup(capabilities)
           globals = { 'vim', '_U', 'use', 'pack', 'use_rocks', 'fnoop', 'fconst' }
         },
         workspace = {
-          library = { cache .. '/rocks' }
+          library = { cache .. '/rocks', vim.api.nvim_get_runtime_file('', true) }
+        },
+        telemetry = {
+          enable = false
         }
       }
-    }
+    },
+    on_attach = function(client, bufnr)
+      client.server_capabilities.documentFormattingProvider = false
+      -- client.resolved_capabilities.rangeFormatting = false
+      default_on_attach(client, bufnr)
+    end
   })
   lspconfig.rust_analyzer.setup {}
   lspconfig.vimls.setup {}
