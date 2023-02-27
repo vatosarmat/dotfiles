@@ -53,7 +53,8 @@ set inccommand=
 
 set notimeout
 
-set spelloptions=camel,noplainbuffer
+set spell
+set spelloptions=camel
 
 let mapleader = " "
 nnoremap <Space> <Nop>

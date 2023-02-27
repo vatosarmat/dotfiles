@@ -12,6 +12,8 @@
  "export"
 ] @include
 
+(type_identifier) @spell
+
 [
  (undefined)
  (null)

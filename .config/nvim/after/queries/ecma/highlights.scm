@@ -13,11 +13,16 @@
  "as"
 ] @keyword
 
+(identifier) @spell
+
 ((identifier) @variable.builtin (#any-of? @variable.builtin "Object" "Array" "Math" "Date" "Function" "Number" "Boolean" "JSON" "React"))
 (import) @variable.builtin
 
 ((identifier) @function.builtin (#any-of? @function.builtin "parseInt" "parseFloat" "isNaN" "eval"))
 ((property_identifier) @function.builtin (#eq? @function.builtin "constructor"))
+
+((identifier) @constructor
+ (#lua-match? @constructor "^[A-Z]"))
 
 [
   (this)

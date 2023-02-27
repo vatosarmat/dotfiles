@@ -6,6 +6,7 @@ function M.expand(key, color_table, group_prefix, other_key_value)
   -- usually we need only fg or only bg
   -- so, kinds of tables: #-string treated as fg, or #-string treated as bg
   -- non-#-string is always treated as links
+  -- & is ref
 
   local PATH_SEPARATOR = '/'
   local ret = {}
@@ -88,7 +89,8 @@ function M.boilerplate(name)
 
   vim.o.background = 'dark'
   if vim.fn.exists('syntax_on') then
-    vim.cmd('syntax reset')
+    vim.cmd('syntax off')
+    vim.cmd('syntax on')
   end
 
   vim.o.termguicolors = true

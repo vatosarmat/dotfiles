@@ -72,9 +72,9 @@ ts_configs.setup {
     enable_autocmd = false
   },
   highlight = {
-    enable = true,
+    enable = true
     -- additional_vim_regex_highlighting = true,
-    disable = { 'help' } -- list of language that will be disabled
+    -- disable = { 'help' }
   },
   indent = {
     enable = true,

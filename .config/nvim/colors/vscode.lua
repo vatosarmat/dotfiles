@@ -10,7 +10,7 @@ local function expand_diagnostic(diagnostic_table)
           fg = color
         }
       else
-        -- Floating = 'Sign'
+        -- color is actual kind, e.g. Floating = 'Sign'
         ret[group] = {
           link = string.format('Diagnostic%s%s', color, severity)
         }
@@ -27,6 +27,7 @@ local fg = Colorscheme_utils.fg
 local bg = Colorscheme_utils.bg
 
 local function make_colorscheme()
+  -- Palette formed from various known colorschemes + my own Self nd Brace
   local P = {
     Vscode = {
       comment = '#608b4e',
@@ -176,6 +177,7 @@ local function make_colorscheme()
     }
   }
 
+  -- Actual colorscheme - highlight groups mapped to structures {fg,bg,italic,...}
   local C = {}
 
   -- Special
@@ -361,6 +363,10 @@ local function make_colorscheme()
         Floating = 'Sign'
       }
     }
+    C.Diagnostic.SpellBad = {
+      undercurl = true,
+      sp = C.Diagnostic.DiagnosticSignInfo.fg
+    }
 
     C.StatusLineDiagnostic = fg({
       User1 = C.Diagnostic.DiagnosticSignError.fg,
@@ -460,7 +466,9 @@ local function make_colorscheme()
       ['@tag.delimiter'] = '@operator',
       ['@text.uri'] = P.Vscode.keyword2,
       ['@text.reference'] = P.Vscode.string,
-      ['@text.title'] = P.Vscode.saturated_blue,
+      ['@text.title'] = 'Title',
+      ['@text.title.h2'] = P.Vscode.saturated_blue,
+      ['@text.title.h3'] = P.Vscode.comment,
       ['@text.literal'] = P.Darcula.brown,
       ['@text'] = 'Normal',
 

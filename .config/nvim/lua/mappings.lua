@@ -2,16 +2,16 @@ local api = vim.api
 local bind1 = require'pl.func'.bind1
 local bind = require'pl.func'.bind
 
-local function is_space_before()
-  local col = vim.fn.col '.' - 1
-  return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
-end
-
-local function feed_keys(keys)
-  api.nvim_feedkeys(api.nvim_replace_termcodes(keys, true, false, true), 'n', false)
-end
-
 local function map_completion()
+  local function is_space_before()
+    local col = vim.fn.col '.' - 1
+    return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
+  end
+
+  local function feed_keys(keys)
+    api.nvim_feedkeys(api.nvim_replace_termcodes(keys, true, false, true), 'n', false)
+  end
+
   local cmp = require 'cmp'
   local luasnip = require 'luasnip'
 
@@ -90,6 +90,16 @@ local function map_completion()
   end)
 end
 
+local function map_spell()
+  local set = vim.keymap.set
+  local nset = bind1(set, 'n')
+
+  nset('<leader>as', function()
+    vim.wo.spell = not vim.wo.spell
+  end)
+end
+
 do
   map_completion()
+  map_spell()
 end
