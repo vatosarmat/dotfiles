@@ -101,13 +101,7 @@ local project_kind_generic = {
   }
 }
 
-local PROJECT_KEYS = {
-  'kind',
-  'package_webpage',
-  'explorer_width',
-  'exclude_files',
-  'exclude_mate_bufs'
-}
+local PROJECT_KEYS = { 'package_webpage', 'explorer_width', 'exclude_files', 'exclude_mate_bufs' }
 
 local M = {}
 
@@ -126,9 +120,16 @@ local function is_marker_present(kind)
 end
 
 function M.detect_type()
-  local prototype = vim.fn.filereadable(project_kind_node.marker) == 1 and project_kind_node or
-                      project_kind_generic
+  local prototype, kind
+
+  if vim.fn.filereadable(project_kind_node.marker) == 1 then
+    prototype = project_kind_node
+    kind = 'node'
+  else
+    prototype = project_kind_generic
+  end
   local project = utils.pick(prototype, PROJECT_KEYS)
+  project.kind = kind
 
   for _, subkind in ipairs(prototype.subkinds) do
     if is_marker_present(subkind) then
@@ -136,11 +137,24 @@ function M.detect_type()
       if subkind.make_info then
         project.info = subkind.make_info()
       end
+      project.kind = (kind and kind .. ',' or '') .. subkind.kind
       break
     end
   end
 
+  local spellfiles = { '.spell_local.utf-8.add' }
+  if project.kind then
+    -- project.kind is comma-separated list
+    local kinds = vim.split(project.kind, ',')
+    spellfiles = vim.list_extend(vim.tbl_map(function(item)
+      return ('%s/spell/%s.utf-8.add'):format(vim.fn.stdpath('config'), item)
+    end, kinds), spellfiles)
+  else
+    project.kind = 'generic'
+  end
+
   vim.g.project = project
+  vim.opt.spellfile:append(spellfiles)
 end
 
 return M

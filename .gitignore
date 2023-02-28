@@ -4,3 +4,4 @@ playground.el
 .cache
 tags
 .config/nvim/plugin/packer_compiled.lua
+.config/nvim/spell/*.spl

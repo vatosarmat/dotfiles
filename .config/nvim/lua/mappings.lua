@@ -92,11 +92,26 @@ end
 
 local function map_spell()
   local set = vim.keymap.set
-  local nset = bind1(set, 'n')
+  local nset = function(lhs, rhs, opts)
+    return set('n', '<leader>a' .. lhs, rhs, opts)
+  end
 
-  nset('<leader>as', function()
+  nset('s', function()
     vim.wo.spell = not vim.wo.spell
   end)
+  nset('w', function()
+    vim.ui.select(vim.opt.spellfile:get(), {
+      prompt = 'Which dict?',
+      format_item = function(item)
+        return vim.fn.fnamemodify(item, ':t:r:r')
+      end
+    }, function(_, idx)
+      if idx then
+        vim.cmd(('normal %szg'):format(idx))
+      end
+    end)
+  end)
+
 end
 
 do

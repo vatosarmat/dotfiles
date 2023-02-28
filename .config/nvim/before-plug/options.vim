@@ -55,6 +55,7 @@ set notimeout
 
 set spell
 set spelloptions=camel
+set spellfile=$STD_PATH_CONFIG/spell/generic.utf-8.add
 
 let mapleader = " "
 nnoremap <Space> <Nop>
