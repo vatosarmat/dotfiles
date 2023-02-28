@@ -4,3 +4,8 @@ vim.filetype.add {
     ejs = 'ejs'
   }
 }
+vim.filetype.add({
+  pattern = {
+    ['%.env%.%l+'] = 'sh'
+  }
+})
