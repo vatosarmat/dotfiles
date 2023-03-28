@@ -39,6 +39,7 @@ function lsp_log {
 
   if [[ "$is_reset" ]]; then
     rm "$HOME/.local/state/nvim/lsp.log"
+    touch "$HOME/.local/state/nvim/lsp.log"
     return
   fi
 
