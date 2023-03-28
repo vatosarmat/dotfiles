@@ -6,6 +6,8 @@ set nobackup nowritebackup
 set noswapfile
 set cpoptions-=_
 
+set noequalalways
+
 set cdpath=.,,,
 
 " set switchbuf=usetab
@@ -55,6 +57,7 @@ set notimeout
 
 set spell
 set spelloptions=camel
+set spellcapcheck=
 set spellfile=$STD_PATH_CONFIG/spell/generic.utf-8.add
 
 let mapleader = " "

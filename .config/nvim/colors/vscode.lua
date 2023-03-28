@@ -91,7 +91,7 @@ local function make_colorscheme()
       ['weak'] = '#7a9ec2',
       ['pudark'] = '#9e7bb0',
       ['green'] = '#a5c261',
-      ['purple'] = '#b267e6',
+      -- ['purple'] = '#b267e6', way too saturated
       ['brown'] = '#cc8242',
       ['gold'] = '#cd9731',
       ['red'] = '#f44747',
@@ -193,7 +193,7 @@ local function make_colorscheme()
 
   local function common()
     -- Free
-    -- Darcula.weak, Darcula.gold
+    -- Darcula.gold
 
     -- Syntax palette
     C.Vscode = fg(P.Vscode, 'Vscode_')
@@ -232,6 +232,7 @@ local function make_colorscheme()
       Type = P.Vscode.type,
       ['@property'] = P.Self.property,
       ['@constructor'] = P.Darcula.orange,
+      ['@namespace'] = P.Darcula.weak,
 
       --
       -- links
@@ -469,7 +470,7 @@ local function make_colorscheme()
       ['@text.title'] = 'Title',
       ['@text.title.h2'] = P.Vscode.saturated_blue,
       ['@text.title.h3'] = P.Vscode.comment,
-      ['@text.literal'] = P.Darcula.brown,
+      ['@text.literal'] = P.Darcula.gold,
       ['@text'] = 'Normal',
 
       ['@tag'] = 'Tag'
@@ -488,11 +489,18 @@ local function make_colorscheme()
     }, '@ecma.')
   end
 
+  local function html_php()
+    C.Html_php = fg({
+      ['@tag.php'] = P.Brace.call
+    })
+  end
+
   common()
   git()
   help()
   makrdown()
   ecma()
+  html_php()
 
   return vim.tbl_extend('error', unpack(vim.tbl_values(C)))
 end

@@ -2,6 +2,7 @@ local api = vim.api
 local lsp = vim.lsp
 local log = require 'vim.lsp.log'
 local util = lsp.util
+local misc = require 'lsp.misc'
 local cext = require 'lsp.client_ext'
 
 local M = {}
@@ -58,7 +59,7 @@ local function make_definition_handler(ui)
         api.nvim_win_set_cursor(0, location_pos(jump_location))
       else
         vim.cmd(win_cmd[ui])
-        vim.fn['lsp#DefinitionList'](util.locations_to_items(list_location))
+        vim.fn['lsp#DefinitionList'](misc.locations_to_items(list_location, client.offset_encoding))
       end
       vim.cmd('clearjumps')
     elseif ui == 'preview' then
@@ -68,7 +69,8 @@ local function make_definition_handler(ui)
       if jump_location then
         util.jump_to_location(jump_location, client.offset_encoding)
       else
-        vim.fn['lsp#DefinitionList'](util.locations_to_items(list_location))
+        local a = misc.locations_to_items(list_location, client.offset_encoding)
+        vim.fn['lsp#DefinitionList'](a)
       end
     end
   end

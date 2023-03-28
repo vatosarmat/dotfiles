@@ -31,15 +31,12 @@ require'nvim-tree'.setup {
     args = {}
   },
   view = {
-    width = function()
-      local p = vim.g.project
-      if p then
-        return p.explorer_width
-      end
-      return 30
-    end,
+    width = {
+      min = 20
+    },
     side = 'left',
-    -- auto_resize = false,
+    -- must be true to avoid wincmd =
+    preserve_window_proportions = true,
     mappings = {
       custom_only = false,
       list = {
@@ -60,6 +57,11 @@ require'nvim-tree'.setup {
   },
   git = {
     ignore = false
+  },
+  actions = {
+    open_file = {
+      resize_window = false
+    }
   },
   filters = {
     -- custom = { '__pycache__' }

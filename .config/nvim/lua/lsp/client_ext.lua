@@ -116,6 +116,10 @@ local function rust_diagnostic_virtual_text(d)
   return d.user_data.lsp.code
 end
 
+local function completion_item_uri(item)
+  return item.uri or item.targetUri
+end
+
 -- kind?: string, deprecated?
 -- short_name: string
 -- diagnostic_webpage: string
@@ -160,11 +164,11 @@ local client_ext = {
     end,
     definition_filter = function(method, items)
       if method == 'textDocument/definition' and #items == 2 then
-        local react_types = 'node_modules/%40types/react/index.d.ts'
-        local tsx, non_tsx = unpack(vim.endswith(items[1].uri, '.tsx') and items or
-                                      vim.endswith(items[2].uri, '.tsx') and { items[2], items[1] } or
-                                      { nil, nil })
-        if tsx and vim.endswith(non_tsx.uri, react_types) then
+        local react_types = 'types/react/index.d.ts'
+        local tsx, non_tsx = unpack(vim.endswith(completion_item_uri(items[1]), '.tsx') and items or
+                                      vim.endswith(completion_item_uri(items[2]), '.tsx') and
+                                      { items[2], items[1] } or { nil, nil })
+        if tsx and vim.endswith(completion_item_uri(non_tsx), react_types) then
           items = { tsx }
         end
       end

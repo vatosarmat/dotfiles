@@ -133,12 +133,16 @@ local function setup_tsserver()
 
   setup({
     predicate = function()
-      return vim.g.project.kind == 'vue'
+      return vim.g.project.kind:match('vue')
     end,
     post = function()
       vim.b.volar_active = true
     end
   }, 'volar', {
+    root_dir = function(fname)
+      return lspconfig.util.root_pattern 'pnpm-workspace.yaml'(fname) or
+               lspconfig.util.root_pattern('package.json')(fname)
+    end,
     filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
     on_attach = function(client, bufnr)
       client.server_capabilities.documentFormattingProvider = false
@@ -176,7 +180,7 @@ local function setup_tsserver()
 
   setup({
     predicate = function()
-      return vim.g.project.kind == 'angular'
+      return vim.g.project.kind:match('angular')
     end
   }, 'angularls')
 
