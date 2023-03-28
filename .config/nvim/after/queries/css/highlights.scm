@@ -1,6 +1,8 @@
 ; extends
 
-[(class_name) (id_name)] @type
+[(class_name) (id_name)] @type @spell
+
+(plain_value) @spell
 
 [
  "@media"
@@ -23,7 +25,7 @@
  (tag_name)
 ] @tag
 
-((property_name) @variable
+((property_name) @variable @spell
                  (#match? @variable "^--"))
 ((plain_value) @variable
                (#match? @variable "^--"))

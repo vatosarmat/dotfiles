@@ -21,7 +21,7 @@ function! s:Misc() abort
   " endfunction
 
   "Macro, <Home> is C-m
-  nnoremap g<Home> q
+  nnoremap <Home> q
 
   "Where is cursor
   nnoremap <C-g> <cmd>echo nvim_treesitter#statusline(#{indicator_size: &columns })<cr>
@@ -304,10 +304,6 @@ function s:InsertHelpers() abort
   inoremap <M-.> ->
 endfunction
 
-function s:Treesitter() abort
-  nnoremap <leader>tp <cmd>TSPlaygroundToggle<cr>
-endfunction
-
 call s:Misc()
 call s:Motions()
 call s:Edit()
@@ -316,7 +312,6 @@ call s:Windows()
 call s:BufferNavigation()
 call s:QfList()
 call s:InsertHelpers()
-call s:Treesitter()
 
 augroup Mappings
   autocmd FileType qf call s:QfListBuffer()
