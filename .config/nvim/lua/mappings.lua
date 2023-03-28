@@ -99,7 +99,7 @@ local function map_spell()
   nset('s', function()
     vim.wo.spell = not vim.wo.spell
   end)
-  nset('w', function()
+  nset('g', function()
     vim.ui.select(vim.opt.spellfile:get(), {
       prompt = 'Which dict?',
       format_item = function(item)

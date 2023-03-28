@@ -17,10 +17,11 @@ local node_exclude_files = vim.list_extend(vim.deepcopy(generic_exclude_files), 
   'node_modules',
   'coverage',
   'yarn.lock',
-  'package.lock',
+  'package-lock.json',
   'build',
   'dist',
-  'yarn-error.log'
+  'yarn-error.log',
+  '.yarn'
 })
 
 local project_kind_node = {
@@ -38,6 +39,7 @@ local project_kind_node = {
       exclude_mate_bufs = { '.component.spec.ts', '.module.ts', '.component.css', '.component.scss' }
     },
     {
+      -- detect by package name in package.json
       kind = 'react',
       marker = 'src/index.tsx',
       exclude_files = { '.test.tsx', '.module.ts' }
@@ -142,7 +144,7 @@ function M.detect_type()
     end
   end
 
-  local spellfiles = { '.spell_local.utf-8.add' }
+  local spellfiles = { '.spell.utf-8.add' }
   if project.kind then
     -- project.kind is comma-separated list
     local kinds = vim.split(project.kind, ',')

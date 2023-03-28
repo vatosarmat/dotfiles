@@ -12,3 +12,5 @@ call s:Context()
 if get(get(b:,'loclist_context', #{}), 'type', -1) == 'symbol_list'
   set nonumber
 end
+
+setlocal nospell
