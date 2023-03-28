@@ -1,5 +1,9 @@
 local bind1 = require'pl.func'.bind1
+local map = require('vim_utils').map
 local ts_configs = require 'nvim-treesitter.configs'
+local styled_components = require 'plug-config.styled_components'
+
+styled_components.directives()
 
 local function setup_textobject()
   local ret = {
@@ -129,12 +133,17 @@ filetype_to_parsername.javascript = 'tsx'
 filetype_to_parsername.jsonc = 'json'
 filetype_to_parsername.blade = 'vue'
 filetype_to_parsername.ejs = 'embedded_template'
+map('n', '<leader>tp', '<cmd>TSPlaygroundToggle<cr>')
+map('n', '<leader>tl', function()
+  _G._U.ts_inc_sel_injected = not _G._U.ts_inc_sel_injected
+  print('ts_inc_sel_injected ' .. tostring(_G._U.ts_inc_sel_injected))
+end)
 
+styled_components.queries()
 --
 --
 --
 local ts_utils = require 'nvim-treesitter.ts_utils'
-local map = require('vim_utils').map
 
 local function package_webpage()
   local cache_file = vim.fn.stdpath('cache') .. '/package_webpage.txt'
