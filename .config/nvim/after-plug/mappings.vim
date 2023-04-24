@@ -301,7 +301,10 @@ function s:QfListBuffer() abort
 endfunction
 
 function s:InsertHelpers() abort
+  inoremap <M-o> $
   inoremap <M-.> ->
+  inoremap <M-;> =>
+  inoremap <M-t> $this->
 endfunction
 
 call s:Misc()

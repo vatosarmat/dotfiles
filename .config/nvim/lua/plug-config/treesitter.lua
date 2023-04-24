@@ -1,7 +1,7 @@
 local bind1 = require'pl.func'.bind1
-local map = require('vim_utils').map
 local ts_configs = require 'nvim-treesitter.configs'
 local styled_components = require 'plug-config.styled_components'
+local keymap = vim.keymap
 
 styled_components.directives()
 
@@ -133,8 +133,8 @@ filetype_to_parsername.javascript = 'tsx'
 filetype_to_parsername.jsonc = 'json'
 filetype_to_parsername.blade = 'vue'
 filetype_to_parsername.ejs = 'embedded_template'
-map('n', '<leader>tp', '<cmd>TSPlaygroundToggle<cr>')
-map('n', '<leader>tl', function()
+keymap.set('n', '<leader>tp', '<cmd>TSPlaygroundToggle<cr>')
+keymap.set('n', '<leader>tl', function()
   _G._U.ts_inc_sel_injected = not _G._U.ts_inc_sel_injected
   print('ts_inc_sel_injected ' .. tostring(_G._U.ts_inc_sel_injected))
 end)
@@ -179,7 +179,7 @@ local function package_webpage()
   end
 end
 
-map('n', '<leader>np', package_webpage)
+keymap.set('n', '<leader>np', package_webpage)
 
 --
 --
@@ -190,15 +190,15 @@ neogen.setup {
   placeholders_hl = 'None'
 }
 
-map('n', '<leader>af', bind1(neogen.generate, {
+keymap.set('n', '<leader>af', bind1(neogen.generate, {
   type = 'func'
 }))
-map('n', '<leader>ac', bind1(neogen.generate, {
+keymap.set('n', '<leader>ac', bind1(neogen.generate, {
   type = 'class'
 }))
-map('n', '<leader>at', bind1(neogen.generate, {
+keymap.set('n', '<leader>at', bind1(neogen.generate, {
   type = 'type'
 }))
-map('n', '<leader>aF', bind1(neogen.generate, {
+keymap.set('n', '<leader>aF', bind1(neogen.generate, {
   type = 'file'
 }))
