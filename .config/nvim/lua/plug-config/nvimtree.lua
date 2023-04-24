@@ -64,11 +64,11 @@ require'nvim-tree'.setup {
     }
   },
   filters = {
-    -- custom = { '__pycache__' }
+    custom = { '__pycache__', [[^\.null-ls_\.*]] }
   },
   renderer = {
     root_folder_modifier = ':t',
-    group_empty = true,
+    group_empty = false,
     icons = {
       show = {
         git = true,
