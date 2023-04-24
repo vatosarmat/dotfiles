@@ -10,7 +10,7 @@
 function __curl {
   local method=
   case "$1" in
-    GET | POST | PATCH | PUT | DELETE)
+    GET | POST | PATCH | PUT | DELETE | OPTIONS)
       method="$1"
       shift
       ;;
@@ -22,7 +22,13 @@ function __curl {
     shift
   fi
 
-  local -a headers=('-H' 'Content-Type: application/json')
+  local -a headers=('-H' 'Accept: application/json')
+  case "$method" in
+    POST | PATCH | PUT)
+      headers+=('-H' 'Content-Type: application/json')
+      ;;
+  esac
+
   if [[ -r ".token" ]]; then
     headers+=('-H' 'Authorization: Bearer '"$(< .token)")
   fi
@@ -34,6 +40,12 @@ function __curl {
     url="$1"
   fi
   shift
+
+  if [[ "$method" = "OPTIONS" ]]; then
+    curl -i -X OPTIONS "$url" "$@"
+    echo
+    return
+  fi
 
   if [[ "$no_jq" ]]; then
     curl --no-progress-meter --compressed -L -X "$method" "${headers[@]}" "$url" "$@"
@@ -47,6 +59,7 @@ alias cupost='__curl POST'
 alias cupatch='__curl PATCH'
 alias cuput='__curl PUT'
 alias cudel='__curl DELETE'
+alias cuopt='__curl OPTIONS'
 
 # function cuget {
 #   curl -L -X GET -H "Content-Type: application/json"
