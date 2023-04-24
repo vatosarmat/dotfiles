@@ -133,7 +133,7 @@ local function setup_tsserver()
 
   setup({
     predicate = function()
-      return vim.g.project.kind:match('vue')
+      return vim.tbl_contains(vim.g.project.name, 'vue')
     end,
     post = function()
       vim.b.volar_active = true
@@ -180,7 +180,7 @@ local function setup_tsserver()
 
   setup({
     predicate = function()
-      return vim.g.project.kind:match('angular')
+      return vim.tbl_contains(vim.g.project.name, 'angular')
     end
   }, 'angularls')
 
@@ -367,7 +367,16 @@ function M.setup(capabilities)
       client.server_capabilities.documentFormattingProvider = false
       -- client.resolved_capabilities.rangeFormatting = false
       default_on_attach(client, bufnr)
-    end
+    end,
+    settings = {
+      intelephense = {
+        diagnostics = {}
+        -- format = {
+        --   enable = false,
+        --   braces = 'k&r'
+        -- }
+      }
+    }
   }
   -- lspconfig.phpactor.setup {
   --   capabilities = capabilities

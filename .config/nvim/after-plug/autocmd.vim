@@ -51,12 +51,12 @@ endfunction
 
 function! s:OnVimEnter() abort
   call s:HighlightDiffConflictMarker()
-  lua require 'project'.detect_type()
+  lua require 'project'.configure()
 endfunction
 
 function! s:OnDirChanged() abort
   if v:event.scope == 'global'
-    lua require 'project'.detect_type()
+    lua require 'project'.configure()
   endif
 endfunction
 

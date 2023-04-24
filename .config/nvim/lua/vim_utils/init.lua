@@ -1,5 +1,6 @@
 local tablex = require 'pl.tablex'
 local func = require 'pl.func'
+local api = vim.api
 
 -- local function get_visual_selection()
 --   local bufnr = vim.api.nvim_win_get_buf(0)
@@ -198,11 +199,70 @@ function Text:render_in_virt_text()
   end, line.hl_ranges)
 end
 
+local function get_visual_selection_range()
+
+  --
+  -- line(), col(), getpos()
+  -- v - in Visual mode, the start of the Visual area(the cursor is the end), 
+  -- not in visual - cursor position. Differs from < is that it is updated right away
+  --
+  -- Marks. If mark not set, 0 is returned. 
+  -- Updated *only after exiting Visual mode*, this is not mentioned in documentation
+  -- <
+  -- >
+  --
+
+  -- this just doesn't fucking work
+  -- local marks = { '\'<', '\'>' }
+  local marks = { 'v', '.' }
+
+  local _, start_line, start_col, _ = unpack(vim.fn.getpos(marks[1]))
+  local _, end_line, end_col, _ = unpack(vim.fn.getpos(marks[2]))
+
+  local end_after_start = start_line < end_line or (start_line == end_line and start_col <= end_col)
+
+  -- counting from 0
+  if end_after_start then
+    return {
+      line = start_line - 1,
+      col = start_col - 1
+    }, {
+      line = end_line - 1,
+      col = end_col
+    }
+  else
+    return {
+      line = end_line - 1,
+      col = end_col - 1
+    }, {
+      line = start_line - 1,
+      col = start_col
+    }
+  end
+end
+
+local function get_visual_selection_lines()
+  local sel_start, sel_end = get_visual_selection_range()
+
+  local lines = vim.api.nvim_buf_get_lines(0, sel_start.line, sel_end.line + 1, false)
+
+  if #lines == 0 then
+    return {}
+  end
+
+  lines[#lines] = string.sub(lines[#lines], 1, sel_end.col)
+  lines[1] = string.sub(lines[1], sel_start.col + 1)
+
+  return lines
+end
+
 return {
   map_buf = map_buf,
   map = map,
   autocmd = autocmd,
   assert_key_mode = assert_key_mode,
   Text = Text,
-  buf_append_line = buf_append_line
+  buf_append_line = buf_append_line,
+  get_visual_selection_range = get_visual_selection_range,
+  get_visual_selection_lines = get_visual_selection_lines
 }

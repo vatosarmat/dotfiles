@@ -1,6 +1,7 @@
 local api = vim.api
 local bind1 = require'pl.func'.bind1
 local bind = require'pl.func'.bind
+local vu = require 'vim_utils'
 
 local function map_completion()
   local function is_space_before()
@@ -114,7 +115,20 @@ local function map_spell()
 
 end
 
+local function map_misc()
+  -- "favouiriteze" symbol
+  vim.keymap.set('n', '<space>an', '<Nop>')
+  vim.keymap.set('x', '<space>an', function()
+    local selection = vu.get_visual_selection_lines()[1]
+    -- project root supposed
+    local fd = io.open('.my_notes.md', 'a')
+    fd:write(selection .. '\n')
+    fd:close()
+  end)
+end
+
 do
   map_completion()
   map_spell()
+  map_misc()
 end

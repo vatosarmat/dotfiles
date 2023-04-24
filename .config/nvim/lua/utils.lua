@@ -45,4 +45,12 @@ function M.extend_keys(dst, src, keys)
   end
 end
 
+function M.single_or_list(dst, item)
+  if dst == nil then
+    return item
+  end
+  table.insert(dst, item)
+  return dst
+end
+
 return M
