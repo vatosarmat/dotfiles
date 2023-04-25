@@ -56,7 +56,7 @@ end
 
 -- Do actual mapping, if something overwritten, save it
 function M.enable(name)
-  if vim.b.shortmap then
+  if vim.b.shortmap and vim.b.shortmap[1] ~= name then
     error('Shortmap ' .. vim.b.shortmap[1] .. ' already enabled')
   end
 
@@ -84,7 +84,9 @@ end
 -- Delete mappings, restore overwritten
 function M.disable()
   local shortmap = vim.b.shortmap
-  assert(shortmap, 'No shortmap enabled')
+  if not shortmap then
+    return
+  end
 
   local overwritten_keymaps = vim.b.overwritten_keymaps
   local mappings = shortmap[2]

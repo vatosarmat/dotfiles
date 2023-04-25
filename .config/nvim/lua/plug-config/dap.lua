@@ -61,7 +61,7 @@ local function cpp_rust()
   -- ADAPTERS
   dap.adapters.cppdbg = {
     type = 'executable',
-    command = '/home/igor/.local/bin/OpenDebugAD7',
+    command = '${env:HOME}/.local/bin/OpenDebugAD7',
     name = 'gdb',
     enrich_config = debugee_cmd_input
   }
@@ -261,6 +261,31 @@ local function js_ts()
   end
 end
 
+local function php()
+  dap.adapters.php = {
+    type = 'executable',
+    command = 'node',
+    args = { vim.fn.getenv('HOME') .. '/Dist/vscode-php-debug/out/phpDebug.js' }
+  }
+
+  dap.configurations.php = {
+    {
+      type = 'php',
+      request = 'launch',
+      name = 'Xdebug stopped',
+      port = 9003,
+      stopOnEntry = true
+    },
+    {
+      type = 'php',
+      request = 'launch',
+      name = 'Xdebug running',
+      port = 9003,
+      stopOnEntry = false
+    }
+  }
+end
+
 --
 -- Mappings and UI
 --
@@ -288,8 +313,8 @@ local function mappings()
 
     mapn('b', dap.toggle_breakpoint, '<C-b>')
 
-    mapn('c', dap.continue)
-    mapn('p', dap.pause)
+    mapn('c', dap.continue, 'c')
+    mapn('p', dap.pause, 'p')
     mapn('r', dap.run_to_cursor, 'r')
 
     mapn('i', bind1(dap.step_into, {
@@ -305,9 +330,11 @@ local function mappings()
     mapn('h', widgets.hover, '<Home>')
     map('x', 'h', bind1(widgets.hover, dap_utils.get_visual_selection_text), '<Home>')
 
-    mapn('R', dap.repl.toggle)
+    mapn('R', dap.repl.toggle, 'R')
+    -- open sidebar
     mapn('f', sidebar_frames, 'gf')
     mapn('v', sidebar_scopes, 'gv')
+    -- toggle centered float
     mapn('<M-f>', bind1(widgets.centered_float, widgets.frames), '<M-f>')
     mapn('<M-v>', bind1(widgets.centered_float, widgets.scopes), '<M-v>')
 
@@ -354,6 +381,7 @@ end
 lua()
 cpp_rust()
 js_ts()
+php()
 --
 mappings()
 ui()

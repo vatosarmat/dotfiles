@@ -25,6 +25,11 @@ augroup ConfigMain
 augroup END
 
 function! s:OnBufWinEnter() abort
+  " echom 'OnBufWinEnter '.expand('<afile>')
+
+  "Sometimes FileType is missing
+  let &ft = &ft
+
   "...
   if &buftype == 'quickfix'
     let id = win_getid()
@@ -42,11 +47,26 @@ function! s:OnBufWinEnter() abort
   if char2nr(getline(1)[-1:-1]) == 13
     e ++ff=dos
   endif
+
+  "Force buffer names to be relative paths
+  execute 'cd' getcwd()
+
+  "DAP
+lua << END
+vim.schedule(function()
+  local dap = require"dap"
+  local shortmap = require 'shortmap'
+  local session =dap.session()
+  if session then
+    shortmap.enable('debug')
+  end
+end
+)
+END
 endfunction
 
 function! s:OnBufAdd() abort
-  "Force buffer names to be relative paths
-  execute 'cd' getcwd()
+  " echom 'BufAdd'
 endfunction
 
 function! s:OnVimEnter() abort
