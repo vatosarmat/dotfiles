@@ -84,7 +84,21 @@ local PROJECT_TYPES = {
   {
     name = 'php',
     marker = { 'composer.json' },
-    exclude_files = { 'vendor', 'runtime/debug', 'runtime/logs', 'web/assets', 'composer.lock' }
+    exclude_files = {
+      'vendor',
+      'runtime/debug',
+      'runtime/logs',
+      'web/assets',
+      'composer.lock',
+      'composer.phar'
+    },
+    subtypes = {
+      {
+        name = 'yii',
+        marker = 'yii',
+        exclude_files = {}
+      }
+    }
   }
 }
 

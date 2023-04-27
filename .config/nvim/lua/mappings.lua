@@ -70,8 +70,8 @@ local function map_completion()
     end
   end)
 
-  iset('<C-f>', cmp.mapping.scroll_docs(2))
-  iset('<C-b>', cmp.mapping.scroll_docs(-2))
+  iset('<C-f>', cmp.mapping.scroll_docs(1))
+  iset('<C-b>', cmp.mapping.scroll_docs(-1))
 
   iset('<C-n>', function()
     if cmp.visible() then

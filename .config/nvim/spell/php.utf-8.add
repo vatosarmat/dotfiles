@@ -3,3 +3,7 @@ yiisoft
 inheritdoc
 isset
 gii
+InlineAction
+runWithParams
+Superglobals
+yiiframework
