@@ -296,6 +296,7 @@ local function make_colorscheme()
       },
       QuickFixLine = '#3e4452',
       CursorLine = '#2b2b2b',
+      CursorLineNr = 'LineNr',
       MatchParen = {
         underline = true
       },

@@ -33,3 +33,6 @@ es5
 el
 commonjs
 es6
+dompurify
+jsdom
+windicss

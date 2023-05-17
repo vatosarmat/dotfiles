@@ -76,3 +76,28 @@ alias cuopt='__curl OPTIONS'
 #   curl -L -X GET -H "Content-Type: application/json"
 #
 # }
+
+function db__mysql_reset {
+  local name="$1"
+  if [[ ! "$name" ]]; then
+    echo "db name expected" >&2
+    return 1
+  fi
+
+  shift
+
+  mysql << SQL
+DROP USER IF EXISTS '$name'@'localhost';
+DROP DATABASE IF EXISTS $name;
+
+CREATE USER '$name'@'localhost' IDENTIFIED WITH mysql_native_password BY '123';
+CREATE DATABASE $name;
+GRANT ALL PRIVILEGES ON $name.* TO '$name'@'localhost';
+SQL
+
+  if (($# > 0)); then
+    local seed_file="$1"
+    mysql -u "$name" --password='123' "$name" < "$seed_file"
+  fi
+
+}

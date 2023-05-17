@@ -27,8 +27,15 @@ augroup END
 function! s:OnBufWinEnter() abort
   " echom 'OnBufWinEnter '.expand('<afile>')
 
-  "Sometimes FileType is missing
-  let &ft = &ft
+  "Sometimes FileType is missing, set ft if have it
+lua << END
+  vim.defer_fn(function()
+    local ft = vim.o.ft
+    if ft ~= '' then
+      vim.o.ft = ft
+    end
+  end, 1000);
+END
 
   "...
   if &buftype == 'quickfix'

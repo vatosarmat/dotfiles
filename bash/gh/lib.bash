@@ -3,7 +3,9 @@ alias ghus="gh__search"
 alias ghuc="gh__cache"
 
 function __gh__prompt_repo_action {
-  repo=${1##+( )}
+  # remove matching prefix pattern
+  local repo
+  read -r repo <<< "$1"
   local prompt="${BOLD}${repo}${SGR0} - "
   prompt+="[${BOLD}w${SGR0}]eb, [${BOLD}v${SGR0}]iew, [${BOLD}c${SGR0}]lone, [${BOLD}s${SGR0}]allow clone, [${BOLD}r${SGR0}]elease?"
   while true; do

@@ -7,3 +7,16 @@ InlineAction
 runWithParams
 Superglobals
 yiiframework
+phpinfo
+phpunit
+urlencoded
+mysqli
+preg
+intval
+intval
+strval
+phpinput
+strval
+boolval
+getenv
+htmlspecialchars
