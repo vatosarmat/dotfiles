@@ -56,6 +56,7 @@ set inccommand=
 set notimeout
 
 set spell
+set spelllang=en,ru
 set spelloptions=camel
 set spellcapcheck=
 set spellfile=$STD_PATH_CONFIG/spell/generic.utf-8.add
