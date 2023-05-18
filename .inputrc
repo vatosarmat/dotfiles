@@ -1,7 +1,6 @@
 $include /etc/inputrc
 "\C-p":history-search-backward
 "\C-n":history-search-forward
-"\emfl":"(IFS=$'\\n'; for line in ; do echo $line; done)\e4\eb\e2\C-b"
 
 set colored-stats On
 set completion-ignore-case On

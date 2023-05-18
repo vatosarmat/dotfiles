@@ -9,6 +9,9 @@ shopt -s globstar
 bind -x '"\C-w":echo -n "${READLINE_LINE}" | xsel -ib'
 #shellcheck disable=2016
 bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  xsel -ib'
+# bind -x '"\C-l\C-k":clear;clear'
+#shellcheck disable=2016
+bind '"\emfl":"(IFS=$''\\n''; for line in ; do echo $line; done)\e4\eb\e2\C-b"'
 
 ### history
 source "$HOME/dotfiles/bash/history.bash"
@@ -54,6 +57,7 @@ export PAGER=less
 export MANPAGER="$PAGER"
 
 ### Aliases
+alias clr='clear;clear'
 ###### systemctl
 alias sc="sudo systemctl"
 alias scn="sudo systemctl --no-pager"
