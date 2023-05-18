@@ -160,11 +160,18 @@ function! utils#LineCol() abort
   return [l, c]
 endfunction
 
-function! utils#TrimBufLines() abort
+function! utils#TrimTrailingSpaces() abort
   if g:UOPTS.laf
     let save_cursor = getpos(".")
     keeppatterns keepjumps %s/\s\+$//e
     call setpos('.', save_cursor)
+    retab
+  endif
+endfun
+
+function! utils#Retab() abort
+  if g:UOPTS.laf
+    retab
   endif
 endfun
 
