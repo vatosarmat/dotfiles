@@ -55,6 +55,7 @@ set inccommand=
 
 set notimeout
 
+set fileencodings=ucs-bom,utf-8,cp1251
 set spell
 set spelllang=en,ru
 set spelloptions=camel

@@ -29,12 +29,15 @@ function! s:OnBufWinEnter() abort
 
   "Sometimes FileType is missing, set ft if have it
 lua << END
-  vim.defer_fn(function()
-    local ft = vim.o.ft
-    if ft ~= '' then
-      vim.o.ft = ft
-    end
-  end, 1000);
+  local afile = vim.fn.expand('<afile>')
+  local abuf = tonumber(vim.fn.expand('<abuf>'))
+  local ft = vim.bo[abuf].ft
+  local buftype = vim.bo[abuf].buftype
+  if afile ~= '' and ft ~= '' and buftype == '' then
+    vim.defer_fn(function()
+      vim.bo[abuf].ft = ft
+    end, 1000);
+  end
 END
 
   "...

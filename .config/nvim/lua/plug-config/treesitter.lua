@@ -1,9 +1,9 @@
 local bind1 = require'pl.func'.bind1
 local ts_configs = require 'nvim-treesitter.configs'
-local styled_components = require 'plug-config.styled_components'
+-- local styled_components = require 'plug-config.styled_components'
 local keymap = vim.keymap
 
-styled_components.directives()
+-- styled_components.directives()
 
 local function setup_textobject()
   local ret = {
@@ -82,7 +82,7 @@ ts_configs.setup {
   },
   indent = {
     enable = true,
-    disable = { 'lua', 'ruby' }
+    disable = { 'lua', 'ruby', 'javascript', 'php' }
   },
   playground = {
     enable = true,
@@ -129,17 +129,17 @@ ts_configs.setup {
   }
 }
 local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_parsername
-filetype_to_parsername.javascript = 'tsx'
-filetype_to_parsername.jsonc = 'json'
-filetype_to_parsername.blade = 'vue'
-filetype_to_parsername.ejs = 'embedded_template'
+-- filetype_to_parsername.javascript = 'tsx'
+-- filetype_to_parsername.jsonc = 'json'
+-- filetype_to_parsername.blade = 'vue'
+-- filetype_to_parsername.ejs = 'embedded_template'
 keymap.set('n', '<leader>tp', '<cmd>TSPlaygroundToggle<cr>')
-keymap.set('n', '<leader>tl', function()
-  _G._U.ts_inc_sel_injected = not _G._U.ts_inc_sel_injected
-  print('ts_inc_sel_injected ' .. tostring(_G._U.ts_inc_sel_injected))
-end)
+-- keymap.set('n', '<leader>tl', function()
+--   _G._U.ts_inc_sel_injected = not _G._U.ts_inc_sel_injected
+--   print('ts_inc_sel_injected ' .. tostring(_G._U.ts_inc_sel_injected))
+-- end)
 
-styled_components.queries()
+-- styled_components.queries()
 --
 --
 --

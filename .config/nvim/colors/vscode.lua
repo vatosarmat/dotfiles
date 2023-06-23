@@ -492,7 +492,13 @@ local function make_colorscheme()
 
   local function html_php()
     C.Html_php = fg({
-      ['@tag.php'] = P.Brace.call
+      ['@tag.php'] = P.Brace.call,
+      ['bladeDelimiter'] = 'Operator',
+      ['phpMemberSelector'] = 'Operator',
+      ['htmlTagName'] = 'Tag',
+      ['htmlLink'] = '@text.uri',
+      ['htmlSpecialTagName'] = 'htmlTagName',
+      ['phpMethodsVar'] = 'phpFunctions'
     })
   end
 

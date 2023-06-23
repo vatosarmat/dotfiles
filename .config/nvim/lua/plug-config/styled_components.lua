@@ -176,9 +176,9 @@ arguments: ((template_string) @scss
 ]]
 
 function M.queries()
-  vim.treesitter.query.set_query('javascript', 'injections', M.ecma_injections)
-  vim.treesitter.query.set_query('typescript', 'injections', M.ecma_injections)
-  vim.treesitter.query.set_query('tsx', 'injections', M.ecma_injections)
+  vim.treesitter.query.set('javascript', 'injections', M.ecma_injections)
+  vim.treesitter.query.set('typescript', 'injections', M.ecma_injections)
+  vim.treesitter.query.set('tsx', 'injections', M.ecma_injections)
 end
 
 return M

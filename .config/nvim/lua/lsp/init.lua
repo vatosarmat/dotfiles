@@ -64,7 +64,9 @@ do
 
   local function auto_format()
     if vim.g.UOPTS.laf == 1 then
-      lsp.buf.formatting_sync(nil, 1500)
+      lsp.buf.format({
+        timeout_ms = 1500
+      })
     end
   end
 
