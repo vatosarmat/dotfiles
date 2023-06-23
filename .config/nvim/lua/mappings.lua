@@ -17,7 +17,7 @@ local function map_completion()
   local luasnip = require 'luasnip'
 
   local set = vim.keymap.set
-  local iset = bind1(set, 'i')
+  local iset = bind1(set, { 'i', 's' })
 
   local function complete_sources(...)
     return cmp.complete {

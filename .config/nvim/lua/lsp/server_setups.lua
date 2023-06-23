@@ -11,7 +11,6 @@ local typescript = require 'typescript'
 local typescript_null_ls = require('typescript.extensions.null-ls.code-actions')
 local schemastore = require('schemastore')
 
-local json_schemas = require 'json_schemas'
 --
 --
 -- server.setup takes same parameters as lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
@@ -240,7 +239,8 @@ local function setup_null_ls()
         -- }
         --
         -- vim.pretty_print(params)
-        return vim.g.project.has_local_pint and params.command or 'pint'
+        vim.print(vim.g.project.php.pint)
+        return vim.g.project.php.pint
       end
     },
     f.blade_formatter
@@ -360,6 +360,7 @@ function M.setup(capabilities)
     -- root_dir = lspconfig_util.find_git_ancestor
   }
   lspconfig.solargraph.setup {}
+
   lspconfig.intelephense.setup {
     filetypes = { 'php', 'blade' },
     on_attach = function(client, bufnr)
@@ -370,6 +371,9 @@ function M.setup(capabilities)
     end,
     settings = {
       intelephense = {
+        environment = {
+          shortOpenTag = true
+        },
         diagnostics = {}
         -- format = {
         --   enable = false,
@@ -379,7 +383,13 @@ function M.setup(capabilities)
     }
   }
   -- lspconfig.phpactor.setup {
-  --   capabilities = capabilities
+  --   filetypes = { 'php', 'blade' },
+  --   on_attach = function(client, bufnr)
+  --     -- client.server_capabilities.formatting = false
+  --     client.server_capabilities.documentFormattingProvider = false
+  --     -- client.resolved_capabilities.rangeFormatting = false
+  --     default_on_attach(client, bufnr)
+  --   end
   -- }
   -- require'lspconfig'.tailwindcss.setup {}
 

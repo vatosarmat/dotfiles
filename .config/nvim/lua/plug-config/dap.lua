@@ -324,8 +324,8 @@ local function mappings()
     mapn('s', dap.step_over, 'o')
     mapn('o', dap.step_out, 'O')
 
-    mapn('u', dap.up)
-    mapn('d', dap.down)
+    mapn('u', dap.up, 'u')
+    mapn('d', dap.down, 'd')
 
     mapn('h', widgets.hover, '<Home>')
     map('x', 'h', bind1(widgets.hover, dap_utils.get_visual_selection_text), '<Home>')
