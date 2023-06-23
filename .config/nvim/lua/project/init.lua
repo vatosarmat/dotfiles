@@ -6,6 +6,7 @@ marker            - string, {a or b}, predicate function
 exclude_files
 package_webpage
 exclude_mate_bufs
+[name]            - project-specific stuff
 subtypes
 --]]
 
@@ -92,11 +93,25 @@ local PROJECT_TYPES = {
       'composer.lock',
       'composer.phar'
     },
+    php = require'project.php'.configure(),
     subtypes = {
       {
         name = 'yii',
         marker = 'yii',
         exclude_files = {}
+      },
+      {
+        name = 'laravel',
+        marker = 'artisan',
+        exclude_files = {
+          'storage/framework',
+          'storage/logs',
+          'bootstrap/cache',
+          'database/migrations',
+          '.phpstorm.meta.php',
+          '_ide_helper.php',
+          'public'
+        }
       }
     }
   }
@@ -138,6 +153,11 @@ local function infer_project_type(type_list, result_type)
         result_type.exclude_mate_bufs = type_item.exclude_mate_bufs
       end
 
+      -- set project-type-specific stuff
+      if type_item[type_item.name] then
+        result_type[type_item.name] = type_item[type_item.name]
+      end
+
       if type_item.subtypes then
         infer_project_type(type_item.subtypes, result_type)
       end
@@ -151,7 +171,7 @@ function M.configure()
 
   local project_type_inferred = {
     name = {},
-    exclude_files = { '.git', '.shada', '.staging' }
+    exclude_files = { '.git', '.shada', '.staging', '.github', 'tests' }
   }
   infer_project_type(PROJECT_TYPES, project_type_inferred)
 
