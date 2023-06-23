@@ -36,3 +36,5 @@ es6
 dompurify
 jsdom
 windicss
+stringify
+argv
