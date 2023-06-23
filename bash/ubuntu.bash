@@ -10,21 +10,19 @@ function dpkg__lsexe {
   dpkg -L "$1" | while read -r filePath; do test -x "$filePath" -a -f "$filePath" && echo "$filePath"; done
 }
 
-#List package files
 function dpkg__lsf {
-  test -n "$1" || {
+  local package_name="$1"
+  if [[ -z "$package_name" ]]; then
     echo "No package name" >&2
     return 1
-  }
-  w="${2:-48}"
-  p=""
-  for f in $(dpkg -L "$1" | sort); do
-    if [[ "$f" != "$p"* ]] && [[ "$p" != "/." ]]; then
-      printf "%-${w}s    %s\n" "$p" "$(file -bi "$p")"
+  fi
+
+  local width="${2:-48}"
+  for fl in $(dpkg -L "$1" | sort); do
+    if [[ -f "$fl" ]]; then
+      printf "%-${width}s  %s\n" "$fl" "$(file -bi "$fl")"
     fi
-    p=$f
   done
-  printf "%-${w}s   %s\n" "$p" "$(file -bi "$p")"
 }
 
 function apt__search {

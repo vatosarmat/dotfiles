@@ -28,7 +28,7 @@
   bl = branch -avv
   c = checkout
   fap = fetch --all --prune
-  full-clean = clean -fd
+  clean-untracked = clean -fd
   lg = log --oneline --decorate --graph --all
   pulr = pull --rebase
   pum = push -u origin/master

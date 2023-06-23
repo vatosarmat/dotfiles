@@ -1,8 +1,10 @@
-alias pa="php artisan"
-alias phc="php composer.phar"
+function php__laravel_completion {
+  # source <(composer completion)
+  # source <(laravel completion)
+  local temp="$(mktemp)"
 
-function php__completion {
-  source <(composer completion)
-  source <(laravel completion)
-  # source <(php artisan completion)
+  if php artisan completion > "$temp"; then
+    source "$temp"
+    complete -F _sf_artisan pa
+  fi
 }

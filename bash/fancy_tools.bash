@@ -7,7 +7,7 @@ if has_cmd bat; then
 fi
 
 if has_cmd fd; then
-  alias fd='fd -H'
+  alias fd='fd -H --exclude .git'
 fi
 
 if has_cmd fzf; then
