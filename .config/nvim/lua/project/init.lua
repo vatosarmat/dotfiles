@@ -84,7 +84,7 @@ local PROJECT_TYPES = {
   },
   {
     name = 'php',
-    marker = { 'composer.json' },
+    marker = { 'composer.json', 'index.php' },
     exclude_files = {
       'vendor',
       'runtime/debug',
@@ -112,7 +112,12 @@ local PROJECT_TYPES = {
           '_ide_helper.php',
           'public'
         }
-      }
+      },
+      {
+        name = 'bitrix',
+        marker = 'bitrix/bitrix.php',
+        exclude_files = {}
+      },
     }
   }
 }
