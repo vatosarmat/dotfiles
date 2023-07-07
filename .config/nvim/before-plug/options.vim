@@ -61,6 +61,12 @@ set spelllang=en,ru
 set spelloptions=camel
 set spellcapcheck=
 set spellfile=$STD_PATH_CONFIG/spell/generic.utf-8.add
+set langmap=йq,цw,уe,кr,еt,нy,гu,шi,щo,зp,х[,ъ]
+set langmap+=фa,ыs,вd,аf,пg,рh,оj,лk,дl,ж\\;,э'
+set langmap+=яz,чx,сc,мv,иb,тn,ьm,б\\,ю.
+set langmap+=ЙQ,ЦW,УE,КR,ЕT,НY,ГU,ШI,ЩO,ЗP,Х{,ъ}
+set langmap+=ФA,ЫS,ВD,АF,ПG,РH,ОJ,ЛK,ДL,Ж:,Э\\"
+set langmap+=ЯZ,ЧX,СC,МV,ИB,ТN,ЬM,Б<,Ю>
 
 let mapleader = " "
 nnoremap <Space> <Nop>
