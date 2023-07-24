@@ -98,7 +98,8 @@ function! Redraw(...) abort
 endfunction
 
 function! s:Copy() abort
-  silent execute '!echo -n '.shellescape(@", 1).' | xsel -ib&'
+  " silent execute '!echo -n '.shellescape(@", 1).' | xsel -ib&'
+  silent execute '!echo -n '.shellescape(@", 1).' | wl-copy&'
   call timer_start(100, 'Redraw')
 endfunction
 

@@ -6,9 +6,11 @@ set -o ignoreeof
 shopt -s histverify
 shopt -s globstar
 #shellcheck disable=2016
-bind -x '"\C-w":echo -n "${READLINE_LINE}" | xsel -ib'
+# bind -x '"\C-w":echo -n "${READLINE_LINE}" | xsel -ib'
+bind -x '"\C-w":echo -n "${READLINE_LINE}" | wl-copy'
 #shellcheck disable=2016
-bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  xsel -ib'
+# bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  xsel -ib'
+bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  wl-copy'
 # bind -x '"\C-l\C-k":clear;clear'
 #shellcheck disable=2016
 bind '"\emfl":"(IFS=$''\\n''; for line in ; do echo $line; done)\e4\eb\e2\C-b"'
@@ -85,7 +87,7 @@ alias egrep='egrep --color=auto'
 alias hd='hexdump'
 alias hdh="hd -v -e '/1 \"%02X \"'"
 
-alias r=". ranger"
+alias r="source /usr/bin/ranger"
 alias g="git"
 alias ffmpeg='ffmpeg -hide_banner'
 alias cevt='cat -evt'
@@ -93,7 +95,8 @@ alias cevt='cat -evt'
 ###### microscripts
 alias sbrc='source "$HOME/.bashrc"'
 alias ppath='echo -e "${PATH//:/\\n}"'
-alias tmpl='mktemp /tmp/XXXXXX.log | tr -d '"'"'\n'"'"' | xsel -ib'
+# alias tmpl='mktemp /tmp/XXXXXX.log | tr -d '"'"'\n'"'"' | xsel -ib'
+alias tmpl='mktemp /tmp/XXXXXX.log | tr -d '"'"'\n'"'"' | wl-copy'
 alias hcurl='curl -s -o /dev/null -D -'
 alias cul='curl -L'
 
@@ -120,7 +123,8 @@ function bytes {
 
 function cod {
   if [[ "$#" = "0" ]]; then
-    local a="$(xsel -ob)"
+    # local a="$(xsel -ob)"
+    local a="$(wl-paste)"
     printf "%s    %x" "$a" "'$a"
   else
     printf %x "'$1"

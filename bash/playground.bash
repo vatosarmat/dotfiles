@@ -2,7 +2,8 @@
 alias notif="while inotifywait -q -q -e modify pg.lua ; do lua pg.lua; done"
 alias file_loop='find "$INFODIR" -type f | while read file ; do'
 alias binecho="dd of=/dev/stdout count=1 status=none <<< "
-alias reddit='xsel -ob | sed "s/^/    /" | xsel -ib'
+# alias reddit='xsel -ob | sed "s/^/    /" | xsel -ib'
+alias reddit='wl-paste | sed "s/^/    /" | wl-copy'
 alias luatp='lua -e '\''local p = require"pl.pretty"; p.dump(p.read(io.read()))'\'
 alias perl_info='perl -V'
 alias perl_cpan='perl -MCPAN -Mlocal::lib -e shell'
