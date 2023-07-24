@@ -34,9 +34,11 @@
   pum = push -u origin/master
   rl = remote -v
   s = status --short
-  shc = clone --depth=1024 --recursive --shallow-submodules
+#  shc = clone --depth=1024 --recursive --shallow-submodules
   si = status --ignored
   smu = submodule update --init --recursive
   ss = status
   tl = tag -l --sort=-creatordate --format='%(creatordate:short):  %(refname:short)'
   w = worktree
+[init]
+	defaultBranch = main
