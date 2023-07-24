@@ -23,3 +23,8 @@ htmlspecialchars
 php7
 Laravel
 laravel
+isset
+strtoupper
+basename
+userfile
+Throwable
