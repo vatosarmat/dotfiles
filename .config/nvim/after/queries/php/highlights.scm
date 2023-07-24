@@ -1,5 +1,23 @@
 ; extends
 
+(variable_name) @variable @spell
+(name) @spell
+
+(relative_scope) @variable.special
+((variable_name) @variable.special
+ (#eq? @variable.special "$this"))
+
+[
+ "abstract"
+ "const"
+ "final"
+ "private"
+ "protected"
+ "public"
+ "readonly"
+ "static"
+] @keyword
+
 [
   (php_tag)
   "?>"
@@ -14,4 +32,3 @@
   name: ((variable_name) @property)
 )
 
-(relative_scope) @variable.special
