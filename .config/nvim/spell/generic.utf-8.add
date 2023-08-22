@@ -313,7 +313,6 @@ cd
 abcd
 wp
 ASC
-эконометрики
 readonly
 ar
 ajax
@@ -328,3 +327,18 @@ lf
 Attr
 deps
 dep
+eval
+jquery
+h4
+unescaped
+bools
+el
+attrs
+worklet
+nomatch
+ast
+stockfish
+proc
+cb
+stringified
+SIGSEGV

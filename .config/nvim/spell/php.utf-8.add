@@ -21,10 +21,11 @@ boolval
 getenv
 htmlspecialchars
 php7
-Laravel
 laravel
 isset
 strtoupper
 basename
 userfile
-Throwable
+throwable
+vue3
+attrs
