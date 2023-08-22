@@ -6,7 +6,7 @@ local autocmd = require'vim_utils'.autocmd
 local lsp_flags = require 'lsp.flags'
 local null_ls = require 'null-ls'
 local neodev = require 'neodev'
-local ts_utils = require 'nvim-lsp-ts-utils'
+-- local ts_utils = require 'nvim-lsp-ts-utils'
 local typescript = require 'typescript'
 local typescript_null_ls = require('typescript.extensions.null-ls.code-actions')
 local schemastore = require('schemastore')
@@ -239,7 +239,7 @@ local function setup_null_ls()
         -- }
         --
         -- vim.pretty_print(params)
-        vim.print(vim.g.project.php.pint)
+        -- vim.print(vim.g.project.php.pint)
         return vim.g.project.php.pint
       end
     },
@@ -264,7 +264,7 @@ local function setup_cpp()
     on_new_config = function(new_config, _)
       local cc_file = 'compile_commands.json'
 
-      for _, dir in ipairs { '.', 'Debug', 'debugfull', 'Release' } do
+      for _, dir in ipairs { '.', 'Debug', 'debugfull', 'Release', 'build' } do
         if vim.fn.filereadable(dir .. '/' .. cc_file) == 1 then
           new_config.init_options.compilationDatabasePath = dir
           return

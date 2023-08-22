@@ -1,5 +1,5 @@
-alias vimi='vim -i .shada'
-alias vimd="cd ~/dotfiles ; vim -i .shada bashrc.bash"
+alias vimi='nvim -i .shada'
+alias vimd="cd ~/dotfiles ; nvim -i .shada bashrc.bash"
 alias vim_update="nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'"
 
 function v {

@@ -1,7 +1,8 @@
 {
-  "printWidth": 90,
+  "printWidth": 100,
   "singleQuote": true,
   "semi": false,
   "trailingComma": "es5",
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "editorconfig": true
 }
