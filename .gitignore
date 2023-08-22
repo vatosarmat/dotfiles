@@ -5,3 +5,4 @@ playground.el
 tags
 .config/nvim/plugin/packer_compiled.lua
 .config/nvim/spell/*.spl
+.luarc.json
