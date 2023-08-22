@@ -72,9 +72,7 @@ function M.enable(name)
       if maybe_overwritten then
         overwritten_keymaps[mode][lhs] = maybe_overwritten
       end
-      buf_set_map(mode, lhs, rhs, {
-        noremap = false
-      })
+      buf_set_map(mode, lhs, rhs, { noremap = false, nowait = true })
     end
   end
   vim.b.overwritten_keymaps = overwritten_keymaps
