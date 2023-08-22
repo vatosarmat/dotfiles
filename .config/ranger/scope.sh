@@ -95,13 +95,13 @@ handle_extension() {
             exit 1;;
 
         ## HTML
-        # htm|html|xhtml)
+        htm|html|xhtml)
             ## Preview as text conversion
-            # w3m -dump "${FILE_PATH}" && exit 5
-            # lynx -dump -- "${FILE_PATH}" && exit 5
-            # elinks -dump "${FILE_PATH}" && exit 5
-            # pandoc -s -t markdown -- "${FILE_PATH}" && exit 5
-            # ;;
+            w3m -dump "${FILE_PATH}" && exit 5
+            lynx -dump -- "${FILE_PATH}" && exit 5
+            elinks -dump "${FILE_PATH}" && exit 5
+            pandoc -s -t markdown -- "${FILE_PATH}" && exit 5
+            ;;
 
         ## JSON
         json)
@@ -302,11 +302,11 @@ handle_mime() {
                 local pygmentize_format='terminal'
                 local highlight_format='ansi'
             fi
-            env COLORTERM=8bit bat --color=always --style="numbers" \
-                -- "${FILE_PATH}" && exit 5
             env HIGHLIGHT_OPTIONS="${HIGHLIGHT_OPTIONS}" highlight \
                 --out-format="${highlight_format}" \
                 --force -- "${FILE_PATH}" && exit 5
+            env COLORTERM=8bit bat --color=always --style="numbers" \
+                -- "${FILE_PATH}" && exit 5
             pygmentize -f "${pygmentize_format}" -O "style=${PYGMENTIZE_STYLE}"\
                 -- "${FILE_PATH}" && exit 5
             exit 2;;
