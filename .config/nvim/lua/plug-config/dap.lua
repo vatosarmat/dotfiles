@@ -135,6 +135,8 @@ local function cpp_rust()
 end
 
 local function js_ts()
+
+  -- dedicated plugin for adapter
   require('dap-vscode-js').setup({
     -- node_path = "node", -- Path of node executable. Defaults to $NODE_PATH, and then "node"
     debugger_path = vim.fn.stdpath('data') .. '/vscode-js-debug', -- Path to vscode-js-debug installation.
@@ -147,15 +149,7 @@ local function js_ts()
 
   local C = dap.configurations
 
-  -- dap.configurations.typescript = {
-  --   {
-  --     name = 'Nest',
-  --     port = 9229,
-  --     request = 'attach',
-  --     skipFiles = { '<node_internals>/**' },
-  --     type = 'node'
-  --   }
-  -- }
+  -- https://github.com/microsoft/vscode-js-debug/blob/main/OPTIONS.md
 
   for _, language in ipairs({ 'typescript', 'javascript' }) do
     C[language] = {
@@ -265,7 +259,7 @@ local function php()
   dap.adapters.php = {
     type = 'executable',
     command = 'node',
-    args = { vim.fn.getenv('HOME') .. '/Dist/vscode-php-debug/out/phpDebug.js' }
+    args = { vim.fn.stdpath('data') .. '/vscode-php-debug/out/phpDebug.js' }
   }
 
   dap.configurations.php = {
@@ -312,6 +306,8 @@ local function mappings()
     end
 
     mapn('b', dap.toggle_breakpoint, '<C-b>')
+    mapn('<M-B>', dap.set_exception_breakpoints, '<M-B>')
+    -- mapn('<M-b>', set_exception_breakpoints, '<C-M-b>')
 
     mapn('c', dap.continue, 'c')
     mapn('p', dap.pause, 'p')
@@ -324,8 +320,8 @@ local function mappings()
     mapn('s', dap.step_over, 'o')
     mapn('o', dap.step_out, 'O')
 
-    mapn('u', dap.up, 'u')
-    mapn('d', dap.down, 'd')
+    mapn('u', dap.up, 'U')
+    mapn('d', dap.down, 'D')
 
     mapn('h', widgets.hover, '<Home>')
     map('x', 'h', bind1(widgets.hover, dap_utils.get_visual_selection_text), '<Home>')

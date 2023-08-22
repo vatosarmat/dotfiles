@@ -11,6 +11,7 @@ subtypes
 --]]
 
 local PROJECT_TYPES = {
+  { name = 'dotfiles', marker = { '.config/nvim/init.vim', '.config/nvim/init.lua' } },
   {
     name = 'node',
     marker = 'package.json',
@@ -69,7 +70,7 @@ local PROJECT_TYPES = {
   {
     name = 'cmake',
     marker = 'CMakeLists.txt',
-    exclude_files = { '.ccls-cache', 'Debug', 'Release' }
+    exclude_files = { '.ccls-cache', 'Debug', 'Release', 'build' }
   },
   {
     name = 'rust',
@@ -113,11 +114,7 @@ local PROJECT_TYPES = {
           'public'
         }
       },
-      {
-        name = 'bitrix',
-        marker = 'bitrix/bitrix.php',
-        exclude_files = {}
-      },
+      { name = 'bitrix', marker = 'bitrix/bitrix.php', exclude_files = { 'bitrix', 'upload' } }
     }
   }
 }

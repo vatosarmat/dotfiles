@@ -80,10 +80,7 @@ ts_configs.setup {
     -- additional_vim_regex_highlighting = true,
     -- disable = { 'help' }
   },
-  indent = {
-    enable = true,
-    disable = { 'lua', 'ruby', 'javascript', 'php' }
-  },
+  indent = { enable = true, disable = { 'lua', 'ruby', 'javascript' } },
   playground = {
     enable = true,
     disable = {},
