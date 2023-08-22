@@ -20,7 +20,7 @@
 (fringe-mode -1)
 
 ;;;Font face
-(defvar dotfiles/font-face "JetBrainsMono NerdFont" "font face")
+(defvar dotfiles/font-face "JetBrainsMono Nerd Font" "font face")
 (defun dotfiles/set-height (size) "" (interactive "p")
   (set-face-attribute 'default nil :font dotfiles/font-face :height size)
 )

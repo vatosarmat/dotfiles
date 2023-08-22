@@ -7,7 +7,7 @@ if has_cmd bat; then
 fi
 
 if has_cmd fd; then
-  alias fd='fd -H --exclude .git'
+  alias fd='fd --hidden --no-ignore-parent --exclude .git'
 fi
 
 if has_cmd fzf; then
@@ -23,9 +23,11 @@ if has_cmd fzf; then
   FZF_DEFAULT_OPTS+="ctrl-alt-j:preview-down,ctrl-alt-k:preview-up,"
   FZF_DEFAULT_OPTS+="ctrl-alt-i:select-all,"
   FZF_DEFAULT_OPTS+="f2:toggle-preview,f3:toggle-preview-wrap,f4:toggle-sort,"
-  FZF_DEFAULT_OPTS+="alt-y:execute(echo -n '{}' | xsel -ib)'"
+  # FZF_DEFAULT_OPTS+="alt-y:execute(echo -n '{}' | xsel -ib)'"
+  FZF_DEFAULT_OPTS+="alt-y:execute(echo -n '{}' | wl-copy)'"
   export FZF_CTRL_R_OPTS
-  FZF_CTRL_R_OPTS="--bind='alt-r:execute(source $HOME/dotfiles/bash/history.bash && history_config && history_read && history -d {1} && history -w)+reload(source $HOME/dotfiles/bash/history.bash && history_config && history_read && source "$HOME/.fzf.bash" && __fzf_history_source__ )'"
+  FZF_CTRL_R_OPTS="--bind='alt-r:execute(source $HOME/dotfiles/bash/history.bash && history_config && history_read && history -d {1} && history -w)+reload(source $HOME/dotfiles/bash/history.bash && history_config && history_read  && __fzf_history_source__ )'"
+  source "$HOME/dotfiles/bash/fzf/key-bindings.bash"
 fi
 
 if has_cmd rg; then
