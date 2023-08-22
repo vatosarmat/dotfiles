@@ -1,15 +1,15 @@
 local lsp = vim.lsp
-local bind1 = require'pl.func'.bind1
+local bind1 = require('pl.func').bind1
 local lspconfig = require 'lspconfig'
 local lspconfig_util = require 'lspconfig.util'
-local autocmd = require'vim_utils'.autocmd
+local autocmd = require('vim_utils').autocmd
 local lsp_flags = require 'lsp.flags'
 local null_ls = require 'null-ls'
 local neodev = require 'neodev'
 -- local ts_utils = require 'nvim-lsp-ts-utils'
 local typescript = require 'typescript'
-local typescript_null_ls = require('typescript.extensions.null-ls.code-actions')
-local schemastore = require('schemastore')
+local typescript_null_ls = require 'typescript.extensions.null-ls.code-actions'
+local schemastore = require 'schemastore'
 
 --
 --
@@ -22,36 +22,31 @@ local jsts_filetype = {
   'javascript.jsx',
   'typescript',
   'typescriptreact',
-  'typescript.jsx'
+  'typescript.jsx',
 }
-local prettier_filetype = vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue', 'handlebars' },
-                                          jsts_filetype)
+local prettier_filetype =
+  vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue', 'handlebars' }, jsts_filetype)
 -- local eslint_filetype = jsts_filetype
 
 local function document_highlight()
   local col = vim.fn.col '.'
   local cursor_char = vim.fn.getline('.'):sub(col, col)
   -- Send request to LSP only if keyword char is under cursor
-  if vim.fn.matchstr(cursor_char, '\\k') ~= '' then
-    lsp.buf.document_highlight()
-  end
+  if vim.fn.matchstr(cursor_char, '\\k') ~= '' then lsp.buf.document_highlight() end
 end
 
 ---@diagnostic disable-next-line: unused-local
 local function default_on_attach(client, _bufnr)
   if client.server_capabilities.documentHighlightProvider then
-    autocmd('LSP_buffer', -------------------------------------------------------
-    {
-      { 'CursorHold', document_highlight }, -----------------------
-      { 'CursorMoved', lsp.buf.clear_references }
-    }, {
-      buffer = true
-    })
+    autocmd(
+      'LSP_buffer',
+      { { 'CursorHold', document_highlight }, { 'CursorMoved', lsp.buf.clear_references } },
+      { buffer = true }
+    )
   end
 end
 
 local function setup_tsserver()
-
   -- {predicate, post}
   -- string
   --
@@ -68,18 +63,14 @@ local function setup_tsserver()
       local res
       if not pp.predicate or (pp.predicate and pp.predicate()) then
         res = server_manager_add(...)
-        if pp.post then
-          pp.post()
-        end
+        if pp.post then pp.post() end
       end
       return res
     end
   end
 
   setup({
-    post = function()
-      vim.b.flow_active = true
-    end
+    post = function() vim.b.flow_active = true end,
   }, 'flow')
 
   -- local tsserver = lspconfig.tsserver
@@ -130,44 +121,46 @@ local function setup_tsserver()
   --   -- root_dir = lspconfig_util.find_git_ancestor
   -- })
 
-  setup({
-    predicate = function()
-      return vim.tbl_contains(vim.g.project.name, 'vue')
-    end,
-    post = function()
-      vim.b.volar_active = true
-    end
-  }, 'volar', {
-    root_dir = function(fname)
-      return lspconfig.util.root_pattern 'pnpm-workspace.yaml'(fname) or
-               lspconfig.util.root_pattern('package.json')(fname)
-    end,
-    filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
-    on_attach = function(client, bufnr)
-      client.server_capabilities.documentFormattingProvider = false
-      -- client.resolved_capabilities.rangeFormatting = false
-      default_on_attach(client, bufnr)
-    end
-  })
-
-  setup({
-    predicate = function()
-      return not (vim.b.flow_active or vim.b.volar_active)
-    end
-  }, 'tsserver', bind1(typescript.setup, {
-    disable_commands = false, -- prevent the plugin from creating Vim commands
-    debug = false, -- enable debug logging for commands
-    go_to_source_definition = {
-      fallback = true -- fall back to standard LSP definition on failure
+  setup(
+    {
+      predicate = function() return vim.tbl_contains(vim.g.project.name, 'vue') end,
+      post = function() vim.b.volar_active = true end,
     },
-    server = { -- pass options to lspconfig's setup method
+    'volar',
+    {
+      root_dir = function(fname)
+        return lspconfig.util.root_pattern 'pnpm-workspace.yaml'(fname)
+          or lspconfig.util.root_pattern 'package.json'(fname)
+      end,
+      filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
       on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = false
         -- client.resolved_capabilities.rangeFormatting = false
         default_on_attach(client, bufnr)
-      end
+      end,
     }
-  }))
+  )
+
+  setup(
+    {
+      predicate = function() return not (vim.b.flow_active or vim.b.volar_active) end,
+    },
+    'tsserver',
+    bind1(typescript.setup, {
+      disable_commands = false, -- prevent the plugin from creating Vim commands
+      debug = false, -- enable debug logging for commands
+      go_to_source_definition = {
+        fallback = true, -- fall back to standard LSP definition on failure
+      },
+      server = { -- pass options to lspconfig's setup method
+        on_attach = function(client, bufnr)
+          client.server_capabilities.documentFormattingProvider = false
+          -- client.resolved_capabilities.rangeFormatting = false
+          default_on_attach(client, bufnr)
+        end,
+      },
+    })
+  )
 
   -- setup({
   --   predicate = function()
@@ -178,39 +171,30 @@ local function setup_tsserver()
   -- })
 
   setup({
-    predicate = function()
-      return vim.tbl_contains(vim.g.project.name, 'angular')
-    end
+    predicate = function() return vim.tbl_contains(vim.g.project.name, 'angular') end,
   }, 'angularls')
-
 end
 
 local function setup_null_ls()
   local f = null_ls.builtins.formatting
   local d = null_ls.builtins.diagnostics
   local sources = {
-    d.shellcheck.with({
-      runtime_condition = function(params)
-        return not string.match(params.bufname, '%.env%.?%l*$')
-      end,
+    d.shellcheck.with {
+      runtime_condition = function(params) return not string.match(params.bufname, '%.env%.?%l*$') end,
 
       extra_args = function(params)
         return vim.endswith(params.bufname, '.bash') and { '--shell=bash' } or {}
-      end
-    }),
-    f.shfmt.with({
-      extra_args = { '-i', '2', '-ci', '-sr' }
-    }),
-    f.lua_format,
-    lsp_flags.prettier_with_d and f.prettierd.with({
+      end,
+    },
+    f.shfmt.with { extra_args = { '-i', '2', '-ci', '-sr' } },
+    f.stylua,
+    lsp_flags.prettier_with_d and f.prettierd.with {
       filetypes = prettier_filetype,
-      env = {
-        PRETTIERD_DEFAULT_CONFIG = os.getenv('HOME') .. '/.config/.prettierrc.json'
-      }
-    }) or f.prettier.with({
-      filetypes = prettier_filetype
+      env = { PRETTIERD_DEFAULT_CONFIG = os.getenv 'HOME' .. '/.config/.prettierrc.json' },
+    } or f.prettier.with {
+      filetypes = prettier_filetype,
       -- only_local = 'node_modules/.bin'
-    }),
+    },
     f.autopep8,
     typescript_null_ls,
     -- f.phpcsfixer.with {
@@ -241,16 +225,12 @@ local function setup_null_ls()
         -- vim.pretty_print(params)
         -- vim.print(vim.g.project.php.pint)
         return vim.g.project.php.pint
-      end
+      end,
     },
-    f.blade_formatter
+    f.blade_formatter,
   }
 
-  null_ls.setup {
-    debug = lsp_flags.null_ls_debug,
-    sources = sources,
-    update_on_insert = true
-  }
+  null_ls.setup { debug = lsp_flags.null_ls_debug, sources = sources, update_on_insert = true }
 end
 
 local function setup_cpp()
@@ -258,7 +238,7 @@ local function setup_cpp()
     init_options = {
       compilationDatabasePath = 'Debug',
       clangdFileStatus = false,
-      semanticHighlighting = true
+      semanticHighlighting = true,
     },
     cmd = { 'clangd', '--background-index', '--clang-tidy', '--completion-style=detailed' },
     on_new_config = function(new_config, _)
@@ -273,7 +253,7 @@ local function setup_cpp()
 
       new_config.init_options.compilationDatabasePath =
         vim.fn.input('Where is ' .. cc_file .. '? ', '', 'file')
-    end
+    end,
   }
   -- ccls fails to gd in dependancies headers, while clangd is ok with that
   -- lspconfig.ccls.setup {
@@ -286,44 +266,30 @@ local M = {}
 function M.setup(capabilities)
   lspconfig.util.default_config = vim.tbl_extend('force', lspconfig.util.default_config, {
     autostart = lsp_flags.lsp_autostart,
-    flags = {
-      debounce_text_changes = 500
-    },
+    flags = { debounce_text_changes = 500 },
     capabilities = capabilities,
-    on_attach = default_on_attach
+    on_attach = default_on_attach,
   })
 
-  neodev.setup({})
+  neodev.setup {}
 
-  local cache = vim.fn.stdpath('cache')
-  lspconfig.lua_ls.setup({
+  local cache = vim.fn.stdpath 'cache'
+  lspconfig.lua_ls.setup {
     settings = {
       Lua = {
-        runtime = {
-          version = 'LuaJIT'
-        },
-        completion = {
-          workspaceWord = false,
-          showWord = 'Disable',
-          callSnippet = 'Replace'
-        },
-        diagnostics = {
-          globals = { 'vim', '_U', 'use', 'pack', 'use_rocks', 'fnoop', 'fconst' }
-        },
-        workspace = {
-          library = { cache .. '/rocks', vim.api.nvim_get_runtime_file('', true) }
-        },
-        telemetry = {
-          enable = false
-        }
-      }
+        runtime = { version = 'LuaJIT' },
+        completion = { workspaceWord = false, showWord = 'Disable', callSnippet = 'Replace' },
+        diagnostics = { globals = { 'vim', '_U', 'use', 'pack', 'use_rocks', 'fnoop', 'fconst' } },
+        workspace = { library = { cache .. '/rocks', vim.api.nvim_get_runtime_file('', true) } },
+        telemetry = { enable = false },
+      },
     },
     on_attach = function(client, bufnr)
       client.server_capabilities.documentFormattingProvider = false
       -- client.resolved_capabilities.rangeFormatting = false
       default_on_attach(client, bufnr)
-    end
-  })
+    end,
+  }
   lspconfig.rust_analyzer.setup {}
   lspconfig.vimls.setup {}
   lspconfig.bashls.setup {}
@@ -337,17 +303,8 @@ function M.setup(capabilities)
   lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {
     filetypes = { 'jsonc' },
-    init_options = {
-      provideFormatter = false
-    },
-    settings = {
-      json = {
-        schemas = schemastore.json.schemas(),
-        validate = {
-          enable = true
-        }
-      }
-    }
+    init_options = { provideFormatter = false },
+    settings = { json = { schemas = schemastore.json.schemas(), validate = { enable = true } } },
   }
   lspconfig.yamlls.setup {}
   lspconfig.eslint.setup {
@@ -371,16 +328,14 @@ function M.setup(capabilities)
     end,
     settings = {
       intelephense = {
-        environment = {
-          shortOpenTag = true
-        },
-        diagnostics = {}
+        environment = { shortOpenTag = true },
+        diagnostics = {},
         -- format = {
         --   enable = false,
         --   braces = 'k&r'
         -- }
-      }
-    }
+      },
+    },
   }
   -- lspconfig.phpactor.setup {
   --   filetypes = { 'php', 'blade' },

@@ -1,22 +1,22 @@
-local find_if = require'pl.tablex'.find_if
-local makeset = require'pl.tablex'.makeset
+local find_if = require('pl.tablex').find_if
+local makeset = require('pl.tablex').makeset
 
-local diagnostic_get_code = require'lsp.misc'.diagnostic_get_code
+local diagnostic_get_code = require('lsp.misc').diagnostic_get_code
 
 local function tsserver_diagnostic_highlight(text, line)
   local type_hl_idx = 0
   local pats = {
-    { [[[pP]roperty '[^']+']], fconst('TSProperty') },
+    { [[[pP]roperty '[^']+']], fconst 'TSProperty' },
     {
       [[[tT]ype '[^']+']],
       function()
         local ret = type_hl_idx % 2 == 0 and 'TSType' or 'TSKeyword'
         type_hl_idx = (type_hl_idx + 1) % 2
         return ret
-      end
+      end,
     },
-    { [[[sS]ignature '[^']+']], fconst('TSInclude') },
-    { [[[oO]verload %d of %d, '[^']+']], fconst('TSFunction') }
+    { [[[sS]ignature '[^']+']], fconst 'TSInclude' },
+    { [[[oO]verload %d of %d, '[^']+']], fconst 'TSFunction' },
   }
   local rest = line
   while #rest > 0 do
@@ -33,14 +33,12 @@ local function tsserver_diagnostic_highlight(text, line)
         if e == q2 then
           text:append(string.sub(rest, 0, q1)) -- prefix
           text:append(string.sub(rest, q1 + 1, q2 - 1), hl_func()) -- type
-          text:append('\'')
+          text:append '\''
           matched = true
           break
         end
       end
-      if not matched then
-        text:append(quote_area)
-      end
+      if not matched then text:append(quote_area) end
       rest = string.sub(rest, q2 + 1)
     else
       -- nothing in quotes
@@ -55,7 +53,7 @@ local function tsserver_diagnostic_virtual_text(d)
   local code_short_msg = {
     [6133] = 'unused_decl',
     [6192] = 'unused_import',
-    [2304] = 'not_found'
+    [2304] = 'not_found',
   }
   return code_short_msg[code] or ('ts:' .. code)
 end
@@ -72,14 +70,10 @@ local function eslint_diagnostic_virtual_text(d)
     'arrow-spacing',
     'object-curly-spacing',
     'quotes',
-    'no-multiple-empty-lines'
+    'no-multiple-empty-lines',
   }
-  local dont_show = find_if(dont_show_them, function(item)
-    return vim.endswith(code, item)
-  end)
-  if dont_show then
-    return nil
-  end
+  local dont_show = find_if(dont_show_them, function(item) return vim.endswith(code, item) end)
+  if dont_show then return nil end
 
   return string.gsub(code, '^@typescript%-eslint', '@ts')
 end
@@ -105,20 +99,16 @@ local function jsonls_diagnostic_virtual_text(d)
     [0x207] = 'TrailingComma',
     [0x208] = 'DuplicateKey',
     [0x209] = 'CommentNotPermitted',
-    [0x300] = 'SchemaResolveError'
+    [0x300] = 'SchemaResolveError',
   }
   local code = d.user_data.lsp.code
 
   return ErrorCode[tonumber(code)]
 end
 
-local function rust_diagnostic_virtual_text(d)
-  return d.user_data.lsp.code
-end
+local function rust_diagnostic_virtual_text(d) return d.user_data.lsp.code end
 
-local function completion_item_uri(item)
-  return item.uri or item.targetUri
-end
+local function completion_item_uri(item) return item.uri or item.targetUri end
 
 -- kind?: string, deprecated?
 -- short_name: string
@@ -134,22 +124,22 @@ local client_ext = {
     kind = 'linter',
     short_name = 'SC',
     diagnostic_disable_line = '#shellcheck disable=${code}',
-    diagnostic_webpage = 'https://github.com/koalaman/shellcheck/wiki/SC${code}'
+    diagnostic_webpage = 'https://github.com/koalaman/shellcheck/wiki/SC${code}',
   },
   ['clangd'] = {
-    short_name = 'CD'
+    short_name = 'CD',
   },
   ['clang-tidy'] = {
     short_name = 'CT',
     diagnostic_disable_line = '// NOLINTNEXTLINE(${code})',
-    diagnostic_webpage = 'https://clang.llvm.org/extra/clang-tidy/checks/${code}.html'
+    diagnostic_webpage = 'https://clang.llvm.org/extra/clang-tidy/checks/${code}.html',
   },
   ['lua_ls'] = {
     short_name = 'LLS',
-    diagnostic_disable_line = '---@diagnostic disable-next-line: ${code}'
+    diagnostic_disable_line = '---@diagnostic disable-next-line: ${code}',
   },
   ['rust_analyzer'] = {
-    short_name = 'RA'
+    short_name = 'RA',
   },
   ['tsserver'] = {
     short_name = 'TS',
@@ -157,92 +147,92 @@ local client_ext = {
     diagnostic_disable_line = '//@ts-expect-error',
     diagnostic_virtual_text = tsserver_diagnostic_virtual_text,
     diagnostic_filter = function(diagnostic_list)
-      local exclude_codes = makeset({ 6133, 6196, 80001, 80006 })
-      return vim.tbl_filter(function(item)
-        return not exclude_codes[item.code]
-      end, diagnostic_list)
+      local exclude_codes = makeset { 6133, 6196, 80001, 80006 }
+      return vim.tbl_filter(function(item) return not exclude_codes[item.code] end, diagnostic_list)
     end,
     definition_filter = function(method, items)
       if method == 'textDocument/definition' and #items == 2 then
         local react_types = 'types/react/index.d.ts'
-        local tsx, non_tsx = unpack(vim.endswith(completion_item_uri(items[1]), '.tsx') and items or
-                                      vim.endswith(completion_item_uri(items[2]), '.tsx') and
-                                      { items[2], items[1] } or { nil, nil })
-        if tsx and vim.endswith(completion_item_uri(non_tsx), react_types) then
-          items = { tsx }
-        end
+        local tsx, non_tsx = unpack(
+          vim.endswith(completion_item_uri(items[1]), '.tsx') and items
+            or vim.endswith(completion_item_uri(items[2]), '.tsx') and { items[2], items[1] }
+            or { nil, nil }
+        )
+        if tsx and vim.endswith(completion_item_uri(non_tsx), react_types) then items = { tsx } end
       end
 
       return items
-    end
+    end,
   },
   ['eslint'] = {
     short_name = 'ES',
     diagnostic_disable_line = '//eslint-disable-next-line ${code}',
-    diagnostic_webpage = function(diagnostic)
-      return diagnostic.user_data.lsp.codeDescription.href
-    end,
+    diagnostic_webpage = function(diagnostic) return diagnostic.user_data.lsp.codeDescription.href end,
     diagnostic_fix_action_selector = function(ca_result)
-      local idx = find_if(ca_result, function(action)
-        return action.command.command == 'eslint.applySingleFix'
-      end)
+      local idx = find_if(
+        ca_result,
+        function(action) return action.command.command == 'eslint.applySingleFix' end
+      )
       return ca_result[idx]
     end,
-    diagnostic_virtual_text = eslint_diagnostic_virtual_text
+    diagnostic_virtual_text = eslint_diagnostic_virtual_text,
   },
   ['jsonls'] = {
     short_name = 'JSON',
-    diagnostic_virtual_text = jsonls_diagnostic_virtual_text
+    diagnostic_virtual_text = jsonls_diagnostic_virtual_text,
   },
   ['lua_format'] = {
-    short_name = 'LUAF'
+    short_name = 'LUAF',
+  },
+  ['stylua'] = {
+    short_name = 'SL',
   },
   ['prettierd'] = {
-    short_name = 'P'
+    short_name = 'P',
   },
   ['shfmt'] = {
-    short_name = 'SHF'
+    short_name = 'SHF',
   },
   ['bashls'] = {
-    short_name = 'B'
+    short_name = 'B',
   },
   ['rustc'] = {
-    diagnostic_virtual_text = rust_diagnostic_virtual_text
+    diagnostic_virtual_text = rust_diagnostic_virtual_text,
   },
   ['css'] = {
-    diagnostic_virtual_text = diagnostic_get_code
+    diagnostic_virtual_text = diagnostic_get_code,
   },
   ['angularls'] = {
-    short_name = 'NG'
+    short_name = 'NG',
   },
   ['pyright'] = {
-    short_name = 'PR'
+    short_name = 'PR',
   },
   ['autopep8'] = {
-    short_name = 'A8'
+    short_name = 'A8',
   },
   ['volar'] = {
-    short_name = 'VU'
+    short_name = 'VU',
   },
   -- PHP
   ['intelephense'] = {
-    short_name = 'IP'
+    short_name = 'IP',
   },
   ['phpactor'] = {
-    short_name = 'PA'
+    short_name = 'PA',
   },
   ['phpcsfixer'] = {
-    short_name = 'PF'
+    short_name = 'PF',
   },
   ['pint'] = {
-    short_name = 'PI'
+    short_name = 'PI',
   },
   ['tailwindcss'] = {
-    short_name = 'TWC'
+    short_name = 'TWC',
   },
   ['blade_formatter'] = {
-    short_name = 'BF'
-  }
+    short_name = 'BF',
+  },
 }
 
 client_ext['Lua Diagnostics.'] = client_ext['sumneko_lua']
@@ -259,7 +249,7 @@ setmetatable(client_ext, {
       rawset(tbl, key, v)
     end
     return v
-  end
+  end,
 })
 
 return client_ext
