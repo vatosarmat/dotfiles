@@ -26,7 +26,7 @@ if has_cmd fzf; then
   # FZF_DEFAULT_OPTS+="alt-y:execute(echo -n '{}' | xsel -ib)'"
   FZF_DEFAULT_OPTS+="alt-y:execute(echo -n '{}' | wl-copy)'"
   export FZF_CTRL_R_OPTS
-  FZF_CTRL_R_OPTS="--bind='alt-r:execute(source $HOME/dotfiles/bash/history.bash && history_config && history_read && history -d {1} && history -w)+reload(source $HOME/dotfiles/bash/history.bash && history_config && history_read  && __fzf_history_source__ )'"
+  FZF_CTRL_R_OPTS="--bind='alt-r:execute-silent(history_ext trash {2..})+reload-sync(source $HOME/dotfiles/bash/history.bash && history_config && history_read && source $HOME/dotfiles/bash/fzf/key-bindings.bash && __fzf_history_source__)'"
   source "$HOME/dotfiles/bash/fzf/key-bindings.bash"
 fi
 

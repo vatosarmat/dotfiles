@@ -1,0 +1,95 @@
+#!/bin/bash
+
+set -e
+# set -x
+
+refine() {
+  local awk_script
+
+  # empty delimiter - read all input into variable perl_script
+  read -r -d '' awk_script << 'AWK' || true
+BEGIN {
+  RS = "\0\n"
+  while(getline trash_entry < (ENVIRON["HOME"] "/.bash_history_trash")) {
+    trash_table[trash_entry] = 1
+  }
+
+  RS = "[[:space:]]*\n[[:space:]]*"
+  ORS = "\0"
+}
+
+function collect_entry(timestamp_table, entry, current_ts) {
+  if(entry && !trash_table[entry]) {
+    # find the earliest timestamp, >
+    if(!timestamp_table[entry] || timestamp_table[entry] > current_ts) {
+      timestamp_table[entry] = current_ts
+    }
+  }
+}
+
+/\0/ {
+  print "unexpected \\0 in input file\n" > "/dev/stderr"
+  error = 1
+  exit -1
+}
+
+
+{
+  if ($0 ~ /^#[[:digit:]]+/) {
+    collect_entry(timestamp_table, entry, current_ts)
+    entry = ""
+    current_ts = substr($0, 2)
+  } else {
+    if(entry) {
+      entry = sprintf("%s\n%s", entry, $0)
+    } else {
+      entry = $0
+    }
+  }
+}
+
+END {
+  if(error){
+    exit -1
+  }
+
+  collect_entry(timestamp_table, entry, current_ts)
+
+  for(entry in timestamp_table) {
+    print timestamp_table[entry], entry
+  }
+}
+AWK
+
+  # history -a
+  mv "$HOME/.bash_history" "$HOME/.bash_history.backup"
+  awk "$awk_script" < "$HOME/.bash_history.backup" |
+    sort -nz |
+    sed -Ez 's/^([[:digit:]]+) (.*)/#\1\n\2/' |
+    tr "\0" "\n" > "$HOME/.bash_history"
+  rm "$HOME/.bash_history_trash"
+  touch "$HOME/.bash_history_trash"
+  # history -c
+  # history -r
+}
+
+trash() {
+  if [[ ! "$1" ]]; then
+    echo 'entry expected' >&2
+    return 1
+  fi
+  local entry="$1"
+  echo -e "${entry}\0" >> "$HOME/.bash_history_trash"
+}
+
+case "$1" in
+  refine)
+    refine
+    ;;
+  trash)
+    trash "$2"
+    ;;
+  *)
+    echo 'subcommand expected' >&2
+    ;;
+esac

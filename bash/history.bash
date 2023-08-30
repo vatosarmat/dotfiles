@@ -4,7 +4,7 @@ function history_config {
   HISTFILESIZE=
   HISTCONTROL=ignoreboth:erasedups
   #shellcheck disable=2140
-  HISTIGNORE="ll":"cd *":"help *":"r":"exit":"history *"
+  HISTIGNORE="ll":"cd *":"help *":"r":"exit":"history *":"fc *":"clr"
   HISTTIMEFORMAT="%F %T:%Z - "
 }
 

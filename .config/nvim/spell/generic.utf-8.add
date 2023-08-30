@@ -342,3 +342,7 @@ proc
 cb
 stringified
 SIGSEGV
+getline
+perl
+stderr
+printf

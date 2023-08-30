@@ -27,6 +27,49 @@ __fzf_select__() {
     done
 }
 
+__fzf_history_source__() {
+  #fc -lnr -2147483648 - list all commands from history list, omit numbers, reverse order, -count
+  #builtin history - get the last command from history list(here it is only to get its number)
+  #last_hist - string of form '2187  cmd args', but it is used in int context, so casted to int
+  #perl - -n - while(<>) loop, -e - program, -l0 - line terminator 0
+  local perl_script
+
+  # empty delimiter - read all input into variable perl_script
+  read -r -d '' perl_script << 'PERL'
+# there is no use strict; so variables declarations are not required
+# BEGIN block runs before 'perl -n' loop
+BEGIN { 
+  $/ = "\0\n";
+  open(TF, '<', $ENV{"HOME"}."/.bash_history_trash");
+  while(<TF>) {
+    chomp;
+    # printf STDERR ("trash: %s\n", $_);
+    $trash_table{$_} = 1;
+  }
+
+  # read-skip initial \t
+  getc; 
+  # input lines separator, to be stripped because of -l0 argument
+  $/ = "\n\t"; 
+  # index
+  $HISTCMD = $ENV{last_hist} + 1 
+} 
+
+chomp;
+# clear initial space or * in input line
+s/^[ *]//;
+
+if(!$trash_table{$_}) {
+  # $_ - input string, $. - its number
+  # if inputs string not yet seen, print it with its number, separated by \t
+  print $HISTCMD - $. . "\t$_" if !$seen{$_}++
+}
+PERL
+  builtin fc -lnr -2147483648 |
+    # last_hist=$(HISTTIMEFORMAT='' builtin history 1) perl -n -e "$perl_script"
+    last_hist=$(HISTTIMEFORMAT='' builtin history 1) perl -n -l0 -e "$perl_script"
+}
+
 if [[ $- =~ i ]]; then
 
   __fzfcmd() {
@@ -49,14 +92,17 @@ if [[ $- =~ i ]]; then
   }
 
   __fzf_history__() {
-    local output opts script
+    local output opts
     opts="--height ${FZF_TMUX_HEIGHT:-40%} --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} -n2..,.. --scheme=history --bind=ctrl-r:toggle-sort ${FZF_CTRL_R_OPTS-} +m --read0"
-    script='BEGIN { getc; $/ = "\n\t"; $HISTCOUNT = $ENV{last_hist} + 1 } s/^[ *]//; print $HISTCOUNT - $. . "\t$_" if !$seen{$_}++'
+
+    # --scheme=history
+    # -n2..,.. -
+    # fzf --query READLINE_LINE called with trich DEFAULT_OPTS and history lines as input
     output=$(
-      builtin fc -lnr -2147483648 |
-        last_hist=$(HISTTIMEFORMAT='' builtin history 1) perl -n -l0 -e "$script" |
+      __fzf_history_source__ |
         FZF_DEFAULT_OPTS="$opts" $(__fzfcmd) --query "$READLINE_LINE"
     ) || return
+    # cut off prefix with entry number delimited by tab
     READLINE_LINE=${output#*$'\t'}
     if [[ -z "$READLINE_POINT" ]]; then
       echo "$READLINE_LINE"
