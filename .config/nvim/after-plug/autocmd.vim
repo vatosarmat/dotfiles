@@ -40,23 +40,27 @@ lua << END
   end
 END
 
-  "...
   if &buftype == 'quickfix'
+
+    "...
     let id = win_getid()
     if getwininfo(id)[0].loclist == 1
       let g:ustate.loclist_windows[id] = 1
     else
       let g:ustate.qf_window = id
     endif
+
+  else
+
+  "Get rid of ^M. Other ways don't work.
+    if char2nr(getline(1)[-1:-1]) == 13
+      e ++ff=dos
+    endif
+
   endif
 
   "...
   call jumplist#BufWinEnter()
-
-  "Get rid of ^M. Other ways don't work.
-  if char2nr(getline(1)[-1:-1]) == 13
-    e ++ff=dos
-  endif
 
   "Force buffer names to be relative paths
   execute 'cd' getcwd()

@@ -152,13 +152,21 @@ local client_ext = {
     end,
     definition_filter = function(method, items)
       if method == 'textDocument/definition' and #items == 2 then
-        local react_types = 'types/react/index.d.ts'
         local tsx, non_tsx = unpack(
           vim.endswith(completion_item_uri(items[1]), '.tsx') and items
             or vim.endswith(completion_item_uri(items[2]), '.tsx') and { items[2], items[1] }
             or { nil, nil }
         )
-        if tsx and vim.endswith(completion_item_uri(non_tsx), react_types) then items = { tsx } end
+
+        if tsx then
+          local url = completion_item_uri(non_tsx)
+          if
+            vim.endswith(url, 'types/react/index.d.ts')
+            or vim.endswith(url, 'types/react/ts5.0/index.d.ts')
+          then
+            items = { tsx }
+          end
+        end
       end
 
       return items

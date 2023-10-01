@@ -25,7 +25,7 @@ local jsts_filetype = {
   'typescript.jsx',
 }
 local prettier_filetype =
-  vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue', 'handlebars' }, jsts_filetype)
+  vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue', 'handlebars', 'html' }, jsts_filetype)
 -- local eslint_filetype = jsts_filetype
 
 local function document_highlight()
@@ -190,7 +190,9 @@ local function setup_null_ls()
     f.stylua,
     lsp_flags.prettier_with_d and f.prettierd.with {
       filetypes = prettier_filetype,
-      env = { PRETTIERD_DEFAULT_CONFIG = os.getenv 'HOME' .. '/.config/.prettierrc.json' },
+      env = {
+        PRETTIERD_DEFAULT_CONFIG = os.getenv 'HOME' .. '/.config/.prettierrc.json',
+      },
     } or f.prettier.with {
       filetypes = prettier_filetype,
       -- only_local = 'node_modules/.bin'
@@ -240,7 +242,7 @@ local function setup_cpp()
       clangdFileStatus = false,
       semanticHighlighting = true,
     },
-    cmd = { 'clangd', '--background-index', '--clang-tidy', '--completion-style=detailed' },
+    cmd = { 'clangd-15', '--background-index', '--clang-tidy', '--completion-style=detailed' },
     on_new_config = function(new_config, _)
       local cc_file = 'compile_commands.json'
 
@@ -296,9 +298,9 @@ function M.setup(capabilities)
   lspconfig.pyright.setup {}
   lspconfig.cmake.setup {}
   lspconfig.html.setup {
-    -- init_options = {
-    --   provideFormatter = false
-    -- }
+    init_options = {
+      provideFormatter = false,
+    },
   }
   lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {
