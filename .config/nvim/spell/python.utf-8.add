@@ -7,3 +7,4 @@ relpath
 makedirs
 realpath
 fromkeys
+venv

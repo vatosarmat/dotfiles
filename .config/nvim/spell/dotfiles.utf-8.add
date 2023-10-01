@@ -2,3 +2,4 @@ stty
 shopt
 dircolors
 mv
+pwd

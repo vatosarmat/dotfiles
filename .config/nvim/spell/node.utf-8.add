@@ -49,3 +49,17 @@ onerror
 onend
 onresult
 rej
+browserslist
+reactjs
+noopener
+noreferrer
+Parens
+URLSearch
+URLSearchParams
+HTMLInputElement
+HTMLTextAreaElement
+multiline
+redux
+HTMLSelectElement
+HTMLFormElement
+dayjs
