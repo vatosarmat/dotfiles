@@ -1,4 +1,4 @@
-local bind1 = require'pl.func'.bind1
+local bind1 = require('pl.func').bind1
 local ts_configs = require 'nvim-treesitter.configs'
 -- local styled_components = require 'plug-config.styled_components'
 local keymap = vim.keymap
@@ -14,7 +14,7 @@ local function setup_textobject()
         -- ['as'] = '@statement.outer',
         -- ['ac'] = '@class.outer',
         -- ['ic'] = '@class.inner'
-      }
+      },
     },
     move = {
       enable = true,
@@ -34,8 +34,8 @@ local function setup_textobject()
       goto_previous_end = {
         -- ['<M-(>'] = '@statement.outer'
         -- ['[]'] = '@class.outer'
-      }
-    }
+      },
+    },
     -- lsp_interop = {
     --   enable = true,
     --   border = 'none',
@@ -53,7 +53,7 @@ local function setup_textobject()
     a = 'parameter',
     k = 'block',
     i = 'conditional',
-    l = 'loop'
+    l = 'loop',
   }
   for letter, obj in pairs(inner_outer) do
     local outer = '@' .. obj .. '.outer'
@@ -73,19 +73,23 @@ ts_configs.setup {
   ensure_installed = 'all',
   context_commentstring = {
     enable = true,
-    enable_autocmd = false
+    enable_autocmd = false,
   },
   highlight = {
-    enable = true
+    enable = true,
+    disable = {
+      'sql',
+    },
+
     -- additional_vim_regex_highlighting = true,
     -- disable = { 'help' }
   },
-  indent = { enable = true, disable = { 'lua', 'ruby', 'javascript' } },
+  indent = { enable = true },
   playground = {
     enable = true,
     disable = {},
     updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-    persist_queries = false -- Whether the query persists across vim sessions
+    persist_queries = false, -- Whether the query persists across vim sessions
   },
   rainbow = {
     enable = false,
@@ -99,13 +103,13 @@ ts_configs.setup {
       -- '#a89984',
       '#539d55',
       -- '#458588',
-      '#d65d0e'
-    }
+      '#d65d0e',
+    },
   },
   refactor = {
     highlight_definitions = {
-      enable = true
-    }
+      enable = true,
+    },
   },
   incremental_selection = {
     enable = true,
@@ -113,19 +117,19 @@ ts_configs.setup {
       init_selection = 'm',
       node_incremental = 'm',
       node_decremental = '<Home>',
-      scope_incremental = 'M'
-    }
+      scope_incremental = 'M',
+    },
   },
   textobjects = setup_textobject(),
   autotag = {
-    enable = true
+    enable = true,
   },
   matchup = {
     enable = true,
-    include_match_words = true
-  }
+    include_match_words = true,
+  },
 }
-local filetype_to_parsername = require'nvim-treesitter.parsers'.filetype_to_parsername
+local filetype_to_parsername = require('nvim-treesitter.parsers').filetype_to_parsername
 -- filetype_to_parsername.javascript = 'tsx'
 -- filetype_to_parsername.jsonc = 'json'
 -- filetype_to_parsername.blade = 'vue'
@@ -143,7 +147,7 @@ keymap.set('n', '<leader>tp', '<cmd>TSPlaygroundToggle<cr>')
 local ts_utils = require 'nvim-treesitter.ts_utils'
 
 local function package_webpage()
-  local cache_file = vim.fn.stdpath('cache') .. '/package_webpage.txt'
+  local cache_file = vim.fn.stdpath 'cache' .. '/package_webpage.txt'
   local p = vim.g.project
   if p.package_webpage then
     local maybe_package = vim.treesitter.query.get_node_text(ts_utils.get_node_at_cursor(0), 0)
@@ -153,8 +157,8 @@ local function package_webpage()
     local good_uri = false
     local query_cache_cmd = string.format('grep -Fqsx %s %s', uri, cache_file)
     if os.execute(query_cache_cmd) ~= 0 then
-      local test_uri_cmd = string.format(
-                             'test "$(curl -Ls -o /dev/null -w "%%{http_code}" %s)" = "200"', uri)
+      local test_uri_cmd =
+        string.format('test "$(curl -Ls -o /dev/null -w "%%{http_code}" %s)" = "200"', uri)
       if os.execute(test_uri_cmd) == 0 then
         vim.fn.writefile({ uri }, cache_file, 'a')
         good_uri = true
@@ -166,13 +170,17 @@ local function package_webpage()
     if good_uri then
       os.execute('xdg-open ' .. uri)
     else
-      vim.fn['utils#Warning']({ maybe_package, 'LspDiagnosticsSignInformation' },
-                              ' webpage doesn\'t exist')
+      vim.fn['utils#Warning'](
+        { maybe_package, 'LspDiagnosticsSignInformation' },
+        ' webpage doesn\'t exist'
+      )
     end
   else
-    vim.fn['utils#Warning']({ 'package_webpage', 'LspDiagnosticsSignInformation' },
-                            ' is not available for project type ',
-                            { p.kind, 'LspDiagnosticsSignInformation' })
+    vim.fn['utils#Warning'](
+      { 'package_webpage', 'LspDiagnosticsSignInformation' },
+      ' is not available for project type ',
+      { p.kind, 'LspDiagnosticsSignInformation' }
+    )
   end
 end
 
@@ -181,21 +189,37 @@ keymap.set('n', '<leader>np', package_webpage)
 --
 --
 --
-local neogen = require('neogen')
+local neogen = require 'neogen'
 neogen.setup {
   snippet_engine = 'luasnip',
-  placeholders_hl = 'None'
+  placeholders_hl = 'None',
 }
 
-keymap.set('n', '<leader>af', bind1(neogen.generate, {
-  type = 'func'
-}))
-keymap.set('n', '<leader>ac', bind1(neogen.generate, {
-  type = 'class'
-}))
-keymap.set('n', '<leader>at', bind1(neogen.generate, {
-  type = 'type'
-}))
-keymap.set('n', '<leader>aF', bind1(neogen.generate, {
-  type = 'file'
-}))
+keymap.set(
+  'n',
+  '<leader>af',
+  bind1(neogen.generate, {
+    type = 'func',
+  })
+)
+keymap.set(
+  'n',
+  '<leader>ac',
+  bind1(neogen.generate, {
+    type = 'class',
+  })
+)
+keymap.set(
+  'n',
+  '<leader>at',
+  bind1(neogen.generate, {
+    type = 'type',
+  })
+)
+keymap.set(
+  'n',
+  '<leader>aF',
+  bind1(neogen.generate, {
+    type = 'file',
+  })
+)
