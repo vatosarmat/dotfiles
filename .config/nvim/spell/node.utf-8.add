@@ -63,3 +63,6 @@ redux
 HTMLSelectElement
 HTMLFormElement
 dayjs
+dedent
+supertest
+querystring
