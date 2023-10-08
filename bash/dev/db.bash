@@ -48,9 +48,53 @@ SQL
 
 }
 
-function _db__bitrix_dbconn_read {
-  local var_name="\$DB$1"
-  php -r "$(grep "^$var_name" < bitrix/php_interface/dbconn.php)echo $var_name;"
+function db__postgres_reset {
+
+  local user password db_name seed_file
+  local OPTIND OPTARG OPTERR opt
+  while getopts "u:p:s:" opt; do
+    case $opt in
+      [u])
+        user="$OPTARG"
+        ;;
+      [p])
+        password="$OPTARG"
+        ;;
+      [s])
+        seed_file="$OPTARG"
+        ;;
+      *) ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+
+  db_name="$1"
+  if [[ ! "$db_name" ]]; then
+    echo "db name expected as a free argument" >&2
+    return 1
+  fi
+  shift
+
+  if [[ ! "$user" ]]; then
+    user="$db_name"
+  fi
+
+  if [[ ! "$password" ]]; then
+    password="123"
+  fi
+
+  psql << SQL
+DROP DATABASE IF EXISTS $db_name;
+DROP USER IF EXISTS $user;
+
+CREATE USER $user WITH ENCRYPTED PASSWORD '$password';
+CREATE DATABASE $db_name WITH OWNER $user;
+SQL
+
+  if [[ "$seed_file" ]]; then
+    mysql --user="$user" --password="$password" "$db_name" < "$seed_file"
+  fi
+
 }
 
 # function _db__bitrix_settings_read {
