@@ -1,16 +1,16 @@
 local execute = vim.api.nvim_command
 local fn = vim.fn
 
-local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
+local install_path = fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
 if fn.empty(fn.glob(install_path)) > 0 then
-  fn.system({ 'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path })
+  fn.system { 'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path }
   execute 'packadd packer.nvim'
 end
 
 local misc = require 'plug-config.misc'
 
-require('packer').startup({
+require('packer').startup {
   function()
     local r = function(name)
       local major = { 'lsp' }
@@ -27,7 +27,7 @@ require('packer').startup({
       use {
         path,
         config = r(name),
-        disable = disable
+        disable = disable,
       }
     end
 
@@ -41,9 +41,9 @@ require('packer').startup({
         'jose-elias-alvarez/null-ls.nvim',
         -- 'jose-elias-alvarez/nvim-lsp-ts-utils',
         'jose-elias-alvarez/typescript.nvim',
-        'b0o/schemastore.nvim'
+        'b0o/schemastore.nvim',
       },
-      config = r 'lsp'
+      config = r 'lsp',
     }
 
     use {
@@ -54,8 +54,8 @@ require('packer').startup({
         'hrsh7th/cmp-path',
         'saadparwaiz1/cmp_luasnip',
         'L3MON4D3/LuaSnip',
-        'windwp/nvim-autopairs'
-      }
+        'windwp/nvim-autopairs',
+      },
     }
 
     use {
@@ -67,14 +67,14 @@ require('packer').startup({
         'JoosepAlviste/nvim-ts-context-commentstring',
         'windwp/nvim-ts-autotag',
         'p00f/nvim-ts-rainbow',
-        'danymat/neogen'
+        'danymat/neogen',
         -- 'nvim-treesitter/nvim-treesitter-angular'
       },
-      config = r 'treesitter'
+      config = r 'treesitter',
     }
     use {
       'numToStr/Comment.nvim',
-      config = misc.Comment
+      config = misc.Comment,
     }
 
     use {
@@ -82,10 +82,10 @@ require('packer').startup({
       requires = {
         {
           'nvim-telescope/telescope-fzf-native.nvim',
-          run = 'make'
-        }
+          run = 'make',
+        },
       },
-      config = r 'telescope'
+      config = r 'telescope',
     }
 
     use 'kyazdani42/nvim-web-devicons'
@@ -94,8 +94,7 @@ require('packer').startup({
     use {
       'mfussenegger/nvim-dap',
       requires = { 'jbyuki/one-small-step-for-vimkind', 'mxsdev/nvim-dap-vscode-js' },
-      rocks = { 'penlight' },
-      config = r 'dap'
+      config = r 'dap',
     }
 
     usec('tpope/vim-fugitive', 'fugitive.vim')
@@ -105,48 +104,48 @@ require('packer').startup({
       'junegunn/fzf',
       run = ':call fzf#install()',
       requires = { 'junegunn/fzf.vim' },
-      config = r 'fzf.vim'
+      config = r 'fzf.vim',
     }
     use 'lambdalisue/suda.vim'
 
     use {
       'kevinhwang91/nvim-ufo',
       requires = 'kevinhwang91/promise-async',
-      config = r 'ufo'
+      config = r 'ufo',
     }
 
     use {
       'machakann/vim-sandwich',
-      config = r 'sandwich'
+      config = r 'sandwich',
     }
 
     use {
       'mattn/emmet-vim',
-      config = misc.emmet
+      config = misc.emmet,
     }
 
     use {
       'andymass/vim-matchup',
-      config = misc.matchup
+      config = misc.matchup,
     }
 
     use {
       'chaoren/vim-wordmotion',
-      config = misc.wordmotion
+      config = misc.wordmotion,
     }
 
     use {
       'haya14busa/vim-asterisk',
-      config = misc.asterisk
+      config = misc.asterisk,
     }
 
     use {
       'rrethy/vim-hexokinase',
-      run = 'make hexokinase'
+      run = 'make hexokinase',
     }
     use {
       'dstein64/nvim-scrollview',
-      config = misc.scrollview
+      config = misc.scrollview,
     }
 
     use 'teal-language/vim-teal'
@@ -156,8 +155,8 @@ require('packer').startup({
   {
     config = {
       git = {
-        clone_timeout = 300
-      }
-    }
-  }
-})
+        clone_timeout = 300,
+      },
+    },
+  },
+}

@@ -1,8 +1,8 @@
 local api = vim.api
 local lsp = vim.lsp
-local reduce = require'pl.tablex'.reduce
-local Text = require'vim_utils'.Text
-local map_buf = require'vim_utils'.map_buf
+local reduce = require('utils').reduce
+local Text = require('vim_utils').Text
+local map_buf = require('vim_utils').map_buf
 
 -- LSP submodules
 local cext = require 'lsp.client_ext'
@@ -24,16 +24,16 @@ local function diagnostic_vim_to_lsp(d)
     range = {
       start = {
         line = d.lnum,
-        character = d.col
+        character = d.col,
       },
       ['end'] = {
         line = d.end_lnum,
-        character = d.end_col
-      }
+        character = d.end_col,
+      },
     },
     severity = ui.severity_vim_to_lsp(d.severity),
     message = d.message,
-    source = d.source
+    source = d.source,
   }, d.user_data and (d.user_data.lsp or {}) or {})
 end
 
@@ -48,7 +48,7 @@ local function show_line_diagnostics()
   local diag_idx_by_line = {}
 
   local line_diagnostics = vim.diagnostic.get(bufnr, {
-    lnum = line_nr
+    lnum = line_nr,
   })
   if vim.tbl_isempty(line_diagnostics) then
     return
@@ -90,8 +90,8 @@ local function show_line_diagnostics()
       local line = api.nvim_buf_get_lines(bufnr, line_nr, line_nr + 1, false)[1]
       print(vim.inspect(line))
       local indent_spaces = string.sub(line, string.find(line, '%s*'))
-      local dl = indent_spaces ..
-                   string.gsub(dl_pattern, '%${code}', get_code(line_diagnostics[idx]))
+      local dl = indent_spaces
+        .. string.gsub(dl_pattern, '%${code}', get_code(line_diagnostics[idx]))
       api.nvim_buf_set_lines(bufnr, line_nr, line_nr, false, { dl })
       vim.cmd('write ' .. tostring(vim.fn.bufname(bufnr)))
     end
@@ -102,9 +102,9 @@ local function show_line_diagnostics()
     local source = line_diagnostics[idx].source
     local diagnostic_webpage = cext[source].diagnostic_webpage
     if diagnostic_webpage then
-      local uri = type(diagnostic_webpage) == 'string' and
-                    string.gsub(diagnostic_webpage, '%${code}', get_code(line_diagnostics[idx])) or
-                    diagnostic_webpage(line_diagnostics[idx])
+      local uri = type(diagnostic_webpage) == 'string'
+          and string.gsub(diagnostic_webpage, '%${code}', get_code(line_diagnostics[idx]))
+        or diagnostic_webpage(line_diagnostics[idx])
       os.execute('$BROWSER ' .. uri)
     end
   end
@@ -117,12 +117,12 @@ local function show_line_diagnostics()
       api.nvim_buf_delete(float_bufnr, {})
       local client = lsp.get_active_clients({
         name = source,
-        bufnr = bufnr
+        bufnr = bufnr,
       })[1]
       -- There must be a client. If no, let error message
       range_params.context = {
         diagnostics = { diagnostic_vim_to_lsp(line_diagnostics[idx]) },
-        only = { 'quickfix' }
+        only = { 'quickfix' },
       }
       ---@diagnostic disable-next-line: unused-local
       client.request('textDocument/codeAction', range_params, function(err, result, ctx, config)
@@ -155,15 +155,15 @@ local function show_line_diagnostics()
 
   map_buf(float_bufnr, 'n', 'd', disable, {
     silent = true,
-    nowait = true
+    nowait = true,
   })
   map_buf(float_bufnr, 'n', 'p', webpage, {
     silent = true,
-    nowait = true
+    nowait = true,
   })
   map_buf(float_bufnr, 'n', 'a', apply_fix, {
     silent = true,
-    nowait = true
+    nowait = true,
   })
 
   return float_bufnr, float_winnr
@@ -185,18 +185,17 @@ end
 local M = {}
 
 function M.setup()
-
   ---@diagnostic disable-next-line: unused-local
   vim.diagnostic.handlers.virtual_text.show = function(namespace, bufnr, diagnostics, opts)
     bufnr = misc.get_bufnr(bufnr)
 
     local ns = vim.diagnostic.get_namespace(namespace)
     if not ns.user_data.virt_text_ns then
-      ns.user_data.virt_text_ns = vim.api.nvim_create_namespace('')
+      ns.user_data.virt_text_ns = vim.api.nvim_create_namespace ''
     end
     local virt_text_ns = ns.user_data.virt_text_ns
 
-    local virt_text_per_line = reduce(function(ret, diagnostic)
+    local virt_text_per_line = reduce(diagnostics, function(ret, diagnostic)
       local lnum = diagnostic.lnum
       -- print(vim.inspect(diagnostic))
       -- print(vim.inspect(ret))
@@ -215,14 +214,14 @@ function M.setup()
         else
           ret[lnum] = {
             severity = {
-              [str] = diagnostic.severity
+              [str] = diagnostic.severity,
             },
-            order = { str }
+            order = { str },
           }
         end
       end
       return ret
-    end, diagnostics, {})
+    end, {})
 
     for line, virt_text in pairs(virt_text_per_line) do
       vim.api.nvim_buf_set_extmark(bufnr, virt_text_ns, line, 0, {
@@ -232,13 +231,13 @@ function M.setup()
           return { item .. ' ', ui.severity[virt_text.severity[item]].hl_virt }
         end, virt_text.order),
         virt_text_pos = 'right_align',
-        virt_text_hide = true
+        virt_text_hide = true,
       })
     end
     vim.diagnostic.save_extmarks(virt_text_ns, bufnr)
   end
 
-  vim.diagnostic.config({
+  vim.diagnostic.config {
     virtual_text = function(_, _)
       return vim.g.UOPTS.ldv == 1
     end,
@@ -249,25 +248,23 @@ function M.setup()
     end,
     signs = true,
     update_in_insert = false,
-    severity_sort = true
-  })
+    severity_sort = true,
+  }
 
   vim.diagnostic.open_float = show_line_diagnostics
 
-  lsp.handlers['textDocument/publishDiagnostics'] =
-    function(_, result, ctx, ...)
-      -- result: diagnostics, uri
-      -- ctx: clinet_id, method
-      local client = lsp.get_client_by_id(ctx.client_id)
-      local filter = cext[client.name].diagnostic_filter
+  lsp.handlers['textDocument/publishDiagnostics'] = function(_, result, ctx, ...)
+    -- result: diagnostics, uri
+    -- ctx: clinet_id, method
+    local client = lsp.get_client_by_id(ctx.client_id)
+    local filter = cext[client.name].diagnostic_filter
 
-      if filter then
-        result.diagnostics = filter(result.diagnostics)
-      end
-
-      return lsp.diagnostic.on_publish_diagnostics(_, result, ctx, ...)
+    if filter then
+      result.diagnostics = filter(result.diagnostics)
     end
 
+    return lsp.diagnostic.on_publish_diagnostics(_, result, ctx, ...)
+  end
 end
 
 return M

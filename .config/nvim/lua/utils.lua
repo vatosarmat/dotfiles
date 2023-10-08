@@ -1,19 +1,5 @@
-local tablex = require 'pl.tablex'
-
 local M = {}
 
--- Such impl is slow
--- function M.omit(tbl, keys)
---   local res = tablex.deepcopy(tbl)
---
---   for _, key in ipairs(keys) do
---     res[key] = nil
---   end
---
---   return res
--- end
-
--- penlight index_by??
 function M.pick(tbl, keys)
   local res = {}
 
@@ -51,6 +37,40 @@ function M.single_or_list(dst, item)
   end
   table.insert(dst, item)
   return dst
+end
+
+function M.b(func, ...)
+  local ba = { ... }
+  return function(...)
+    func(unpack(ba), ...)
+  end
+end
+
+function M.reduce(array, cb, initial)
+  local accum = initial
+  for i, v in ipairs(array) do
+    accum = cb(accum, v, i)
+  end
+  return accum
+end
+
+function M.find(array, cb)
+  for i, v in ipairs(array) do
+    if cb(v, i) then
+      return v, i
+    end
+  end
+
+  return nil, nil
+end
+
+function M.make_set(array)
+  local ret = {}
+  for _, v in ipairs(array) do
+    ret[v] = true
+  end
+
+  return ret
 end
 
 return M

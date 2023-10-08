@@ -1,7 +1,7 @@
 -- local api = vim.api
 local lsp = vim.lsp
 local api = vim.api
-local func = require 'pl.func'
+local b = require('utils').b
 -- local log = require 'vim.lsp.log'
 local vim_utils = require 'vim_utils'
 local telescope = require 'telescope.builtin'
@@ -18,25 +18,26 @@ local lookup = require 'lsp.lookup'
 
 completion.setup()
 diagnostic.setup()
-servers.setup(completion.capabilities(vim.tbl_deep_extend('force',
-                                                          lsp.protocol.make_client_capabilities(), {
-  textDocument = {
-    foldingRange = {
-      dynamicRegistration = false,
-      lineFoldingOnly = true
-    }
-  }
-})))
+servers.setup(
+  completion.capabilities(vim.tbl_deep_extend('force', lsp.protocol.make_client_capabilities(), {
+    textDocument = {
+      foldingRange = {
+        dynamicRegistration = false,
+        lineFoldingOnly = true,
+      },
+    },
+  }))
+)
 
 do
   ui.setup()
 
   local lsp_service = {
     ui = {
-      symbol = ui.symbol
+      symbol = ui.symbol,
     },
     flags = lsp_flags,
-    status_line = status_line
+    status_line = status_line,
   }
 
   function lsp_service.omnifunc(...)
@@ -53,7 +54,6 @@ end
 do
   local map = vim_utils.map
   local autocmd = vim_utils.autocmd
-  local b = func.bind1
 
   local function toggle_option(option)
     vim.fn['uopts#toggle'](option)
@@ -64,28 +64,28 @@ do
 
   local function auto_format()
     if vim.g.UOPTS.laf == 1 then
-      lsp.buf.format({
-        timeout_ms = 1500
-      })
+      lsp.buf.format {
+        timeout_ms = 1500,
+      }
     end
   end
 
   local function map_diagnostic_goto(sev, key)
     key = key or 'g'
     map('n', '[' .. key, function()
-      vim.diagnostic.goto_prev({
+      vim.diagnostic.goto_prev {
         wrap = false,
         float = false,
-        severity = vim.diagnostic.severity[sev]
-      })
+        severity = vim.diagnostic.severity[sev],
+      }
       vim.fn['uopts#nzz']()
     end)
     map('n', ']' .. key, function()
-      vim.diagnostic.goto_next({
+      vim.diagnostic.goto_next {
         wrap = false,
         float = false,
-        severity = vim.diagnostic.severity[sev]
-      })
+        severity = vim.diagnostic.severity[sev],
+      }
       vim.fn['uopts#nzz']()
     end)
   end
@@ -109,7 +109,7 @@ do
             end
             return true
           end,
-          once = true
+          once = true,
         })
         vim.b[file_buf].float_winid = new_float_winid
         return new_float_buf, new_float_winid
@@ -162,6 +162,6 @@ do
   autocmd('LSP', {
     { 'BufWritePre *', auto_format }, ------------------------------------
     [[ User LspDiagnosticsChanged redraws! ]],
-    [[ User LspProgressUpdate redraws! ]]
+    [[ User LspProgressUpdate redraws! ]],
   })
 end

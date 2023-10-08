@@ -1,5 +1,5 @@
-local find_if = require('pl.tablex').find_if
-local makeset = require('pl.tablex').makeset
+local find = require('utils').find
+local make_set = require('utils').make_set
 
 local diagnostic_get_code = require('lsp.misc').diagnostic_get_code
 
@@ -38,7 +38,9 @@ local function tsserver_diagnostic_highlight(text, line)
           break
         end
       end
-      if not matched then text:append(quote_area) end
+      if not matched then
+        text:append(quote_area)
+      end
       rest = string.sub(rest, q2 + 1)
     else
       -- nothing in quotes
@@ -72,8 +74,12 @@ local function eslint_diagnostic_virtual_text(d)
     'quotes',
     'no-multiple-empty-lines',
   }
-  local dont_show = find_if(dont_show_them, function(item) return vim.endswith(code, item) end)
-  if dont_show then return nil end
+  local dont_show = find(dont_show_them, function(item)
+    return vim.endswith(code, item)
+  end)
+  if dont_show then
+    return nil
+  end
 
   return string.gsub(code, '^@typescript%-eslint', '@ts')
 end
@@ -106,9 +112,13 @@ local function jsonls_diagnostic_virtual_text(d)
   return ErrorCode[tonumber(code)]
 end
 
-local function rust_diagnostic_virtual_text(d) return d.user_data.lsp.code end
+local function rust_diagnostic_virtual_text(d)
+  return d.user_data.lsp.code
+end
 
-local function completion_item_uri(item) return item.uri or item.targetUri end
+local function completion_item_uri(item)
+  return item.uri or item.targetUri
+end
 
 -- kind?: string, deprecated?
 -- short_name: string
@@ -147,8 +157,10 @@ local client_ext = {
     diagnostic_disable_line = '//@ts-expect-error',
     diagnostic_virtual_text = tsserver_diagnostic_virtual_text,
     diagnostic_filter = function(diagnostic_list)
-      local exclude_codes = makeset { 6133, 6196, 80001, 80006 }
-      return vim.tbl_filter(function(item) return not exclude_codes[item.code] end, diagnostic_list)
+      local exclude_codes = make_set { 6133, 6196, 80001, 80006 }
+      return vim.tbl_filter(function(item)
+        return not exclude_codes[item.code]
+      end, diagnostic_list)
     end,
     definition_filter = function(method, items)
       if method == 'textDocument/definition' and #items == 2 then
@@ -175,13 +187,13 @@ local client_ext = {
   ['eslint'] = {
     short_name = 'ES',
     diagnostic_disable_line = '//eslint-disable-next-line ${code}',
-    diagnostic_webpage = function(diagnostic) return diagnostic.user_data.lsp.codeDescription.href end,
+    diagnostic_webpage = function(diagnostic)
+      return diagnostic.user_data.lsp.codeDescription.href
+    end,
     diagnostic_fix_action_selector = function(ca_result)
-      local idx = find_if(
-        ca_result,
-        function(action) return action.command.command == 'eslint.applySingleFix' end
-      )
-      return ca_result[idx]
+      return find(ca_result, function(action)
+        return action.command.command == 'eslint.applySingleFix'
+      end)
     end,
     diagnostic_virtual_text = eslint_diagnostic_virtual_text,
   },

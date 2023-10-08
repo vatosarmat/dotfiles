@@ -1,6 +1,5 @@
 local api = vim.api
-local bind1 = require'pl.func'.bind1
-local bind = require'pl.func'.bind
+local b = require('utils').b
 local vu = require 'vim_utils'
 
 local function map_completion()
@@ -17,39 +16,39 @@ local function map_completion()
   local luasnip = require 'luasnip'
 
   local set = vim.keymap.set
-  local iset = bind1(set, { 'i', 's' })
+  local iset = b(set, { 'i', 's' })
 
   local function complete_sources(...)
     return cmp.complete {
       config = {
         sources = vim.tbl_map(function(v)
           return {
-            name = v
+            name = v,
           }
-        end, pack(...))
-      }
+        end, pack(...)),
+      },
     }
   end
 
   -- snippet
   iset('<M-Tab>', function()
-    cmp.complete({
+    cmp.complete {
       reason = cmp.ContextReason.Manual,
       config = {
         sorting = {
           comparators = {
             function(a, b)
               return vim.stricmp(b.completion_item.label, a.completion_item.label) > 0
-            end
-          }
+            end,
+          },
         },
         sources = {
           {
-            name = 'luasnip'
-          }
-        }
-      }
-    })
+            name = 'luasnip',
+          },
+        },
+      },
+    }
   end)
   iset('<M-i>', luasnip.expand)
   -- lsp
@@ -70,8 +69,8 @@ local function map_completion()
     end
   end)
 
-  iset('<C-f>', bind1(cmp.scroll_docs, 1))
-  iset('<C-b>', bind1(cmp.scroll_docs, -1))
+  iset('<C-f>', b(cmp.scroll_docs, 1))
+  iset('<C-b>', b(cmp.scroll_docs, -1))
 
   iset('<C-n>', function()
     if cmp.visible() then
@@ -105,14 +104,13 @@ local function map_spell()
       prompt = 'Which dict?',
       format_item = function(item)
         return vim.fn.fnamemodify(item, ':t:r:r')
-      end
+      end,
     }, function(_, idx)
       if idx then
         vim.cmd(('normal %szg'):format(idx))
       end
     end)
   end)
-
 end
 
 local function map_misc()

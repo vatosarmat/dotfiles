@@ -1,5 +1,4 @@
 local lsp = vim.lsp
-local bind1 = require('pl.func').bind1
 local lspconfig = require 'lspconfig'
 local lspconfig_util = require 'lspconfig.util'
 local autocmd = require('vim_utils').autocmd
@@ -32,7 +31,9 @@ local function document_highlight()
   local col = vim.fn.col '.'
   local cursor_char = vim.fn.getline('.'):sub(col, col)
   -- Send request to LSP only if keyword char is under cursor
-  if vim.fn.matchstr(cursor_char, '\\k') ~= '' then lsp.buf.document_highlight() end
+  if vim.fn.matchstr(cursor_char, '\\k') ~= '' then
+    lsp.buf.document_highlight()
+  end
 end
 
 ---@diagnostic disable-next-line: unused-local
@@ -63,14 +64,18 @@ local function setup_tsserver()
       local res
       if not pp.predicate or (pp.predicate and pp.predicate()) then
         res = server_manager_add(...)
-        if pp.post then pp.post() end
+        if pp.post then
+          pp.post()
+        end
       end
       return res
     end
   end
 
   setup({
-    post = function() vim.b.flow_active = true end,
+    post = function()
+      vim.b.flow_active = true
+    end,
   }, 'flow')
 
   -- local tsserver = lspconfig.tsserver
@@ -123,8 +128,12 @@ local function setup_tsserver()
 
   setup(
     {
-      predicate = function() return vim.tbl_contains(vim.g.project.name, 'vue') end,
-      post = function() vim.b.volar_active = true end,
+      predicate = function()
+        return vim.tbl_contains(vim.g.project.name, 'vue')
+      end,
+      post = function()
+        vim.b.volar_active = true
+      end,
     },
     'volar',
     {
@@ -143,23 +152,27 @@ local function setup_tsserver()
 
   setup(
     {
-      predicate = function() return not (vim.b.flow_active or vim.b.volar_active) end,
+      predicate = function()
+        return not (vim.b.flow_active or vim.b.volar_active)
+      end,
     },
     'tsserver',
-    bind1(typescript.setup, {
-      disable_commands = false, -- prevent the plugin from creating Vim commands
-      debug = false, -- enable debug logging for commands
-      go_to_source_definition = {
-        fallback = true, -- fall back to standard LSP definition on failure
-      },
-      server = { -- pass options to lspconfig's setup method
-        on_attach = function(client, bufnr)
-          client.server_capabilities.documentFormattingProvider = false
-          -- client.resolved_capabilities.rangeFormatting = false
-          default_on_attach(client, bufnr)
-        end,
-      },
-    })
+    function()
+      typescript.setup {
+        disable_commands = false, -- prevent the plugin from creating Vim commands
+        debug = false, -- enable debug logging for commands
+        go_to_source_definition = {
+          fallback = true, -- fall back to standard LSP definition on failure
+        },
+        server = { -- pass options to lspconfig's setup method
+          on_attach = function(client, bufnr)
+            client.server_capabilities.documentFormattingProvider = false
+            -- client.resolved_capabilities.rangeFormatting = false
+            default_on_attach(client, bufnr)
+          end,
+        },
+      }
+    end
   )
 
   -- setup({
@@ -171,7 +184,9 @@ local function setup_tsserver()
   -- })
 
   setup({
-    predicate = function() return vim.tbl_contains(vim.g.project.name, 'angular') end,
+    predicate = function()
+      return vim.tbl_contains(vim.g.project.name, 'angular')
+    end,
   }, 'angularls')
 end
 
@@ -180,7 +195,9 @@ local function setup_null_ls()
   local d = null_ls.builtins.diagnostics
   local sources = {
     d.shellcheck.with {
-      runtime_condition = function(params) return not string.match(params.bufname, '%.env%.?%l*$') end,
+      runtime_condition = function(params)
+        return not string.match(params.bufname, '%.env%.?%l*$')
+      end,
 
       extra_args = function(params)
         return vim.endswith(params.bufname, '.bash') and { '--shell=bash' } or {}
@@ -281,8 +298,7 @@ function M.setup(capabilities)
       Lua = {
         runtime = { version = 'LuaJIT' },
         completion = { workspaceWord = false, showWord = 'Disable', callSnippet = 'Replace' },
-        diagnostics = { globals = { 'vim', '_U', 'use', 'pack', 'use_rocks', 'fnoop', 'fconst' } },
-        workspace = { library = { cache .. '/rocks', vim.api.nvim_get_runtime_file('', true) } },
+        diagnostics = { globals = { 'vim', '_U', 'use', 'pack', 'fnoop', 'fconst' } },
         telemetry = { enable = false },
       },
     },

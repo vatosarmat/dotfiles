@@ -1,6 +1,4 @@
-local tablex = require 'pl.tablex'
-local func = require 'pl.func'
-local api = vim.api
+local b = require('utils').b
 
 -- local function get_visual_selection()
 --   local bufnr = vim.api.nvim_win_get_buf(0)
@@ -40,7 +38,7 @@ local allowed_key_modes = {
   i = true,
   t = true,
   c = true,
-  s = true
+  s = true,
 }
 
 local function assert_key_mode(mode)
@@ -52,8 +50,7 @@ end
 local function map_buf(bufnr, modes, lhs, rhs, opts)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
-  local set_keymap = bufnr and func.bind1(vim.api.nvim_buf_set_keymap, bufnr) or
-                       vim.api.nvim_set_keymap
+  local set_keymap = bufnr and b(vim.api.nvim_buf_set_keymap, bufnr) or vim.api.nvim_set_keymap
   local setter
   if type(rhs) == 'function' then
     local store_key = 'global'
@@ -71,11 +68,19 @@ local function map_buf(bufnr, modes, lhs, rhs, opts)
       _U.map[store_key][mode][lhs] = rhs
       local rhs_str
       if opts.expr then
-        rhs_str = string.format('luaeval(\'_U.map[\'\'%s\'\'][\'\'%s\'\'][\'\'%s\'\']()\')',
-                                store_key, mode, string.gsub(lhs, '<', '<lt>'))
+        rhs_str = string.format(
+          'luaeval(\'_U.map[\'\'%s\'\'][\'\'%s\'\'][\'\'%s\'\']()\')',
+          store_key,
+          mode,
+          string.gsub(lhs, '<', '<lt>')
+        )
       else
-        rhs_str = string.format('<cmd>lua _U.map[\'%s\'][\'%s\'][\'%s\']()<cr>', store_key, mode,
-                                string.gsub(lhs, '<', '<lt>'))
+        rhs_str = string.format(
+          '<cmd>lua _U.map[\'%s\'][\'%s\'][\'%s\']()<cr>',
+          store_key,
+          mode,
+          string.gsub(lhs, '<', '<lt>')
+        )
       end
       set_keymap(mode, lhs, rhs_str, opts)
     end
@@ -89,7 +94,7 @@ local function map_buf(bufnr, modes, lhs, rhs, opts)
   modes:gsub('.', setter)
 end
 
-local map = func.bind1(map_buf, nil)
+local map = b(map_buf, nil)
 
 -- cmd is either string or tuple
 -- cmds is either array of string-cmd's and tuple-cmd's or single string-cmd
@@ -134,19 +139,19 @@ Text.__index = Text
 function Text:new(initial_text, maybe_hl)
   local initial_line = {
     text = initial_text or '',
-    hl_ranges = {}
+    hl_ranges = {},
   }
   if maybe_hl then
     initial_line.hl_ranges = {
       {
         group = maybe_hl,
         from = 0,
-        to = string.len(initial_line.text)
-      }
+        to = string.len(initial_line.text),
+      },
     }
   end
   return setmetatable({
-    lines = { initial_line }
+    lines = { initial_line },
   }, self)
 end
 
@@ -159,7 +164,7 @@ function Text:append(text, maybe_hl)
     table.insert(last_line.hl_ranges, {
       group = maybe_hl,
       from = from,
-      to = to
+      to = to,
     })
   end
   last_line.text = last_line.text .. text
@@ -168,12 +173,12 @@ end
 function Text:newline()
   table.insert(self.lines, {
     text = '',
-    hl_ranges = {}
+    hl_ranges = {},
   })
 end
 
 function Text:render_in_float(opts)
-  local lines = tablex.imap(function(line)
+  local lines = vim.tbl_map(function(line)
     return line.text
   end, self.lines)
   local bufnr, winnr = vim.lsp.util.open_floating_preview(lines, 'plaintext', opts)
@@ -200,13 +205,12 @@ function Text:render_in_virt_text()
 end
 
 local function get_visual_selection_range()
-
   --
   -- line(), col(), getpos()
-  -- v - in Visual mode, the start of the Visual area(the cursor is the end), 
+  -- v - in Visual mode, the start of the Visual area(the cursor is the end),
   -- not in visual - cursor position. Differs from < is that it is updated right away
   --
-  -- Marks. If mark not set, 0 is returned. 
+  -- Marks. If mark not set, 0 is returned.
   -- Updated *only after exiting Visual mode*, this is not mentioned in documentation
   -- <
   -- >
@@ -225,18 +229,18 @@ local function get_visual_selection_range()
   if end_after_start then
     return {
       line = start_line - 1,
-      col = start_col - 1
+      col = start_col - 1,
     }, {
       line = end_line - 1,
-      col = end_col
+      col = end_col,
     }
   else
     return {
       line = end_line - 1,
-      col = end_col - 1
+      col = end_col - 1,
     }, {
       line = start_line - 1,
-      col = start_col
+      col = start_col,
     }
   end
 end
@@ -264,5 +268,5 @@ return {
   Text = Text,
   buf_append_line = buf_append_line,
   get_visual_selection_range = get_visual_selection_range,
-  get_visual_selection_lines = get_visual_selection_lines
+  get_visual_selection_lines = get_visual_selection_lines,
 }

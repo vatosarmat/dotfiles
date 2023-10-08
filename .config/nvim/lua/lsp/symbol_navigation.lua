@@ -1,8 +1,8 @@
 local api = vim.api
 local lsp = vim.lsp
-local tablex = require 'pl.tablex'
+local find = require('utils').find
 local log = require 'vim.lsp.log'
-local ui_symbol = require'lsp.ui'.symbol
+local ui_symbol = require('lsp.ui').symbol
 local misc = require 'lsp.misc'
 
 local util = lsp.util
@@ -15,9 +15,11 @@ local symbol_navigation = _U.symbol_navigation
 -- LSP range and pos. Zero-based
 local function is_pos_in_range(range, pos)
   local pos_line, pos_char = unpack(pos)
-  return (pos_line > range.start.line and pos_line < range['end'].line) or
-           ((pos_line == range.start.line or pos_line == range['end'].line) and
-             (pos_char >= range.start.character and pos_char <= range['end'].character))
+  return (pos_line > range.start.line and pos_line < range['end'].line)
+    or (
+      (pos_line == range.start.line or pos_line == range['end'].line)
+      and (pos_char >= range.start.character and pos_char <= range['end'].character)
+    )
 end
 
 -- local function get_cursor_pos()
@@ -50,10 +52,9 @@ end
 -- DocumentSymbol
 --
 local DocumentSymbol = {
-  name = 'DocumentSymbol'
+  name = 'DocumentSymbol',
 }
 do
-
   function DocumentSymbol.make_loclist_item(symbol)
     local start = symbol.selectionRange.start
     local kind = util._get_symbol_kind_name(symbol.kind)
@@ -62,7 +63,7 @@ do
       filename = vim.api.nvim_buf_get_name(0),
       lnum = start.line + 1,
       col = start.character + 1,
-      text = (ui_symbol[kind].icon or kind) .. '  ' .. symbol.name .. maybe_detail
+      text = (ui_symbol[kind].icon or kind) .. '  ' .. symbol.name .. maybe_detail,
     }
   end
 
@@ -80,8 +81,8 @@ do
     local next_depth = {
       {
         parent = nil,
-        children = symbols
-      }
+        children = symbols,
+      },
     }
     local depth = 0
 
@@ -118,7 +119,7 @@ do
           if symbol.children and #symbol.children > 0 then
             table.insert(next_depth, {
               parent = item,
-              children = symbol.children
+              children = symbol.children,
             })
           end
           symbol.children = nil
@@ -149,7 +150,7 @@ end
 -- }
 
 local SymbolInformation = {
-  name = 'SymbolInformation'
+  name = 'SymbolInformation',
 }
 
 do
@@ -160,14 +161,14 @@ do
       filename = vim.uri_to_fname(symbol.location.uri),
       lnum = start.line + 1,
       col = start.character + 1,
-      text = (ui_symbol[kind].icon or kind) .. '  ' .. symbol.name
+      text = (ui_symbol[kind].icon or kind) .. '  ' .. symbol.name,
     }
   end
 
   function SymbolInformation.is_cursor_on_symbol(symbol)
     local cursor_line = api.nvim_win_get_cursor(0)[1] - 1
-    return cursor_line >= symbol.location.range.start.line and cursor_line <=
-             symbol.location.range['end'].line
+    return cursor_line >= symbol.location.range.start.line
+      and cursor_line <= symbol.location.range['end'].line
   end
 
   function SymbolInformation.is_pos_in_symbol_range(symbol, pos)
@@ -195,7 +196,7 @@ do
       local current_item = make_loclist_item(SymbolInformation, symbol)
       local current_item_start = {
         symbol.location.range.start.line,
-        symbol.location.range.start.character
+        symbol.location.range.start.character,
       }
 
       local where_to_add
@@ -241,7 +242,7 @@ end
 
 local SymbolHandler = {
   ['SymbolInformation'] = SymbolInformation,
-  ['DocumentSymbol'] = DocumentSymbol
+  ['DocumentSymbol'] = DocumentSymbol,
 }
 
 local function get_symbol_handler(symbol)
@@ -271,7 +272,7 @@ local function SymbolNavigation(initial_symbols)
       self.tree = new_tree
       self.loclist_node = nil
       self.loclist_node_path = {}
-    end
+    end,
   }
 
   local function set_loclist()
@@ -282,8 +283,8 @@ local function SymbolNavigation(initial_symbols)
       items = items,
       title = #path > 0 and table.concat(path, path_sep) or top_level_title,
       context = {
-        type = 'symbol_list'
-      }
+        type = 'symbol_list',
+      },
     }
 
     function what.quickfixtextfunc(info)
@@ -303,7 +304,7 @@ local function SymbolNavigation(initial_symbols)
     local items = state:get_loclist_items()
     local sync_fn = {
       after = 'lsp#Lafter',
-      before = 'lsp#Lbefore'
+      before = 'lsp#Lbefore',
     }
 
     local cursor = api.nvim_win_get_cursor(0)
@@ -315,7 +316,7 @@ local function SymbolNavigation(initial_symbols)
       vim.fn['lsp#Lbefore']()
     else
       -- cursor may be on one of the list items, select that item in list
-      local index = tablex.find_if(items, function(item)
+      local _, index = find(items, function(item)
         return item.lnum == cursor[1] and item.lnum or nil
       end)
       if index then
@@ -344,10 +345,10 @@ local function SymbolNavigation(initial_symbols)
     if state.loclist_node then
       state.loclist_node = state.loclist_node.parent
       -- remove last element
-      state.loclist_node_path = vim.list_slice(state.loclist_node_path, 1,
-                                               #state.loclist_node_path - 1)
+      state.loclist_node_path =
+        vim.list_slice(state.loclist_node_path, 1, #state.loclist_node_path - 1)
       set_loclist()
-      sync_loclist('before')
+      sync_loclist 'before'
     else
       api.nvim_echo({ { 'These symbols are top-level', 'WarningMsg' } }, true, {})
     end
@@ -374,11 +375,10 @@ local function SymbolNavigation(initial_symbols)
       -- })
       table.insert(state.loclist_node_path, node_at_cursor.symbol.name)
       set_loclist()
-      sync_loclist('after')
+      sync_loclist 'after'
     else
       api.nvim_echo({ { 'Symbol under cursor has no children', 'WarningMsg' } }, true, {})
     end
-
   end
 
   return pub
@@ -411,7 +411,7 @@ local M = {}
 
 function M.document_symbol_request()
   local params = {
-    textDocument = util.make_text_document_params()
+    textDocument = util.make_text_document_params(),
   }
   vim.lsp.buf_request(0, 'textDocument/documentSymbol', params, document_symbol_handler)
 end

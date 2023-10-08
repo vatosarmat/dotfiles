@@ -1,8 +1,8 @@
-local func = require 'pl.func'
-local reduce = require'pl.tablex'.reduce
-local assert_key_mode = require'vim_utils'.assert_key_mode
-local buf_set_map = func.bind(vim.api.nvim_buf_set_keymap, 0, func._1, func._2, func._3, func._4)
-local buf_del_map = func.bind(vim.api.nvim_buf_del_keymap, 0, func._1, func._2)
+local reduce = require('utils').reduce
+local b = require('utils').b
+local assert_key_mode = require('vim_utils').assert_key_mode
+local buf_set_map = b(vim.api.nvim_buf_set_keymap, 0)
+local buf_del_map = b(vim.api.nvim_buf_del_keymap, 0)
 
 local M = {}
 
@@ -24,12 +24,12 @@ local function buf_get_map(mode)
         silent = item.silent,
         nowait = item.nowait,
         script = item.script,
-        noremap = item.noremap
-      }
+        noremap = item.noremap,
+      },
     }
     return dict
   end
-  return reduce(f, raw, {})
+  return reduce(raw, f, {})
 end
 
 -- mapping is {modes, lhs, rhs}
@@ -51,7 +51,7 @@ function M.define(name, mappings)
     return full_mappings
   end
 
-  _U.shortmap[name] = { name, reduce(f, mappings, {}) }
+  _U.shortmap[name] = { name, reduce(mappings, f, {}) }
 end
 
 -- Do actual mapping, if something overwritten, save it

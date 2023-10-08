@@ -1,6 +1,4 @@
-local func = require 'pl.func'
-local bind1 = require'pl.func'.bind1
-local bind = require'pl.func'.bind
+local b = require('utils').b
 local dap = require 'dap'
 local widgets = require 'dap.ui.widgets'
 local dap_utils = require 'dap.utils'
@@ -23,28 +21,28 @@ local function lua()
       --   return '127.0.0.1'
       -- end,
       host = '127.0.0.1',
-      port = '40001'
+      port = '40001',
       -- port = function()
       --   local val = tonumber(vim.fn.input('Port: '))
       --   assert(val, "Please provide a port number")
       --   return val
       -- end
-    }
+    },
   }
 
   dap.adapters.nlua = function(callback, config)
-    callback({
+    callback {
       type = 'server',
       host = config.host,
-      port = config.port
-    })
+      port = config.port,
+    }
   end
 end
 
 local function cpp_rust()
   local function debugee_cmd_input(_config, done)
     local config = vim.deepcopy(_config)
-    local from_clipboard = vim.trim(vim.fn.getreg('+'))
+    local from_clipboard = vim.trim(vim.fn.getreg '+')
     local cmd = vim.trim(vim.fn.input('Cmd to debug: ', from_clipboard, 'shellcmd'))
     local words = vim.gsplit(cmd, ' ', true)
 
@@ -63,14 +61,14 @@ local function cpp_rust()
     type = 'executable',
     command = '${env:HOME}/.local/bin/OpenDebugAD7',
     name = 'gdb',
-    enrich_config = debugee_cmd_input
+    enrich_config = debugee_cmd_input,
   }
 
   dap.adapters.lldb = {
     type = 'executable',
     command = '/usr/bin/lldb-vscode',
     name = 'lldb',
-    enrich_config = debugee_cmd_input
+    enrich_config = debugee_cmd_input,
   }
 
   -- CONFIGURATIONS
@@ -83,7 +81,7 @@ local function cpp_rust()
       type = 'lldb',
       request = 'launch',
       cwd = '${workspaceFolder}',
-      stopOnEntry = false
+      stopOnEntry = false,
 
       -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
       --
@@ -105,16 +103,16 @@ local function cpp_rust()
         type = 'lldb',
         request = 'attach',
         pid = require('dap.utils').pick_process,
-        args = {}
-      }
+        args = {},
+      },
     },
     {
       name = 'GDB launch',
       type = 'cppdbg',
       request = 'launch',
       cwd = '${workspaceFolder}',
-      stopOnEntry = true
-    }
+      stopOnEntry = true,
+    },
     -- {
     --   name = 'Attach to gdbserver :1234',
     --   type = 'cppdbg',
@@ -135,23 +133,22 @@ local function cpp_rust()
 end
 
 local function js_ts()
-
   -- dedicated plugin for adapter
-  require('dap-vscode-js').setup({
+  require('dap-vscode-js').setup {
     -- node_path = "node", -- Path of node executable. Defaults to $NODE_PATH, and then "node"
-    debugger_path = vim.fn.stdpath('data') .. '/vscode-js-debug', -- Path to vscode-js-debug installation.
+    debugger_path = vim.fn.stdpath 'data' .. '/vscode-js-debug', -- Path to vscode-js-debug installation.
     -- debugger_cmd = { "js-debug-adapter" }, -- Command to use to launch the debug server. Takes precedence over `node_path` and `debugger_path`.
-    adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' } -- which adapters to register in nvim-dap
+    adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' }, -- which adapters to register in nvim-dap
     -- log_file_path = "(stdpath cache)/dap_vscode_js.log" -- Path for file logging
     -- log_file_level = false -- Logging level for output to file. Set to false to disable file logging.
     -- log_console_level = vim.log.levels.ERROR -- Logging level for output to console. Set to false to disable console output.
-  })
+  }
 
   local C = dap.configurations
 
   -- https://github.com/microsoft/vscode-js-debug/blob/main/OPTIONS.md
 
-  for _, language in ipairs({ 'typescript', 'javascript' }) do
+  for _, language in ipairs { 'typescript', 'javascript' } do
     C[language] = {
       {
         type = 'pwa-node',
@@ -162,7 +159,7 @@ local function js_ts()
         runtimeArgs = { 'src/index.ts' },
         skipFiles = {},
         outFiles = {
-          '${workspaceFolder}/**/*.js'
+          '${workspaceFolder}/**/*.js',
           -- '!**/node_modules/**',
           -- '${workspaceFolder}/node_modules/@nestjs'
         },
@@ -171,7 +168,7 @@ local function js_ts()
         cwd = '${workspaceFolder}',
         --
         console = 'integratedTerminal',
-        internalConsoleOptions = 'neverOpen'
+        internalConsoleOptions = 'neverOpen',
       },
       {
         type = 'pwa-node',
@@ -182,7 +179,7 @@ local function js_ts()
         runtimeArgs = { 'build' },
         skipFiles = {},
         outFiles = {
-          '${workspaceFolder}/**/*.js'
+          '${workspaceFolder}/**/*.js',
           -- '!**/node_modules/**',
           -- '${workspaceFolder}/node_modules/@nestjs'
         },
@@ -191,7 +188,7 @@ local function js_ts()
         cwd = '${workspaceFolder}',
         --
         console = 'integratedTerminal',
-        internalConsoleOptions = 'neverOpen'
+        internalConsoleOptions = 'neverOpen',
       },
       {
         type = 'pwa-node',
@@ -202,7 +199,7 @@ local function js_ts()
         runtimeArgs = { 'start' },
         skipFiles = {},
         outFiles = {
-          '${workspaceFolder}/**/*.js'
+          '${workspaceFolder}/**/*.js',
           -- '!**/node_modules/**',
           -- '${workspaceFolder}/node_modules/@nestjs'
         },
@@ -211,21 +208,21 @@ local function js_ts()
         cwd = '${workspaceFolder}',
         --
         console = 'integratedTerminal',
-        internalConsoleOptions = 'neverOpen'
+        internalConsoleOptions = 'neverOpen',
       },
       {
         type = 'pwa-node',
         request = 'launch',
         name = 'Launch file',
         program = '${file}',
-        cwd = '${workspaceFolder}'
+        cwd = '${workspaceFolder}',
       },
       {
         type = 'pwa-node',
         request = 'attach',
         name = 'Attach',
         processId = dap_utils.pick_process,
-        cwd = '${workspaceFolder}'
+        cwd = '${workspaceFolder}',
       },
       {
         type = 'pwa-node',
@@ -237,7 +234,7 @@ local function js_ts()
         rootPath = '${workspaceFolder}',
         cwd = '${workspaceFolder}',
         console = 'integratedTerminal',
-        internalConsoleOptions = 'neverOpen'
+        internalConsoleOptions = 'neverOpen',
       },
       {
         type = 'pwa-node',
@@ -249,8 +246,8 @@ local function js_ts()
         rootPath = '${workspaceFolder}',
         cwd = '${workspaceFolder}',
         console = 'integratedTerminal',
-        internalConsoleOptions = 'neverOpen'
-      }
+        internalConsoleOptions = 'neverOpen',
+      },
     }
   end
 end
@@ -259,7 +256,7 @@ local function php()
   dap.adapters.php = {
     type = 'executable',
     command = 'node',
-    args = { vim.fn.stdpath('data') .. '/vscode-php-debug/out/phpDebug.js' }
+    args = { vim.fn.stdpath 'data' .. '/vscode-php-debug/out/phpDebug.js' },
   }
 
   dap.configurations.php = {
@@ -268,15 +265,15 @@ local function php()
       request = 'launch',
       name = 'Xdebug stopped',
       port = 9003,
-      stopOnEntry = true
+      stopOnEntry = true,
     },
     {
       type = 'php',
       request = 'launch',
       name = 'Xdebug running',
       port = 9003,
-      stopOnEntry = false
-    }
+      stopOnEntry = false,
+    },
   }
 end
 
@@ -289,13 +286,13 @@ local function mappings()
   local function common()
     local function map(mode, key, command, short)
       key = '<leader>d' .. key
-      require'vim_utils'.map(mode, key, command)
+      require('vim_utils').map(mode, key, command)
       if short then
         table.insert(short_mappings, { mode, short, key })
       end
     end
 
-    local mapn = bind(map, 'n', func._1, func._2, func._3)
+    local mapn = b(map, 'n')
 
     local function sidebar_frames()
       widgets.sidebar(widgets.frames).open()
@@ -313,10 +310,14 @@ local function mappings()
     mapn('p', dap.pause, 'p')
     mapn('r', dap.run_to_cursor, 'r')
 
-    mapn('i', bind1(dap.step_into, {
-      steppingGranularity = 'statement',
-      askForTargets = true
-    }), 'i')
+    mapn(
+      'i',
+      b(dap.step_into, {
+        steppingGranularity = 'statement',
+        askForTargets = true,
+      }),
+      'i'
+    )
     mapn('s', dap.step_over, 'o')
     mapn('o', dap.step_out, 'O')
 
@@ -324,17 +325,17 @@ local function mappings()
     mapn('d', dap.down, 'D')
 
     mapn('h', widgets.hover, '<Home>')
-    map('x', 'h', bind1(widgets.hover, dap_utils.get_visual_selection_text), '<Home>')
+    map('x', 'h', b(widgets.hover, dap_utils.get_visual_selection_text), '<Home>')
 
     mapn('R', dap.repl.toggle, 'R')
     -- open sidebar
     mapn('f', sidebar_frames, 'gf')
     mapn('v', sidebar_scopes, 'gv')
     -- toggle centered float
-    mapn('<M-f>', bind1(widgets.centered_float, widgets.frames), '<M-f>')
-    mapn('<M-v>', bind1(widgets.centered_float, widgets.scopes), '<M-v>')
+    mapn('<M-f>', b(widgets.centered_float, widgets.frames), '<M-f>')
+    mapn('<M-v>', b(widgets.centered_float, widgets.scopes), '<M-v>')
 
-    mapn('K', bind1(shortmap.toggle, 'debug'))
+    mapn('K', b(shortmap.toggle, 'debug'))
 
     shortmap.define('debug', short_mappings)
   end
@@ -354,22 +355,22 @@ local function ui()
     callback = function(arg)
       vim.schedule(function()
         vim.api.nvim_buf_delete(arg.buf, {
-          force = true
+          force = true,
         })
       end)
-    end
+    end,
   })
 
   vim.fn.sign_define('DapBreakpoint', {
     text = '',
     texthl = 'DapBreakpointSign',
-    linehl = 'DapBreakpointLine'
+    linehl = 'DapBreakpointLine',
   })
 
   vim.fn.sign_define('DapStopped', {
     text = '',
     texthl = 'DapStoppedSign',
-    linehl = 'DapStoppedLine'
+    linehl = 'DapStoppedLine',
   })
 end
 

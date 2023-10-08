@@ -1,4 +1,4 @@
-local bind1 = require('pl.func').bind1
+local b = require('utils').b
 local ts_configs = require 'nvim-treesitter.configs'
 -- local styled_components = require 'plug-config.styled_components'
 local keymap = vim.keymap
@@ -198,28 +198,28 @@ neogen.setup {
 keymap.set(
   'n',
   '<leader>af',
-  bind1(neogen.generate, {
+  b(neogen.generate, {
     type = 'func',
   })
 )
 keymap.set(
   'n',
   '<leader>ac',
-  bind1(neogen.generate, {
+  b(neogen.generate, {
     type = 'class',
   })
 )
 keymap.set(
   'n',
   '<leader>at',
-  bind1(neogen.generate, {
+  b(neogen.generate, {
     type = 'type',
   })
 )
 keymap.set(
   'n',
   '<leader>aF',
-  bind1(neogen.generate, {
+  b(neogen.generate, {
     type = 'file',
   })
 )
