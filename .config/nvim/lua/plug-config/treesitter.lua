@@ -77,12 +77,9 @@ ts_configs.setup {
   },
   highlight = {
     enable = true,
-    disable = {
-      'sql',
-    },
+    disable = {},
 
     -- additional_vim_regex_highlighting = true,
-    -- disable = { 'help' }
   },
   indent = { enable = true },
   playground = {

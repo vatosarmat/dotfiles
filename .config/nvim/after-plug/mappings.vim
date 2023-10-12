@@ -123,7 +123,8 @@ function! s:Edit() abort
 
   "Indent
   inoremap <C-l> <C-o>==
-  nnoremap <leader><C-l> ==
+  nnoremap <C-l> ==
+  xnoremap <C-l> =
 
   "More convinient register selector
   nnoremap q "

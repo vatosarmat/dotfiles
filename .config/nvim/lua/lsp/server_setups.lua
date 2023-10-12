@@ -298,7 +298,7 @@ function M.setup(capabilities)
       Lua = {
         runtime = { version = 'LuaJIT' },
         completion = { workspaceWord = false, showWord = 'Disable', callSnippet = 'Replace' },
-        diagnostics = { globals = { 'vim', '_U', 'use', 'pack', 'fnoop', 'fconst' } },
+        diagnostics = { globals = { '_U', 'pack', 'fnoop', 'fconst' } },
         telemetry = { enable = false },
       },
     },
