@@ -113,7 +113,8 @@ require('lazy').setup({
 
   {
     'machakann/vim-sandwich',
-    config = r 'sandwich',
+    init = require('plug-config.sandwich').init,
+    config = require('plug-config.sandwich').config,
   },
 
   {

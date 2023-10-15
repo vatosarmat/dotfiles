@@ -1,11 +1,21 @@
-local function setup()
+local M = {}
+
+function M.init()
+  vim.cmd [[
+let g:sandwich_no_default_key_mappings = 1
+let g:operator_sandwich_no_default_key_mappings = 1
+let g:textobj_sandwich_no_default_key_mappings = 1
+]]
+end
+
+function M.config()
   local api = vim.api
   local set = vim.keymap.set
 
   vim.fn['operator#sandwich#set']('all', 'all', 'hi_duration', 0)
 
   -- Among others, adds recipes for: spaces, new lines
-  vim.cmd([[runtime macros/sandwich/keymap/surround.vim]])
+  vim.cmd [[runtime macros/sandwich/keymap/surround.vim]]
 
   set('x', '<C-s>', '<Plug>(sandwich-add)')
 
@@ -22,8 +32,8 @@ local function setup()
   vim.g['sandwich#recipes'] = vim.list_extend(vim.g['sandwich#recipes'], {
     {
       buns = { '${', '}' },
-      input = { '$' }
-    }
+      input = { '$' },
+    },
   })
 
   -- %() - non-capturing group in Vim regexps, \h - [A-Za-z_], \w - [0-9A-Za-z_]
@@ -40,8 +50,8 @@ local function setup()
       header = [[\<\%(\h\k*\.\)*\h\k*]],
       bra = '(',
       ket = ')',
-      footer = ''
-    }
+      footer = '',
+    },
   }
 
   local augroup = api.nvim_create_augroup('Sandwich', {})
@@ -50,35 +60,34 @@ local function setup()
     pattern = { 'typescriptreact', 'javascriptreact' },
     desc = 'Setup sandwich recipes for React',
     callback = function()
-      vim.fn['sandwich#util#addlocal']({
+      vim.fn['sandwich#util#addlocal'] {
         {
           buns = { '<>', '</>' },
-          input = { '<' }
-        }
-      })
-    end
+          input = { '<' },
+        },
+      }
+    end,
   })
   api.nvim_create_autocmd('FileType', {
     group = augroup,
     pattern = { 'typescript', 'typescriptreact' },
     desc = 'Setup sandwich recipes for typescript',
     callback = function()
-      vim.fn['sandwich#util#addlocal']({
+      vim.fn['sandwich#util#addlocal'] {
         {
           buns = { 'Promise<', '>' },
-          input = { 'p' }
+          input = { 'p' },
         },
         {
           buns = { 'sandwich#magicchar#f#fname("<")', '">"' },
           kind = { 'add', 'replace' },
           action = { 'add' },
           expr = 1,
-          input = { 'g' }
-        }
-      })
-    end
+          input = { 'g' },
+        },
+      }
+    end,
   })
-
 end
 
-setup()
+return M
