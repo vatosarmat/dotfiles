@@ -1,5 +1,11 @@
 ; extends
 
+; - keywords
+; - adjustments
+; - spell
+; - braces
+
+; - keywords
 [
  "export"
  "default"
@@ -13,31 +19,15 @@
  "as"
 ] @keyword
 
-(identifier) @spell
-(property_identifier) @spell
-
-((identifier) @variable.builtin (#any-of? @variable.builtin "Object" "Array" "Math" "Date" "Function" "Number" "Boolean" "JSON" "React"))
-(import) @variable.builtin
-
-((identifier) @function.builtin (#any-of? @function.builtin "parseInt" "parseFloat" "isNaN" "eval"))
-((property_identifier) @function.builtin (#eq? @function.builtin "constructor"))
-
-[
-  (this)
-  (super)
-] @variable.special
-
-[
- (undefined)
- (null)
-] @null
-
+; - adjustments
 (shorthand_property_identifier) @variable
 (shorthand_property_identifier_pattern) @variable
 
-; (format_parameter
-;   pattern: (identifier) @variable)
+; - spell
+(identifier) @spell
+(property_identifier) @spell
 
+; - braces
 (object ["{" "}"] @ecma.object.brace)
 (object_pattern ["{" "}"] @ecma.object_pattern.brace)
 

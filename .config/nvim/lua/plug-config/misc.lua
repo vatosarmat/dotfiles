@@ -67,33 +67,41 @@ M.wordmotion = {
   end,
 }
 
-function M.emmet()
-  -- <Home> is C-m
-  local set = vim.keymap.set
+M.emmet = {
+  init = function()
+    -- <Home> is C-m
+    local set = vim.keymap.set
 
-  set('i', '<Home>', '<Nop>')
-  vim.g.user_emmet_leader_key = '<Home>'
-  vim.g.user_emmet_complete_tag = nil
-  vim.g.user_emmet_mode = 'i'
-  vim.g.user_emmet_expandabbr_key = '<Home><Home>'
-end
+    set('i', '<Home>', '<Nop>')
+    vim.g.user_emmet_leader_key = '<Home>'
+    vim.g.user_emmet_complete_tag = nil
+    vim.g.user_emmet_mode = 'i'
+    vim.g.user_emmet_expandabbr_key = '<Home><Home>'
+  end,
+  config = function() end,
+}
 
-function M.matchup()
-  local set = vim.keymap.set
+M.matchup = {
+  init = function()
+    vim.g.matchup_matchparen_offscreen = vim.empty_dict()
+    vim.g.matchup_surround_enabled = false
+    vim.g.matchup_transmute_enabled = false
+    vim.g.matchup_motion_keepjumps = true
+  end,
+  config = function()
+    local set = vim.keymap.set
+    set({ 'n', 'x', 'o' }, '<M-%>', '<plug>(matchup-g%)')
+  end,
+}
 
-  vim.g.matchup_matchparen_offscreen = vim.empty_dict()
-  vim.g.matchup_surround_enabled = false
-  vim.g.matchup_transmute_enabled = false
-  vim.g.matchup_motion_keepjumps = true
-
-  set({ 'n', 'x', 'o' }, '<M-%>', '<plug>(matchup-g%)')
-end
-
-function M.scrollview()
-  vim.g.scrollview_on_startup = 1
-  vim.g.scrollview_winblend = 60
-  vim.g.scrollview_column = 1
-  vim.g.scrollview_auto_mouse = 0
-end
+M.scrollview = {
+  init = function()
+    vim.g.scrollview_on_startup = 1
+    vim.g.scrollview_winblend = 60
+    vim.g.scrollview_column = 1
+    vim.g.scrollview_auto_mouse = 0
+  end,
+  config = function() end,
+}
 
 return M

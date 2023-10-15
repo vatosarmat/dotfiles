@@ -1,35 +1,12 @@
--- local api = vim.api
 local lsp = vim.lsp
-local api = vim.api
-local b = require('utils').b
--- local log = require 'vim.lsp.log'
-local vim_utils = require 'vim_utils'
-local telescope = require 'telescope.builtin'
 
--- LSP submodules
-local status_line = require 'lsp.status_line'
-local ui = require 'lsp.ui'
-local lsp_flags = require 'lsp.flags'
-local sym_nav = require 'lsp.symbol_navigation'
-local completion = require 'lsp.completion'
-local diagnostic = require 'lsp.diagnostic'
-local servers = require 'lsp.server_setups'
-local lookup = require 'lsp.lookup'
+local M = {}
 
-completion.setup()
-diagnostic.setup()
-servers.setup(
-  completion.capabilities(vim.tbl_deep_extend('force', lsp.protocol.make_client_capabilities(), {
-    textDocument = {
-      foldingRange = {
-        dynamicRegistration = false,
-        lineFoldingOnly = true,
-      },
-    },
-  }))
-)
+function M.init()
+  local status_line = require 'lsp.status_line'
+  local ui = require 'lsp.ui'
+  local lsp_flags = require 'lsp.flags'
 
-do
   ui.setup()
 
   local lsp_service = {
@@ -41,17 +18,38 @@ do
   }
 
   function lsp_service.omnifunc(...)
-    -- zzz
     return lsp.omnifunc(unpack { ... })
   end
 
   _U.lsp = lsp_service
 end
 
---
--- Mappings and (auto)commands
---
-do
+function M.config()
+  local api = vim.api
+
+  local telescope = require 'telescope.builtin'
+  local sym_nav = require 'lsp.symbol_navigation'
+  local completion = require 'lsp.completion'
+  local diagnostic = require 'lsp.diagnostic'
+  local servers = require 'lsp.server_setups'
+  local lookup = require 'lsp.lookup'
+  local vim_utils = require 'vim_utils'
+  local b = require('utils').b
+
+  completion.setup()
+  diagnostic.setup()
+
+  servers.setup(
+    completion.capabilities(vim.tbl_deep_extend('force', lsp.protocol.make_client_capabilities(), {
+      textDocument = {
+        foldingRange = {
+          dynamicRegistration = false,
+          lineFoldingOnly = true,
+        },
+      },
+    }))
+  )
+
   local map = vim_utils.map
   local autocmd = vim_utils.autocmd
 
@@ -165,3 +163,5 @@ do
     [[ User LspProgressUpdate redraws! ]],
   })
 end
+
+return M

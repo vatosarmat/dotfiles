@@ -7,17 +7,17 @@ local function expand_diagnostic(diagnostic_table)
       local group = string.format('Diagnostic%s%s', kind, severity)
       if vim.startswith(color, '#') then
         ret[group] = {
-          fg = color
+          fg = color,
         }
       else
         -- color is actual kind, e.g. Floating = 'Sign'
         ret[group] = {
-          link = string.format('Diagnostic%s%s', color, severity)
+          link = string.format('Diagnostic%s%s', color, severity),
         }
       end
     end
     ret[string.format('Diagnostic%s', severity)] = {
-      link = string.format('DiagnosticSign%s', severity)
+      link = string.format('DiagnosticSign%s', severity),
     }
   end
   return ret
@@ -40,7 +40,7 @@ local function make_colorscheme()
       char = '#d7ba7d',
       type = '#4ec9b0',
       saturated_blue = '#4fc1ff',
-      red = '#d16969'
+      red = '#d16969',
     },
     Alacritty = {
       normal = {
@@ -55,7 +55,7 @@ local function make_colorscheme()
         -- weak and Keyword2-like
         magenta = '#b294bb',
         -- weak
-        cyan = '#8abeb7'
+        cyan = '#8abeb7',
       },
       bright = {
         -- Vscode.red-like
@@ -69,8 +69,8 @@ local function make_colorscheme()
         -- Keyword2-like
         magenta = '#c397d8',
         -- Type-like
-        cyan = '#70c0b1'
-      }
+        cyan = '#70c0b1',
+      },
       -- Dim has too low contrast with background
     },
     Darcula = {
@@ -95,7 +95,7 @@ local function make_colorscheme()
       ['brown'] = '#cc8242',
       ['gold'] = '#cd9731',
       ['red'] = '#f44747',
-      ['orange'] = '#ffc66d'
+      ['orange'] = '#ffc66d',
     },
     Winter = {
       -- '#00bff9',
@@ -146,7 +146,7 @@ local function make_colorscheme()
       '#d08770',
       '#d8dee9',
       '#ebcb8b',
-      '#eceff4'
+      '#eceff4',
     },
     OneDarkPro = {
       '#56b6c2',
@@ -160,21 +160,22 @@ local function make_colorscheme()
       '#d19a66',
       '#e06c75',
       '#e5c07b',
-      '#f44747'
+      '#f44747',
     },
     Self = {
       comment = '#777777',
       operator = '#e6d0d0',
       bracket = '#d0d0d0',
       property = '#83ccd2',
-      constant = '#90c0fe'
+      constant = '#90c0fe',
     },
     Brace = {
       declaration = '#4bc3ff',
       -- call = '#c552c5',
       call = '#dc7c40',
-      pattern = '#afff69'
-    }
+      pattern = '#afff69',
+      type = '#00b368',
+    },
   }
 
   -- Actual colorscheme - highlight groups mapped to structures {fg,bg,italic,...}
@@ -218,7 +219,7 @@ local function make_colorscheme()
       Function = P.Vscode['function'],
       ['@function.builtin'] = {
         fg = '&Function',
-        italic = true
+        italic = true,
       },
       ['@variable.special'] = P.Vscode.comment,
       ['@variable.builtin'] = P.Vscode.saturated_blue,
@@ -230,8 +231,13 @@ local function make_colorscheme()
       ['@boolean'] = P.Darcula.brown,
 
       Type = P.Vscode.type,
+      ['@type.qualifier'] = 'Keyword',
       ['@property'] = P.Self.property,
       ['@constructor'] = P.Darcula.orange,
+      ['@constructor.builtin'] = {
+        fg = '&@variable.builtin',
+        italic = true,
+      },
       ['@namespace'] = P.Darcula.weak,
 
       --
@@ -252,7 +258,7 @@ local function make_colorscheme()
       Label = 'Identifier',
       ['@variable'] = 'Identifier',
 
-      Special = '@null'
+      Special = '@null',
     }
 
     C.TextHihglight = bg {
@@ -263,42 +269,42 @@ local function make_colorscheme()
       LspReferenceRead = '#304030',
       LspReferenceWrite = '#502842',
 
-      LspReferenceText = 'QuickFixLine'
+      LspReferenceText = 'QuickFixLine',
     }
 
     -- All(but Self.comment) grey shades here
     C.Ui = bg {
       Normal = {
         fg = '#abb2bf',
-        bg = '#1e1e1e'
+        bg = '#1e1e1e',
       },
       Title = {
         fg = '#e6eeff',
-        bold = true
+        bold = true,
       },
       StatusLine = {
         fg = '&Normal/fg',
-        bg = '#000000'
+        bg = '#000000',
       },
       StatusLineNC = {
         fg = '#5c6370',
-        bg = '#191919'
+        bg = '#191919',
       },
       Pmenu = {
         fg = '&Title/fg',
-        bg = '#282c34'
+        bg = '#282c34',
       },
       LineNr = {
-        fg = '#858585'
+        fg = '#858585',
       },
       WinSeparator = {
-        fg = '#3a3a3a'
+        fg = '#3a3a3a',
       },
       QuickFixLine = '#3e4452',
       CursorLine = '#2b2b2b',
       CursorLineNr = 'LineNr',
       MatchParen = {
-        underline = true
+        underline = true,
       },
       -- MatchWord = '',
       -- MatchWordCur = '',
@@ -325,11 +331,11 @@ local function make_colorscheme()
       PmenuThumb = '&Normal/fg',
       PmenuSel = {
         fg = '&Title/fg',
-        bg = C.TextHihglight.Visual.bg
+        bg = C.TextHihglight.Visual.bg,
       },
 
       Folded = 'Normal',
-      UfoFoldedBg = 'CursorLine'
+      UfoFoldedBg = 'CursorLine',
     }
 
     C.NvimTree = fg({
@@ -339,7 +345,7 @@ local function make_colorscheme()
       ExecFile = 'Function',
       SpecialFile = 'Keyword2',
       GitDirty = '@property',
-      GitNew = 'NvimTreeGitDirty'
+      GitNew = 'NvimTreeGitDirty',
     }, 'NvimTree')
 
     -- Diagnostic
@@ -347,69 +353,69 @@ local function make_colorscheme()
       Error = {
         VirtualText = '#a01212',
         Sign = '#f41d1d',
-        Floating = '#f44747'
+        Floating = '#f44747',
       },
       Warn = {
         VirtualText = '#a05200',
         Sign = '#ff8800',
-        Floating = 'Sign'
+        Floating = 'Sign',
       },
       Info = {
         VirtualText = '#276180',
         Sign = '#4fc1ff',
-        Floating = 'Sign'
+        Floating = 'Sign',
       },
       Hint = {
         VirtualText = '#278027',
         Sign = '#3bc03d',
-        Floating = 'Sign'
-      }
+        Floating = 'Sign',
+      },
     }
     C.Diagnostic.SpellBad = {
       undercurl = true,
-      sp = C.Diagnostic.DiagnosticSignInfo.fg
+      sp = C.Diagnostic.DiagnosticSignInfo.fg,
     }
 
     C.StatusLineDiagnostic = fg({
       User1 = C.Diagnostic.DiagnosticSignError.fg,
       User2 = C.Diagnostic.DiagnosticSignWarn.fg,
       User3 = C.Diagnostic.DiagnosticSignInfo.fg,
-      User4 = C.Diagnostic.DiagnosticSignHint.fg
+      User4 = C.Diagnostic.DiagnosticSignHint.fg,
     }, nil, C.Ui.StatusLine.bg)
 
     -- Dap
     C.DapLine = bg({
       BreakpointLine = '#100010',
-      StoppedLine = '#400040'
+      StoppedLine = '#400040',
     }, 'Dap')
 
     C.DapSign = fg({
       BreakpointSign = '#d098f4',
-      StoppedSign = '#9e1cf4'
+      StoppedSign = '#9e1cf4',
     }, 'Dap')
 
     C.StatusLineDap = {
       User8 = {
         fg = C.DapSign.DapStoppedSign.fg,
-        bg = C.Ui.StatusLine.bg
-      }
+        bg = C.Ui.StatusLine.bg,
+      },
     }
 
     --
     C.SymbolIcon = fg({
       Function = '#c0c000',
       Variable = '#0080c0',
-      Class = '#008064'
+      Class = '#008064',
     }, 'SymbolIcon')
 
     -- CmpItem
     C.CmpItemAbbr = fg({
       Deprecated = {
         strikethrough = true,
-        fg = C.Ui.StatusLineNC.fg
+        fg = C.Ui.StatusLineNC.fg,
       },
       Match = 'Keyword',
-      MatchFuzzy = 'Identifier'
+      MatchFuzzy = 'Identifier',
     }, 'CmpItemAbbr')
 
     C.CmpItemKind = fg({
@@ -420,7 +426,7 @@ local function make_colorscheme()
       Method = 'Keyword2',
       Keyword = C.Ui.Pmenu.fg,
       Property = C.Ui.Pmenu.fg,
-      Unit = C.Ui.Pmenu.fg
+      Unit = C.Ui.Pmenu.fg,
     }, 'CmpItemKind')
   end
 
@@ -432,31 +438,31 @@ local function make_colorscheme()
       Text = '#1e0000',
       ConflictMarker = {
         fg = C.Ui.StatusLine.bg,
-        bg = C.Ui.LineNr.fg
-      }
+        bg = C.Ui.LineNr.fg,
+      },
     }, 'Diff')
 
     C.StatusLineDiff = fg({
       User5 = '#727c5d',
       User6 = '#76959d',
-      User7 = '#946f71'
+      User7 = '#946f71',
     }, nil, C.Ui.StatusLine.bg)
 
     C.GitSigns = fg({
       Add = '#587c0c',
       Change = '#0c7d9d',
-      Delete = '#94151b'
+      Delete = '#94151b',
     }, 'GitSigns')
 
     C.Fugitive = fg({
       UnstagedModifier = P.Vscode.red,
-      UntrackedModifier = P.Vscode.string
+      UntrackedModifier = P.Vscode.string,
     }, 'fugitive')
   end
 
   local function help()
     C.Help = fg({
-      Header = 'Function'
+      Header = 'Function',
     }, 'help')
   end
 
@@ -474,7 +480,7 @@ local function make_colorscheme()
       ['@text.literal'] = P.Darcula.gold,
       ['@text'] = 'Normal',
 
-      ['@tag'] = 'Tag'
+      ['@tag'] = 'Tag',
     }
   end
 
@@ -486,20 +492,36 @@ local function make_colorscheme()
       ['object_pattern.brace'] = P.Brace.pattern,
       ['array_pattern.brace'] = P.Brace.pattern,
       ['subscript.brace'] = P.Brace.call,
-      ['arguments.brace'] = P.Brace.call
+      ['arguments.brace'] = P.Brace.call,
     }, '@ecma.')
   end
 
+  local function typescript()
+    C.Typescript = fg({
+      ['type.brace'] = P.Brace.type,
+    }, '@typescript.')
+  end
+
   local function html_php()
-    C.Html_php = fg({
+    C.Html_php = fg {
       ['@tag.php'] = P.Brace.call,
       ['bladeDelimiter'] = 'Operator',
       ['phpMemberSelector'] = 'Operator',
       ['htmlTagName'] = 'Tag',
       ['htmlLink'] = '@text.uri',
       ['htmlSpecialTagName'] = 'htmlTagName',
-      ['phpMethodsVar'] = 'phpFunctions'
-    })
+      ['phpMethodsVar'] = 'phpFunctions',
+    }
+  end
+
+  local function lsp()
+    C.Lsp = fg({
+      ['type.property'] = '@property',
+      ['typemod.function.defaultLibrary'] = '@function.builtin',
+      ['typemod.variable.defaultLibrary'] = '@variable.builtin',
+      ['typemod.class.defaultLibrary'] = '@constructor.builtin',
+      ['typemod.class.declaration'] = '@constructor',
+    }, '@lsp.')
   end
 
   common()
@@ -507,7 +529,9 @@ local function make_colorscheme()
   help()
   makrdown()
   ecma()
+  typescript()
   html_php()
+  lsp()
 
   return vim.tbl_extend('error', unpack(vim.tbl_values(C)))
 end
@@ -517,5 +541,5 @@ local colorscheme = make_colorscheme()
 _U.colorscheme = colorscheme
 
 -- Colorscheme_utils.validate(colorscheme)
-Colorscheme_utils.boilerplate('vscode')
+Colorscheme_utils.boilerplate 'vscode'
 Colorscheme_utils.set_hl(colorscheme)

@@ -133,6 +133,9 @@ require('nvim-tree').setup {
   filters = {
     custom = { '__pycache__', [[^\.null-ls_\.*]] },
   },
+  notify = {
+    threshold = vim.log.levels.WARN,
+  },
   renderer = {
     root_folder_modifier = ':t',
     group_empty = false,

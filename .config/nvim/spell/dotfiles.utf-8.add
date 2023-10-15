@@ -3,3 +3,5 @@ shopt
 dircolors
 mv
 pwd
+omnifunc
+autocmd

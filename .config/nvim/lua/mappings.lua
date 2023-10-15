@@ -30,37 +30,63 @@ local function map_completion()
     }
   end
 
-  -- snippet
-  iset('<M-Tab>', function()
-    cmp.complete {
-      reason = cmp.ContextReason.Manual,
-      config = {
-        sorting = {
-          comparators = {
-            function(a, b)
-              return vim.stricmp(b.completion_item.label, a.completion_item.label) > 0
-            end,
+  iset('<M-i>', function()
+    if cmp.visible() then
+      cmp.select_next_item()
+    else
+      cmp.complete {
+        reason = cmp.ContextReason.Manual,
+        config = {
+          sorting = {
+            comparators = {
+              function(a, b)
+                return vim.stricmp(b.completion_item.label, a.completion_item.label) > 0
+              end,
+            },
+          },
+          sources = {
+            {
+              name = 'luasnip',
+            },
           },
         },
-        sources = {
-          {
-            name = 'luasnip',
-          },
-        },
-      },
-    }
+      }
+    end
   end)
-  iset('<M-i>', luasnip.expand)
+
   -- lsp
-  iset('<C-j>', function()
+  iset('<C-i>', function()
     if cmp.visible() then
       cmp.select_next_item()
     else
       complete_sources('nvim_lsp', 'nvim_lua')
     end
   end)
-  iset('<C-y>', cmp.confirm)
-  iset('<C-M-y>', cmp.close)
+
+  iset('<C-j>', function()
+    if cmp.visible() then
+      cmp.confirm()
+    else
+      luasnip.expand()
+    end
+  end)
+
+  iset('<Down>', function()
+    if cmp.visible() then
+      cmp.confirm()
+    else
+      feed_keys '<Down>'
+    end
+  end)
+
+  iset('<M-Tab>', function()
+    if cmp.visible() then
+      cmp.close()
+    else
+      feed_keys '<Tab>'
+    end
+  end)
+
   iset('<C-e>', function()
     if cmp.visible() then
       cmp.abort()
