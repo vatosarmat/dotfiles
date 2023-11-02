@@ -218,6 +218,7 @@ local function make_colorscheme()
       Constant = P.Self.constant,
       Function = P.Vscode['function'],
       ['@function.builtin'] = {
+        -- works because Function is a color value and no prefix in this hl subtable
         fg = '&Function',
         italic = true,
       },
@@ -235,6 +236,7 @@ local function make_colorscheme()
       ['@property'] = P.Self.property,
       ['@constructor'] = P.Darcula.orange,
       ['@constructor.builtin'] = {
+        -- works because @variable.builtin is a color value and no prefix in this hl subtable
         fg = '&@variable.builtin',
         italic = true,
       },
@@ -283,6 +285,7 @@ local function make_colorscheme()
         bold = true,
       },
       StatusLine = {
+        -- requires /fg because Normal is table-like hl item
         fg = '&Normal/fg',
         bg = '#000000',
       },
@@ -291,6 +294,7 @@ local function make_colorscheme()
         bg = '#191919',
       },
       Pmenu = {
+        -- requires /fg because Title is table-like hl item
         fg = '&Title/fg',
         bg = '#282c34',
       },
@@ -354,6 +358,10 @@ local function make_colorscheme()
         VirtualText = '#a01212',
         Sign = '#f41d1d',
         Floating = '#f44747',
+        -- Underline = {
+        --   fg = 'Floating',
+        --   undercurl = true,
+        -- },
       },
       Warn = {
         VirtualText = '#a05200',
@@ -466,8 +474,8 @@ local function make_colorscheme()
     }, 'help')
   end
 
-  local function makrdown()
-    C.Makrdown = fg {
+  local function markdown()
+    C.Markdown = fg {
       Tag = P.Darcula.green,
       htmlArg = '@property',
       ['@tag.attribute'] = '@property',
@@ -479,6 +487,14 @@ local function make_colorscheme()
       ['@text.title.h3'] = P.Vscode.comment,
       ['@text.literal'] = P.Darcula.gold,
       ['@text'] = 'Normal',
+      ['@text.emphasis'] = {
+        fg = '&@text.title.h3',
+        italic = true,
+      },
+      ['@text.strong'] = {
+        fg = '&@text.title.h2',
+        italic = true,
+      },
 
       ['@tag'] = 'Tag',
     }
@@ -517,22 +533,25 @@ local function make_colorscheme()
   local function lsp()
     C.Lsp = fg({
       ['type.property'] = '@property',
+      ['type.property'] = '@property',
       ['typemod.function.defaultLibrary'] = '@function.builtin',
       ['typemod.variable.defaultLibrary'] = '@variable.builtin',
       ['typemod.class.defaultLibrary'] = '@constructor.builtin',
       ['typemod.class.declaration'] = '@constructor',
+      ['@lsp.type.class.javascript'] = '@constructor',
     }, '@lsp.')
   end
 
   common()
   git()
   help()
-  makrdown()
+  markdown()
   ecma()
   typescript()
   html_php()
   lsp()
 
+  -- merge all the tables in C
   return vim.tbl_extend('error', unpack(vim.tbl_values(C)))
 end
 

@@ -33,13 +33,26 @@ _G.fconst = function(v)
   end
 end
 
--- local log_file = vim.fn.stdpath 'cache' .. '/ilog.log'
+-- local LOG = true
 
--- vim.fn.delete(log_file)
+---@diagnostic disable-next-line: undefined-global
+if LOG then
+  local log_file_path = vim.fn.stdpath 'cache' .. '/ilog.log'
 
-_G.ilog = function(str)
-  -- local name = debug.getinfo(2, 'n').name
-  -- vim.fn.writefile({ (name or 'NO_NAME') .. ': ' .. str }, log_file, 'a')
+  vim.loop.fs_unlink(log_file_path)
+  -- created file access mode
+  -- 0660 = 432
+  local log_file = vim.loop.fs_open(log_file_path, 'a', 432)
+
+  _G.ilog = function(title, body)
+    local name = debug.getinfo(2, 'n').name
+    local bodyStr = body and '\n' .. vim.inspect(body) or ''
+
+    ---@diagnostic disable-next-line: param-type-mismatch
+    vim.loop.fs_write(log_file, (name or 'NO_NAME') .. ': ' .. title .. bodyStr .. '\n\n')
+  end
+else
+  _G.ilog = function() end
 end
 
 require 'plug'
