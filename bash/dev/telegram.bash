@@ -24,24 +24,23 @@ function telegram__call {
     return 1
   fi
 
-  #endpoint
-  local endpoint
-  if [[ "$TELEGRAM_API_ENDPOINT" ]]; then
-    endpoint="$TELEGRAM_API_ENDPOINT"
+  local base_url
+  if [[ "$TELEGRAM_BASE_URL" ]]; then
+    base_url="$TELEGRAM_BASE_URL"
   elif [[ -r ".env" ]]; then
-    endpoint="$(dotenv__read TELEGRAM_API_ENDPOINT)"
+    base_url="$(dotenv__read TELEGRAM_BASE_URL)"
   fi
-  if [[ ! "$endpoint" ]]; then
-    endpoint="https://api.telegram.org"
+  if [[ ! "$base_url" ]]; then
+    base_url="https://api.telegram.org"
   fi
 
   # For -X POST --data '{...}' need '-H' 'Content-Type: application/json'
 
-  echo curl -sS "${endpoint}/bot${token}/${method}" "$@" >&2
+  echo curl -sS "${base_url}/bot${token}/${method}" "$@" >&2
   if [[ "$no_jq" ]]; then
-    curl -sS "${endpoint}/bot${token}/${method}" "$@"
+    curl -sS "${base_url}/bot${token}/${method}" "$@"
   else
-    curl -sS "${endpoint}/bot${token}/${method}" "$@" | jq
+    curl -sS "${base_url}/bot${token}/${method}" "$@" | jq
   fi
 
 }

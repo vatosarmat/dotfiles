@@ -1,3 +1,13 @@
+function db__postgres_get_json {
+  psql -t moyclass <<< "select params->'emp_telegram_bot' from managers where id=228025"
+
+  # How to fetch undecorated value from psql, so no need in jq?
+  psql -t moyclass <<< "select json_agg(tg_text) from mailing_templates where system_code='emp_stopped_visiting' and lang='en';" | jq -r '.[]'
+
+  jq -r '.templates[] | select(.code=="emp_stopped_visiting" and .lang=="ru").text' bin/updates/2148_templates.json
+
+}
+
 function db__mysql_reset {
 
   local user password db_name seed_file
@@ -92,7 +102,7 @@ CREATE DATABASE $db_name WITH OWNER $user;
 SQL
 
   if [[ "$seed_file" ]]; then
-    mysql --user="$user" --password="$password" "$db_name" < "$seed_file"
+    psql --user="$user" --password="$password" "$db_name" < "$seed_file"
   fi
 
 }
