@@ -111,6 +111,14 @@ require('lazy').setup({
     config = r 'ufo',
   },
 
+  -- {
+  --   'kylechui/nvim-surround',
+  --   version = '*', -- Use for stability; omit to use `main` branch for the latest features
+  --   -- event = 'VeryLazy',
+  --   init = require('plug-config.surround').init,
+  --   config = require('plug-config.surround').config,
+  -- },
+
   {
     'machakann/vim-sandwich',
     init = require('plug-config.sandwich').init,
