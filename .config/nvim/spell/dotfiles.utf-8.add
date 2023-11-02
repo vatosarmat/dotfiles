@@ -5,3 +5,6 @@ mv
 pwd
 omnifunc
 autocmd
+lspconfig
+filetypes
+bufnr

@@ -66,3 +66,4 @@ dayjs
 dedent
 supertest
 querystring
+knex
