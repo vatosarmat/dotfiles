@@ -10,6 +10,19 @@ local typescript = require 'typescript'
 local typescript_null_ls = require 'typescript.extensions.null-ls.code-actions'
 local schemastore = require 'schemastore'
 
+-- lspconfig.util.on_setup = lspconfig.util.add_hook_before(lspconfig.util.on_setup, function(config)
+--   local cwd = vim.fn.getcwd()
+--   if config.name == 'eslint' then
+--     vim.print 'hello!'
+--     vim.print(cwd)
+--     if vim.endswith(cwd, 'moyklass/crm') then
+--       config.settings.options = {
+--         overrideConfigFile = vim.fn.fnamemodify(cwd, ':h') .. '/server/.eslintrc.js',
+--       }
+--     end
+--   end
+-- end)
+
 --
 --
 -- server.setup takes same parameters as lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
@@ -143,8 +156,8 @@ local function setup_tsserver()
       end,
       filetypes = vim.list_extend(jsts_filetype, { 'vue' }),
       on_attach = function(client, bufnr)
-        client.server_capabilities.documentFormattingProvider = false
-        -- client.resolved_capabilities.rangeFormatting = false
+        -- client.server_capabilities.documentFormattingProvider = false
+        client.resolved_capabilities.rangeFormatting = false
         default_on_attach(client, bufnr)
       end,
     }
@@ -167,7 +180,7 @@ local function setup_tsserver()
         server = { -- pass options to lspconfig's setup method
           on_attach = function(client, bufnr)
             client.server_capabilities.documentFormattingProvider = false
-            -- client.resolved_capabilities.rangeFormatting = false
+            client.resolved_capabilities.rangeFormatting = false
             default_on_attach(client, bufnr)
           end,
         },
@@ -183,11 +196,17 @@ local function setup_tsserver()
   --   -- filetypes = vim.list_extend(jsts_filetype, { 'vue' })
   -- })
 
-  setup({
-    predicate = function()
-      return vim.tbl_contains(vim.g.project.name, 'angular')
-    end,
-  }, 'angularls')
+  -- require('lspconfig').angularls.setup {
+  -- cmd = {
+  --   'ngserver',
+  --   '--stdio',
+  --   '--tsProbeLocations',
+  -- '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/lib/node_modules',
+  -- '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/lib/node_modules/typescript',
+  -- '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/lib/node_modules/typescript/lib',
+  -- '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/lib/node_modules/typescript/lib/tsserverlibrary.js',
+  -- },
+  -- }
 end
 
 local function setup_null_ls()
@@ -205,15 +224,25 @@ local function setup_null_ls()
     },
     f.shfmt.with { extra_args = { '-i', '2', '-ci', '-sr' } },
     f.stylua,
-    lsp_flags.prettier_with_d and f.prettierd.with {
+    f.prettierd.with {
+      runtime_condition = function(params)
+        local node = vim.g.project.node
+        return node and node.is_prettier
+      end,
       filetypes = prettier_filetype,
       env = {
         PRETTIERD_DEFAULT_CONFIG = os.getenv 'HOME' .. '/.config/.prettierrc.json',
       },
-    } or f.prettier.with {
-      filetypes = prettier_filetype,
-      -- only_local = 'node_modules/.bin'
     },
+    -- lsp_flags.prettier_with_d and f.prettierd.with {
+    --   filetypes = prettier_filetype,
+    --   env = {
+    --     PRETTIERD_DEFAULT_CONFIG = os.getenv 'HOME' .. '/.config/.prettierrc.json',
+    --   },
+    -- } or f.prettier.with {
+    --   filetypes = prettier_filetype,
+    --   -- only_local = 'node_modules/.bin'
+    -- },
     f.autopep8,
     typescript_null_ls,
     -- f.phpcsfixer.with {
@@ -321,19 +350,43 @@ function M.setup(capabilities)
   lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {
     filetypes = { 'jsonc' },
-    init_options = { provideFormatter = false },
+    init_options = { provideFormatter = true },
     settings = { json = { schemas = schemastore.json.schemas(), validate = { enable = true } } },
   }
   lspconfig.yamlls.setup {}
   lspconfig.eslint.setup {
-    -- settings = {
-    --   format = true,
-    --   workingDirectory = {
-    --     mode = 'location'
-    --   }
-    -- }
-    -- root_dir = lspconfig_util.find_git_ancestor
+    autostart = true,
+    init_options = { provideFormatter = true },
+    -- cmd = {
+    --   '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/node',
+    --   '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/vscode-eslint-language-server',
+    --   '--stdio',
+    -- },
+    settings = {
+      useESLintClass = true,
+      --   packageManager = 'npm',
+      --   runtime = '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/node',
+      nodePath = '/home/igor/Code/Job/KLASS/moyklass/server',
+    },
+    -- root_dir = lspconfig_util.find_git_ancestor,
+    on_attach = function(client, bufnr)
+      client.server_capabilities.documentFormattingProvider = not vim.g.project.node.is_prettier
+
+      -- vim.api.nvim_create_autocmd('BufWritePre', {
+      --   buffer = bufnr,
+      --   command = 'EslintFixAll',
+      -- })
+    end,
+    on_new_config = function(config, new_root_dir)
+      lspconfig.eslint.document_config.default_config.on_new_config(config, new_root_dir)
+      if vim.endswith(new_root_dir, 'moyklass/crm/src') then
+        config.settings.options = {
+          overrideConfigFile = vim.fn.fnamemodify(new_root_dir, ':h:h') .. '/server/.eslintrc.js',
+        }
+      end
+    end,
   }
+
   lspconfig.solargraph.setup {}
 
   lspconfig.intelephense.setup {

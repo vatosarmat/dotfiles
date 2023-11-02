@@ -13,8 +13,12 @@ local misc = require 'lsp.misc'
 -- Utils
 --
 
-local function get_source(diagnostic)
-  return cext[diagnostic.source].short_name or diagnostic.source or '?'
+local function get_source_name(diagnostic)
+  if diagnostic.source then
+    return cext[diagnostic.source].short_name or diagnostic.source or '?'
+  end
+
+  return '?'
 end
 
 local get_code = misc.diagnostic_get_code
@@ -57,14 +61,14 @@ local function show_line_diagnostics()
   local text = Text:new()
   -- local diag_idx_by_text = {}
   for diag_idx, diagnostic in ipairs(line_diagnostics) do
-    local name = get_source(diagnostic)
+    local name = get_source_name(diagnostic)
     local code = get_code(diagnostic)
     local hiname = ui.severity[diagnostic.severity].hl_float
     assert(hiname, 'unknown severity: ' .. tostring(diagnostic.severity))
     text:append(name .. '_' .. code .. ': ', hiname)
     local lines = vim.fn.split(diagnostic.message, '\n', true)
     for _, line in ipairs(lines) do
-      local hl = cext[diagnostic.source].diagnostic_highlight
+      local hl = diagnostic.source and cext[diagnostic.source].diagnostic_highlight or nil
       if hl then
         hl(text, line)
       else

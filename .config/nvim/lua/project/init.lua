@@ -24,13 +24,19 @@ local PROJECT_TYPES = {
       'dist',
       'yarn-error.log',
       '.yarn',
+      'log',
     },
     package_webpage = 'https://www.npmjs.com/package/${package}',
     exclude_mate_bufs = {},
+    node = require('project.node').configure(),
     subtypes = {
       {
         name = 'angular',
-        marker = 'angular.json',
+        marker = function()
+          local text = table.concat(vim.fn.readfile 'package.json', '\n')
+          local table = vim.json.decode(text)
+          return vim.tbl_get(table, 'dependencies', 'angular')
+        end,
         exclude_files = { '.angular' },
         exclude_mate_bufs = {
           '.component.spec.ts',
@@ -125,6 +131,7 @@ local PROJECT_TYPES = {
 
 local function is_marker_present(project_type)
   local markers = vim.tbl_flatten { project_type.marker }
+  ilog('', markers)
 
   for _, marker in ipairs(markers) do
     local marker_type = type(marker)
@@ -132,7 +139,9 @@ local function is_marker_present(project_type)
     if marker_type == 'function' then
       return marker()
     elseif marker_type == 'string' then
-      return vim.fn.filereadable(marker) == 1
+      if vim.fn.filereadable(marker) == 1 then
+        return true
+      end
     end
   end
 
