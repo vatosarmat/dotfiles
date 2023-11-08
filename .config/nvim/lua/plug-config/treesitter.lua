@@ -1,4 +1,5 @@
 local b = require('utils').b
+local utils = require 'utils'
 local ts_configs = require 'nvim-treesitter.configs'
 -- local styled_components = require 'plug-config.styled_components'
 local keymap = vim.keymap
@@ -142,12 +143,13 @@ keymap.set('n', '<leader>tp', '<cmd>TSPlaygroundToggle<cr>')
 --
 --
 local ts_utils = require 'nvim-treesitter.ts_utils'
+local ts_indent = require 'nvim-treesitter.indent'
 
 local function package_webpage()
   local cache_file = vim.fn.stdpath 'cache' .. '/package_webpage.txt'
   local p = vim.g.project
   if p.package_webpage then
-    local maybe_package = vim.treesitter.query.get_node_text(ts_utils.get_node_at_cursor(0), 0)
+    local maybe_package = vim.treesitter.get_node_text(ts_utils.get_node_at_cursor(0), 0)
     _, maybe_package = maybe_package:match '^%s*([\'"]?)(.*%S)%1'
     local uri = string.gsub(p.package_webpage, '%${package}', maybe_package)
 
