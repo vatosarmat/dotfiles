@@ -3,7 +3,7 @@ alias vimd="cd ~/dotfiles ; nvim -i .shada bashrc.bash"
 alias vim_update="nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'"
 
 function v {
-  local project_markers="README README.md README.markdown README.rst readme.md index.php package.json CMakeLists.txt Cargo.toml"
+  local project_markers="README README.md README.markdown README.rst readme.md index.php package.json CMakeLists.txt Cargo.toml manifest.json"
   for f in $project_markers; do
     if [[ -f "$f" ]]; then
       nvim -i '.shada' "$f"

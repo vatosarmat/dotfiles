@@ -1,5 +1,17 @@
 #shellcheck disable=2155
 
+function node__get_deps {
+  local which
+  if [[ "$1" = "dev" || "$1" = "d" ]]; then
+    which="devDependencies"
+  else
+    which="dependencies"
+  fi
+  jq -j .$which' | keys | join(" ")' < package.json | wl-copy
+}
+
+### below is trash
+
 function node__ng_completion {
   source <(ng completion script)
 }
