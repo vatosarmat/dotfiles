@@ -53,9 +53,9 @@ end
 local function tsserver_diagnostic_virtual_text(d)
   local code = diagnostic_get_code(d)
   local code_short_msg = {
-    [6133] = 'unused_decl',
-    [6192] = 'unused_import',
-    [2304] = 'not_found',
+    -- [6133] = 'unused_decl',
+    -- [6192] = 'unused_import',
+    -- [2304] = 'not_found',
   }
   return code_short_msg[code] or ('ts:' .. code)
 end
@@ -156,12 +156,12 @@ local client_ext = {
     diagnostic_highlight = tsserver_diagnostic_highlight,
     diagnostic_disable_line = '//@ts-expect-error',
     diagnostic_virtual_text = tsserver_diagnostic_virtual_text,
-    diagnostic_filter = function(diagnostic_list)
-      local exclude_codes = make_set { 6133, 6196, 80001, 80006 }
-      return vim.tbl_filter(function(item)
-        return not exclude_codes[item.code]
-      end, diagnostic_list)
-    end,
+    -- diagnostic_filter = function(diagnostic_list)
+    --   local exclude_codes = make_set { 6133, 6196, 80001, 80006 }
+    --   return vim.tbl_filter(function(item)
+    --     return not exclude_codes[item.code]
+    --   end, diagnostic_list)
+    -- end,
     definition_filter = function(method, items)
       if method == 'textDocument/definition' and #items == 2 then
         local tsx, non_tsx = unpack(

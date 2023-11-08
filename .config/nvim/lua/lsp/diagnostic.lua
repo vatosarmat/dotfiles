@@ -178,11 +178,11 @@ end
 --
 
 local function diagnostic_format(d)
-  local format = cext[d.source].diagnostic_virtual_text
+  local format = d.source and cext[d.source].diagnostic_virtual_text or nil
   if format then
     return format(d)
   else
-    return string.format('%s:%s', get_source(d), get_code(d))
+    return string.format('%s:%s', get_source_name(d), get_code(d))
   end
 end
 
@@ -238,7 +238,10 @@ function M.setup()
         virt_text_hide = true,
       })
     end
-    vim.diagnostic.save_extmarks(virt_text_ns, bufnr)
+
+    if vim.diagnostic.save_extmarks then
+      vim.diagnostic.save_extmarks(virt_text_ns, bufnr)
+    end
   end
 
   vim.diagnostic.config {

@@ -14,7 +14,7 @@ local PROJECT_TYPES = {
   { name = 'dotfiles', marker = { '.config/nvim/init.vim', '.config/nvim/init.lua' } },
   {
     name = 'node',
-    marker = 'package.json',
+    marker = { 'package.json', 'manifest.json' },
     exclude_files = {
       'node_modules',
       'coverage',
@@ -33,9 +33,12 @@ local PROJECT_TYPES = {
       {
         name = 'angular',
         marker = function()
-          local text = table.concat(vim.fn.readfile 'package.json', '\n')
-          local table = vim.json.decode(text)
-          return vim.tbl_get(table, 'dependencies', 'angular')
+          if vim.fn.filereadable 'package.json' == 1 then
+            local text = table.concat(vim.fn.readfile 'package.json', '\n')
+            local table = vim.json.decode(text)
+            return vim.tbl_get(table, 'dependencies', 'angular')
+          end
+          return false
         end,
         exclude_files = { '.angular' },
         exclude_mate_bufs = {
@@ -49,9 +52,12 @@ local PROJECT_TYPES = {
         -- detect by package name in package.json
         name = 'react',
         marker = function()
-          local text = table.concat(vim.fn.readfile 'package.json', '\n')
-          local table = vim.json.decode(text)
-          return vim.tbl_get(table, 'dependencies', 'react')
+          if vim.fn.filereadable 'package.json' == 1 then
+            local text = table.concat(vim.fn.readfile 'package.json', '\n')
+            local table = vim.json.decode(text)
+            return vim.tbl_get(table, 'dependencies', 'react')
+          end
+          return false
         end,
         exclude_files = { '.test.tsx', '.module.ts' },
       },

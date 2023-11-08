@@ -37,7 +37,8 @@ local jsts_filetype = {
   'typescript.jsx',
 }
 local prettier_filetype =
-  vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue', 'handlebars', 'html' }, jsts_filetype)
+  -- vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue', 'handlebars', 'html' }, jsts_filetype)
+  vim.list_extend({ 'css', 'scss', 'vue', 'handlebars', 'html' }, jsts_filetype)
 -- local eslint_filetype = jsts_filetype
 
 local function document_highlight()
@@ -180,7 +181,8 @@ local function setup_tsserver()
         server = { -- pass options to lspconfig's setup method
           on_attach = function(client, bufnr)
             client.server_capabilities.documentFormattingProvider = false
-            client.resolved_capabilities.rangeFormatting = false
+            -- client.resolved_capabilities.rangeFormatting = false - no resolved_capabilities
+            client.server_capabilities.rangeFormatting = false
             default_on_attach(client, bufnr)
           end,
         },
@@ -362,12 +364,12 @@ function M.setup(capabilities)
     --   '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/vscode-eslint-language-server',
     --   '--stdio',
     -- },
-    settings = {
-      useESLintClass = true,
-      --   packageManager = 'npm',
-      --   runtime = '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/node',
-      nodePath = '/home/igor/Code/Job/KLASS/moyklass/server',
-    },
+    -- settings = {
+    --   useESLintClass = true,
+    --   packageManager = 'npm',
+    --   runtime = '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/node',
+    --   nodePath = '/home/igor/Code/Job/KLASS/moyklass/server',
+    -- },
     -- root_dir = lspconfig_util.find_git_ancestor,
     on_attach = function(client, bufnr)
       client.server_capabilities.documentFormattingProvider = not vim.g.project.node.is_prettier

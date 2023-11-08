@@ -6,6 +6,8 @@ set nobackup nowritebackup
 set noswapfile
 set cpoptions-=_
 
+set lcs+=space:·
+
 set noequalalways
 
 set cdpath=.,,,

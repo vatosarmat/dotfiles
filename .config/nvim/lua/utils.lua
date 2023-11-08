@@ -73,4 +73,25 @@ function M.make_set(array)
   return ret
 end
 
+function M.compose(...)
+  local fnchain = { ... }
+  return function(...)
+    local args = { ... }
+    for _, fn in ipairs(fnchain) do
+      args = { fn(unpack(args)) }
+    end
+    return unpack(args)
+  end
+end
+
+function M.times(str, n)
+  local ret = ''
+  while n > 0 do
+    ret = ret .. str
+    n = n - 1
+  end
+
+  return ret
+end
+
 return M
