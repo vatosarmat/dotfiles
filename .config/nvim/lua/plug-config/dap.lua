@@ -170,46 +170,46 @@ local function js_ts()
         console = 'integratedTerminal',
         internalConsoleOptions = 'neverOpen',
       },
-      {
-        type = 'pwa-node',
-        request = 'launch',
-        name = 'NestJS build',
-        --
-        runtimeExecutable = './node_modules/.bin/nest',
-        runtimeArgs = { 'build' },
-        skipFiles = {},
-        outFiles = {
-          '${workspaceFolder}/**/*.js',
-          -- '!**/node_modules/**',
-          -- '${workspaceFolder}/node_modules/@nestjs'
-        },
-        resolveSourceMapLocations = { '**' },
-        rootPath = '${workspaceFolder}',
-        cwd = '${workspaceFolder}',
-        --
-        console = 'integratedTerminal',
-        internalConsoleOptions = 'neverOpen',
-      },
-      {
-        type = 'pwa-node',
-        request = 'launch',
-        name = 'NestJS start',
-        --
-        runtimeExecutable = './node_modules/.bin/nest',
-        runtimeArgs = { 'start' },
-        skipFiles = {},
-        outFiles = {
-          '${workspaceFolder}/**/*.js',
-          -- '!**/node_modules/**',
-          -- '${workspaceFolder}/node_modules/@nestjs'
-        },
-        resolveSourceMapLocations = { '**' },
-        rootPath = '${workspaceFolder}',
-        cwd = '${workspaceFolder}',
-        --
-        console = 'integratedTerminal',
-        internalConsoleOptions = 'neverOpen',
-      },
+      -- {
+      --   type = 'pwa-node',
+      --   request = 'launch',
+      --   name = 'NestJS build',
+      --   --
+      --   runtimeExecutable = './node_modules/.bin/nest',
+      --   runtimeArgs = { 'build' },
+      --   skipFiles = {},
+      --   outFiles = {
+      --     '${workspaceFolder}/**/*.js',
+      --     -- '!**/node_modules/**',
+      --     -- '${workspaceFolder}/node_modules/@nestjs'
+      --   },
+      --   resolveSourceMapLocations = { '**' },
+      --   rootPath = '${workspaceFolder}',
+      --   cwd = '${workspaceFolder}',
+      --   --
+      --   console = 'integratedTerminal',
+      --   internalConsoleOptions = 'neverOpen',
+      -- },
+      -- {
+      --   type = 'pwa-node',
+      --   request = 'launch',
+      --   name = 'NestJS start',
+      --   --
+      --   runtimeExecutable = './node_modules/.bin/nest',
+      --   runtimeArgs = { 'start' },
+      --   skipFiles = {},
+      --   outFiles = {
+      --     '${workspaceFolder}/**/*.js',
+      --     -- '!**/node_modules/**',
+      --     -- '${workspaceFolder}/node_modules/@nestjs'
+      --   },
+      --   resolveSourceMapLocations = { '**' },
+      --   rootPath = '${workspaceFolder}',
+      --   cwd = '${workspaceFolder}',
+      --   --
+      --   console = 'integratedTerminal',
+      --   internalConsoleOptions = 'neverOpen',
+      -- },
       {
         type = 'pwa-node',
         request = 'launch',
@@ -221,33 +221,41 @@ local function js_ts()
         type = 'pwa-node',
         request = 'attach',
         name = 'Attach',
-        processId = dap_utils.pick_process,
+        processId = b(dap_utils.pick_process, {
+          filter = function(proc)
+            return proc.name:find 'node%s+.*--inspect'
+          end,
+        }),
         cwd = '${workspaceFolder}',
       },
       {
         type = 'pwa-node',
         request = 'launch',
-        name = 'Debug Jest Tests',
+        name = 'Jest',
         -- trace = true, -- include debugger info
-        runtimeExecutable = 'node',
-        runtimeArgs = { './node_modules/jest/bin/jest.js', '--runInBand' },
+        -- runtimeExecutable = 'node',
+        -- runtimeExecutable = './node_modules/.bin/jest',
+        -- runtimeArgs = { '--runInBand' },
+        runtimeArgs = {
+          '${workspaceFolder}/node_modules/jest/bin/jest.js',
+        },
         rootPath = '${workspaceFolder}',
         cwd = '${workspaceFolder}',
         console = 'integratedTerminal',
         internalConsoleOptions = 'neverOpen',
       },
-      {
-        type = 'pwa-node',
-        request = 'launch',
-        name = 'Debug Mocha Tests',
-        -- trace = true, -- include debugger info
-        runtimeExecutable = 'node',
-        runtimeArgs = { './node_modules/mocha/bin/mocha.js' },
-        rootPath = '${workspaceFolder}',
-        cwd = '${workspaceFolder}',
-        console = 'integratedTerminal',
-        internalConsoleOptions = 'neverOpen',
-      },
+      -- {
+      --   type = 'pwa-node',
+      --   request = 'launch',
+      --   name = 'Debug Mocha Tests',
+      --   -- trace = true, -- include debugger info
+      --   runtimeExecutable = 'node',
+      --   runtimeArgs = { './node_modules/mocha/bin/mocha.js' },
+      --   rootPath = '${workspaceFolder}',
+      --   cwd = '${workspaceFolder}',
+      --   console = 'integratedTerminal',
+      --   internalConsoleOptions = 'neverOpen',
+      -- },
     }
   end
 end
