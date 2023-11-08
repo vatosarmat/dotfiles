@@ -5,6 +5,7 @@ local cmp = require 'cmp'
 local cmp_types = require 'cmp.types'
 local cmp_nvim_lsp = require 'cmp_nvim_lsp'
 local autopairs = require 'nvim-autopairs'
+local utils = require 'utils'
 -- local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 
 local M = {}
@@ -56,6 +57,14 @@ local function setup_luasnip()
       fmt = fmt,
       sfmt = function(name, str, ...)
         return s(name, fmt(str, { ... }))
+      end,
+
+      compose = utils.compose,
+      trim_path = function(a)
+        return a:gsub('^[./]+', '')
+      end,
+      upper_first = function(a)
+        return a:gsub('^%l', string.upper)
       end,
     },
   }
