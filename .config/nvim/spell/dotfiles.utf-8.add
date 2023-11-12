@@ -8,3 +8,15 @@ autocmd
 lspconfig
 filetypes
 bufnr
+getmetatable
+tostring
+tbl
+cwd
+getcwd
+fnamemodify
+lesskey
+luasnip
+filetype
+sfmt
+ipairs
+getenv

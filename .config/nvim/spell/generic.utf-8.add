@@ -400,3 +400,9 @@ jsonls
 eslint
 solargraph
 intelephense
+isempty
+islist
+mergable
+fmt
+Struct
+cmp
