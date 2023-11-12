@@ -26,7 +26,7 @@ const $1@ = async ($2@) => {
 }
 ]],
     i(1, 'name'),
-    i(2, 'args'),
+    i(2),
     i(3)
   ),
   sfmt(
@@ -37,7 +37,7 @@ const $1@ = ($2@) => {
 }
 ]],
     i(1, 'name'),
-    i(2, 'args'),
+    i(2),
     i(3)
   ),
 
@@ -50,18 +50,7 @@ async function $1@($2@) {
 }
 ]],
     i(1, 'func'),
-    i(2, 'args'),
-    i(3)
-  ),
-  sfmt(
-    'faa',
-    [[
-async function $1@($2@) {
-  $3@
-}
-]],
-    i(1, 'func'),
-    i(2, 'args'),
+    i(2),
     i(3)
   ),
 

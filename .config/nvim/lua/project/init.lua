@@ -1,5 +1,14 @@
 local utils = require 'utils'
 
+-- @class Project
+-- @field name string | string[]
+-- @field marker string | string[] | fun(): boolean
+-- @field exclude_files? string[]
+-- @field package_webpage? string
+-- @field exclude_mate_bufs? string[]
+-- @field specific? any
+-- @field subtypes? Project[]
+
 --[[
 name
 marker            - string, {a or b}, predicate function 
@@ -10,8 +19,9 @@ exclude_mate_bufs
 subtypes
 --]]
 
+-- @type Project[]
 local PROJECT_TYPES = {
-  { name = 'dotfiles', marker = { '.config/nvim/init.vim', '.config/nvim/init.lua' } },
+  { name = 'dotfiles', marker = 'bashrc.bash' },
   {
     name = 'node',
     marker = { 'package.json', 'manifest.json' },
@@ -187,19 +197,7 @@ local function infer_project_type(type_list, result_type)
   end
 end
 
-local M = {}
-
-function M.configure()
-  local project_type_inferred = {
-    name = {},
-    exclude_files = { '.git', '.shada', '.staging', '.github', 'tests' },
-  }
-  infer_project_type(PROJECT_TYPES, project_type_inferred)
-
-  if project_type_inferred.package_webpage == nil then
-    project_type_inferred.package_webpage = 'https://github.com/${package}'
-  end
-
+local function configure_spell(project_type_inferred)
   local spellfiles
   if #project_type_inferred.name == 0 then
     table.insert(project_type_inferred.name, 'generic')
@@ -211,8 +209,29 @@ function M.configure()
   end
   table.insert(spellfiles, '.spell.utf-8.add')
 
+  return spellfiles
+end
+
+local M = {}
+
+function M.configure()
+  local project_type_inferred = {
+    name = {},
+    exclude_files = { '.git', '.shada', '.github' },
+  }
+  infer_project_type(PROJECT_TYPES, project_type_inferred)
+
+  if project_type_inferred.package_webpage == nil then
+    project_type_inferred.package_webpage = 'https://github.com/${package}'
+  end
+
   vim.g.project = project_type_inferred
-  vim.opt.spellfile:append(spellfiles)
+  vim.opt.spellfile:append(configure_spell(project_type_inferred))
+
+  local status, projects = pcall(require, 'projects')
+  if status then
+    vim.g.project = utils.merge_tables('force', vim.g.project, projects.setup())
+  end
 end
 
 return M

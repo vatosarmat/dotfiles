@@ -164,3 +164,6 @@ require('lazy').setup({
   'jwalton512/vim-blade',
 }, {})
 ilog 'DONE: lazy setup'
+
+vim.opt.rtp:append(vim.fn.getenv 'NVIM_EXTRA')
+vim.opt.rtp:append(vim.fn.stdpath 'data' .. '/rocks')

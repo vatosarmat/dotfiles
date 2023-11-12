@@ -13,11 +13,11 @@ telescope.setup {
         ['<C-h>'] = 'which_key',
         ['<C-o>'] = {
           '<esc>',
-          type = 'command'
+          type = 'command',
         }, -- Use <Control-o> to change to normal mode indefinitely
-        ['<esc>'] = tactions.close -- Close list on first escape keypress
-      }
-    }
+        ['<esc>'] = tactions.close, -- Close list on first escape keypress
+      },
+    },
   },
   pickers = {
     -- Default configuration for builtin pickers goes here:
@@ -34,6 +34,6 @@ telescope.setup {
     --   extension_config_key = value,
     -- }
     -- please take a look at the readme of the extension you want to configure
-  }
+  },
 }
-telescope.load_extension('fzf')
+telescope.load_extension 'fzf'
