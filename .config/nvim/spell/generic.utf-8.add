@@ -406,3 +406,8 @@ mergable
 fmt
 Struct
 cmp
+readdir
+basename
+bufname
+bufs
+keymap

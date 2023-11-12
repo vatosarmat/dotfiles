@@ -1,8 +1,10 @@
 local api = vim.api
+local keymap = vim.keymap
 local b = require('utils').b
 local vu = require 'vim_utils'
+local codemod = require 'codemod'
 
-local function map_completion()
+local function completion()
   local function is_space_before()
     local col = vim.fn.col '.' - 1
     return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
@@ -116,7 +118,7 @@ local function map_completion()
   end)
 end
 
-local function map_spell()
+local function spell()
   local set = vim.keymap.set
   local nset = function(lhs, rhs, opts)
     return set('n', '<leader>a' .. lhs, rhs, opts)
@@ -139,7 +141,7 @@ local function map_spell()
   end)
 end
 
-local function map_misc()
+local function misc()
   -- "favouiriteze" symbol
   vim.keymap.set('n', '<space>an', '<Nop>')
   vim.keymap.set('x', '<space>an', function()
@@ -151,8 +153,14 @@ local function map_misc()
   end)
 end
 
+local function edit()
+  keymap.set('n', '<leader>ce', codemod.language_export)
+  keymap.set('n', '<leader>cp', codemod.language_print)
+end
+
 do
-  map_completion()
-  map_spell()
-  map_misc()
+  completion()
+  spell()
+  misc()
+  edit()
 end
