@@ -21,3 +21,14 @@ sfmt
 ipairs
 getenv
 jumplist
+skiplist
+startswith
+endswith
+suf
+fname
+filereadable
+bo
+buftype
+gsub
+pcall
+basepath
