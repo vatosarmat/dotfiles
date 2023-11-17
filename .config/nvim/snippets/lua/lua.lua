@@ -25,23 +25,30 @@ end
 
   -- loop, l
   sfmt(
-    'lfr',
+    'lfl',
     [[
-for index, value in ipairs($1@) do
-  $2@
+for $1@, $2@ in ipairs($3@) do
+  $4@
 end
 ]],
-    i(1, 'list'),
-    i(2)
+    i(1, 'index'),
+    i(2, 'item'),
+    i(3, 'list'),
+    i(4)
   ),
   sfmt(
-    'lfr',
+    'lft',
     [[
-for key, value in pairs($1@) do
-  $2@
+for $1@, $2@ in pairs($3@) do
+  $4@
 end
 ]],
-    i(1, 'table'),
-    i(2)
+    i(1, 'key'),
+    i(2, 'item'),
+    i(3, 'table'),
+    i(4)
   ),
+
+  -- require, r
+  sfmt('rr', [[local $2@ = require('$1@')]], i(1, 'module'), i(2)),
 }

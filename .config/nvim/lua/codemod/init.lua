@@ -26,9 +26,9 @@ M.language_print = language_wrap('print', function(print)
 
   local line = vim.fn.line '.'
   local indent = ts_indent.get_indent(line)
-  vim.fn.append(line - 1, {
-    utils.times(' ', indent) .. print(([['\n\n%s:']]):format(target)),
-    utils.times(' ', indent) .. print(target),
+  vim.fn.append(line, {
+    (' '):rep(indent) .. print(([['\n\n%s:']]):format(target)),
+    (' '):rep(indent) .. print(target),
   })
 end)
 
