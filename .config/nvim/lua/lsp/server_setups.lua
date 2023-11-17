@@ -228,7 +228,7 @@ local function setup_null_ls()
     f.stylua,
     f.prettierd.with {
       runtime_condition = function(params)
-        local node = vim.g.project.node
+        local node = vim.g.project.specific
         return node and node.is_prettier
       end,
       filetypes = prettier_filetype,
@@ -372,7 +372,7 @@ function M.setup(capabilities)
     -- },
     -- root_dir = lspconfig_util.find_git_ancestor,
     on_attach = function(client, bufnr)
-      client.server_capabilities.documentFormattingProvider = not vim.g.project.node.is_prettier
+      client.server_capabilities.documentFormattingProvider = not vim.g.project.specific.is_prettier
 
       -- vim.api.nvim_create_autocmd('BufWritePre', {
       --   buffer = bufnr,

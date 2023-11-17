@@ -1,3 +1,13 @@
+"Motions around Vim built-in jumplist
+"w:jumplist_last_buf_jump_dir = NEXT|PREV|MATE
+"
+" Navigation functions: NextBuf, PrevBuf, AnotherBuf
+" They all eventually call BufJump
+"
+" Variables:
+" - w:jumplist_last_buf_jump_dir - for function AnotherBuf
+" - w:buffer_skip - make BufJump skip this file
+
 
 function! jumplist#NextBuf(quiet = 0) abort
   return s:BufJump('NEXT', a:quiet)
@@ -11,10 +21,12 @@ function! jumplist#MateBuf(quiet = 0) abort
   let w:jumplist_last_buf_jump_dir = 'MATE'
 endfunction
 
+" repeat last move, i.e. move in the same direction
 function! jumplist#AnotherBuf(quiet = 0) abort
   if w:jumplist_last_buf_jump_dir == 'MATE'
     lua require 'buffer_navigation'.cycle_mate_bufs()
   else
+    "If not moved, change direction
     if !s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
       let w:jumplist_last_buf_jump_dir = w:jumplist_last_buf_jump_dir == 'NEXP' ? 'PREV' : 'NEXT'
       call s:BufJump(w:jumplist_last_buf_jump_dir, a:quiet)
@@ -22,45 +34,51 @@ function! jumplist#AnotherBuf(quiet = 0) abort
   endif
 endfunction
 
+" skip this buf, jump to another one
 function! jumplist#Exclude(buf_name = 0) abort
   "exclude file by name
   if a:buf_name
-    let w:jumplist_exclude[a:buf_name] = 1
+    let w:buffer_skip[a:buf_name] = 1
   else
     "exclude currently opened file
     if getbufvar(bufnr(), '&buftype') == ''
       let buf_name = expand('%:p')
-      let w:jumplist_exclude[buf_name] = 1
+      let w:buffer_skip[buf_name] = 1
       call jumplist#AnotherBuf()
     endif
   endif
 endfunction
 
+" Init w: variables
+" remove buffer from skip list if it is opened
 function! jumplist#BufWinEnter() abort
-  if !exists('w:jumplist_exclude')
-    let w:jumplist_exclude = #{}
+  if !exists('w:buffer_skip')
+    let w:buffer_skip = #{}
     let w:jumplist_last_buf_jump_dir = 'PREV'
     clearjumps
   endif
 
   let buf_name = expand('%:p')
-  if has_key(w:jumplist_exclude, buf_name)
-    call remove(w:jumplist_exclude, buf_name)
+  if has_key(w:buffer_skip, buf_name)
+    call remove(w:buffer_skip, buf_name)
   endif
 endfunction
 
+"This literally just executes <C-i> or <C-o> for the amount of times required
+"to get the farthest next or the nearest prev, skipping buffer_skip
 function! s:BufJump(dir, quiet = 0) abort
   let [jumps, pos] = getjumplist()
   let current_buf = bufnr()
   let cmd = ''
 
+  "Buffer exists, it is a file, it is not in skiplist
   function! IsJumpable(bnr)
     return bufexists(a:bnr) &&
       \ getbufvar(a:bnr, '&buftype') == '' &&
-      \ !has_key(w:jumplist_exclude, fnamemodify(bufname(a:bnr), ':p'))
+      \ !has_key(w:buffer_skip, fnamemodify(bufname(a:bnr), ':p'))
   endfunction
 
-  function! Fatherst(a, jmp_item, offset) closure
+  function! Farthest(a, jmp_item, offset) closure
     let nr = a:jmp_item.bufnr
     if nr != current_buf && IsJumpable(nr)
       "
@@ -69,10 +87,11 @@ function! s:BufJump(dir, quiet = 0) abort
     return a:a
   endfunction
   "Farthest offset of each buffer after the pos in the jumplist
-  let after_bufs = utils#Reduce(jumps[pos+1:], function('Fatherst'), #{})
+  "@type - Record<bufnr, farthest offset in jumplist relative to pos>
+  let after_bufs = utils#Reduce(jumps[pos+1:], function('Farthest'), #{})
 
   if a:dir == 'NEXT' && len(after_bufs) > 0
-    "to the closest buf
+    "to the closest buf, i.e. closest position among the buf-farthest positions
     let count = min(values(after_bufs))
     let cmd = string(count+1)."\<C-i>"
   elseif a:dir == 'PREV' && pos > 0
@@ -83,6 +102,7 @@ function! s:BufJump(dir, quiet = 0) abort
       let cmd = string(pos-found)."\<C-o>"
     endif
   endif
+
   if cmd != ''
     "Clear 'No buf to jump' message
     execute 'normal!' cmd

@@ -1,104 +1,91 @@
--- This is logica dependency marker
--- require 'project'
+local utils = require 'utils'
 local api = vim.api
-local buffer_navigation = _U.buffer_navigation
 
 local M = {}
 
-local function read_basename_mates(current_bufname)
-  local basename = string.match(vim.fn.fnamemodify(current_bufname, ':t'), '^[^.]+')
-  local dir = vim.fn.fnamemodify(current_bufname, ':p:h')
-  local exclude_mate_bufs = vim.g.project.exclude_mate_bufs
-  local mate_bufs = {}
-  local exclude_bufs = {}
-  vim.fn.readdir(dir, function(node)
-    if vim.startswith(node, basename .. '.') then
-      local full = dir .. '/' .. node
-      table.insert(mate_bufs, full)
-      for _, suf in ipairs(exclude_mate_bufs) do
-        if vim.endswith(node, suf) then
-          table.insert(exclude_bufs, full)
-          break
-        end
-      end
-    end
-    return 0
-  end)
-
-  return mate_bufs, exclude_bufs
-end
-
-local function init_mate_bufs(current_bufname)
-  if buffer_navigation[current_bufname] then
-    vim.b.mate_bufs = buffer_navigation[current_bufname]
-    return buffer_navigation[current_bufname]
-  end
-
-  local mate_bufs, mate_exclude_bufs = read_basename_mates(current_bufname)
-  for _, buf in ipairs(mate_bufs) do
-    buffer_navigation[buf] = mate_bufs
-  end
-  if #mate_exclude_bufs > 0 then
-    local exclude_bufs = vim.w.jumplist_exclude
-    for _, buf in ipairs(mate_exclude_bufs) do
-      exclude_bufs[buf] = 1
-    end
-
-    vim.w.jumplist_exclude = exclude_bufs
-  end
-
-  vim.b.mate_bufs = mate_bufs
-  return mate_bufs
-end
-
-function M.cycle_mate_bufs()
-  if vim.bo.buftype ~= '' then
-    vim.fn['utils#Warning']('That\'s not a normal file buffer')
-    return
-  end
-
-  local current_bufname = vim.fn.expand('%:p')
+local function get_mate_bufs(current_buf_path)
+  -- @type string[]
   local mate_bufs = vim.b.mate_bufs
 
   if not mate_bufs then
-    mate_bufs = init_mate_bufs(current_bufname)
+    -- get mate_bufs according to project
+    mate_bufs = vim.g.project.mate_bufs.get(current_buf_path)
+
+    if not mate_bufs or #mate_bufs == 0 then
+      mate_bufs = { current_buf_path }
+    end
+
+    local default_skip = vim.g.project.mate_bufs.default_skip
+
+    if default_skip then
+      -- apply default_skip according to project
+      local buffer_skip = vim.w.buffer_skip
+
+      for _, mate_buf in ipairs(mate_bufs) do
+        -- default_skip is either function or array of patterns to check against
+        local skip = (vim.is_callable(default_skip) and default_skip(mate_buf))
+          or utils.find(default_skip, function(pattern)
+            return mate_buf:match(pattern)
+          end)
+        if skip then
+          buffer_skip[mate_buf] = true
+        end
+      end
+
+      vim.w.buffer_skip = buffer_skip
+    end
+
+    vim.b.mate_bufs = mate_bufs
   end
 
-  if #mate_bufs == 1 then
-    vim.fn['utils#Warning']('No mate bufs for this buffer')
+  return mate_bufs
+end
+
+-- this function doesn't depend of the way of initializing mate_bufs
+function M.cycle_mate_bufs()
+  if vim.bo.buftype ~= '' then
+    vim.fn['utils#Warning'] 'That\'s not a normal file buffer'
     return
   end
 
-  local exclude_bufs = vim.w.jumplist_exclude
-  for current_idx, path in ipairs(mate_bufs) do
-    if current_bufname == path then
-      local target_name = nil
-      if #mate_bufs == 2 then
-        -- If only 2 mate bufs, get the nearest next
-        target_name = mate_bufs[current_idx % #mate_bufs + 1]
-      else
-        local idx = current_idx
+  local current_buf_path = vim.fn.expand '%:p'
+  local mate_bufs = get_mate_bufs(current_buf_path)
+
+  local target_name
+  if #mate_bufs == 1 then
+    vim.fn['utils#Warning'] 'No mate bufs for this buffer'
+    return
+  elseif #mate_bufs == 2 then
+    target_name = current_buf_path == mate_bufs[1] and mate_bufs[2] or mate_bufs[1]
+  else
+    local skip_bufs = vim.w.buffer_skip
+    for mate_idx, mate_path in ipairs(mate_bufs) do
+      if current_buf_path == mate_path then
+        local idx = mate_idx
         local i = 0
+        -- find first not excluded
         repeat
           i = i + 1
           idx = idx % #mate_bufs + 1
-          if idx == current_idx then
+          if idx == mate_idx then
+            -- circle closed, all excluded
             -- If all excluded, get the nearest next
             target_name = mate_bufs[idx % #mate_bufs + 1]
-          elseif not exclude_bufs[mate_bufs[idx]] then
+          elseif not skip_bufs[mate_bufs[idx]] then
             target_name = mate_bufs[idx]
           end
         until target_name
+        break
       end
-      --
-      vim.fn['jumplist#MateBuf']()
-      api.nvim_set_current_buf(vim.uri_to_bufnr(vim.uri_from_fname(target_name)))
-      return
     end
   end
+
+  vim.fn['jumplist#MateBuf']()
+  api.nvim_set_current_buf(vim.uri_to_bufnr(vim.uri_from_fname(target_name)))
 end
 
 function M.clear_mate_bufs()
+  -- list of mate bufs including current one
   vim.b.mate_bufs = nil
 end
 

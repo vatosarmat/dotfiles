@@ -134,14 +134,4 @@ function M.compose(...)
   end
 end
 
-function M.times(str, n)
-  local ret = ''
-  while n > 0 do
-    ret = ret .. str
-    n = n - 1
-  end
-
-  return ret
-end
-
 return M

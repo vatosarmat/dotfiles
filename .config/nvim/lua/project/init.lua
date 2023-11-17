@@ -1,23 +1,28 @@
 local utils = require 'utils'
+local pu = require 'project.utils'
+
+-- @class MateBufs
+-- @field get fun(current_buf_path: string): string[]
+-- @field default_skip? string[] | fun(buf_path: string): boolean
 
 -- @class Project
 -- @field name string | string[]
 -- @field marker string | string[] | fun(): boolean
 -- @field exclude_files? string[]
 -- @field package_webpage? string
--- @field exclude_mate_bufs? string[]
+-- @files mate_bufs? MateBufs
 -- @field specific? any
 -- @field subtypes? Project[]
 
---[[
-name
-marker            - string, {a or b}, predicate function 
-exclude_files
-package_webpage
-exclude_mate_bufs
-[name]            - project-specific stuff
-subtypes
---]]
+-- @type Project
+local GENERIC_PROJECT = {
+  name = 'generic',
+  package_webpage = 'https://github.com/${package}',
+  exclude_files = { '.git', '.shada' },
+  mate_bufs = {
+    get = pu.mates_same_basepath,
+  },
+}
 
 -- @type Project[]
 local PROJECT_TYPES = {
@@ -37,8 +42,7 @@ local PROJECT_TYPES = {
       'log',
     },
     package_webpage = 'https://www.npmjs.com/package/${package}',
-    exclude_mate_bufs = {},
-    node = require('project.node').configure(),
+    specific = require('project.node').configure(),
     subtypes = {
       {
         name = 'angular',
@@ -51,11 +55,13 @@ local PROJECT_TYPES = {
           return false
         end,
         exclude_files = { '.angular' },
-        exclude_mate_bufs = {
-          '.component.spec.ts',
-          '.module.ts',
-          '.component.css',
-          '.component.scss',
+        mate_bufs = {
+          default_skip = {
+            '.component.spec.ts',
+            '.module.ts',
+            '.component.css',
+            '.component.scss',
+          },
         },
       },
       {
@@ -84,7 +90,9 @@ local PROJECT_TYPES = {
         name = 'nest',
         marker = 'nest-cli.json',
         exclude_files = { 'test' },
-        exclude_mate_bufs = { '.controller.spec.ts', '.service.spec.ts', '.module.ts' },
+        mate_bufs = {
+          default_skip = { '.controller.spec.ts', '.service.spec.ts', '.module.ts' },
+        },
       },
     },
   },
@@ -120,7 +128,7 @@ local PROJECT_TYPES = {
       'composer.lock',
       'composer.phar',
     },
-    php = require('project.php').configure(),
+    specific = require('project.php').configure(),
     subtypes = {
       {
         name = 'yii',
@@ -164,43 +172,60 @@ local function is_marker_present(project_type)
   return false
 end
 
-local function infer_project_type(type_list, result_type)
-  for _, type_item in ipairs(type_list) do
-    if is_marker_present(type_item) then
+local function apply_project_subtype(project, subtype)
+  -- override package_webpage
+  if subtype.package_webpage then
+    project.package_webpage = subtype.package_webpage
+  end
+
+  -- append exclude_files
+  if subtype.exclude_files then
+    vim.list_extend(project.exclude_files, subtype.exclude_files)
+  end
+
+  if subtype.mate_bufs then
+    -- override mate_bufs.get method
+    if subtype.mate_bufs.get then
+      project.mate_bufs.get = subtype.mate_bufs.get
+    end
+
+    -- override mate_bufs.default_skip methods/tables
+    if subtype.mate_bufs.default_skip then
+      -- merge lists, compose functions
+      project.mate_bufs.default_skip = subtype.mate_bufs.default_skip
+    end
+  end
+
+  -- set project-type-specific stuff
+  if subtype.specific then
+    project.specific = subtype.specific
+  end
+end
+
+local function infer_project_type(result_type, subtype_list)
+  if type(result_type.name) == 'string' then
+    result_type.name = { result_type.name }
+  end
+
+  for _, subtype in ipairs(subtype_list) do
+    if is_marker_present(subtype) then
       -- append name
-      table.insert(result_type.name, type_item.name)
+      table.insert(result_type.name, subtype.name)
 
-      -- override package_webpage
-      if type_item.package_webpage then
-        result_type.package_webpage = type_item.package_webpage
-      end
+      apply_project_subtype(result_type, subtype)
 
-      -- append exclude_files
-      if type_item.exclude_files then
-        vim.list_extend(result_type.exclude_files, type_item.exclude_files)
-      end
-
-      -- override exclude_mate_bufs
-      if type_item.exclude_mate_bufs then
-        result_type.exclude_mate_bufs = type_item.exclude_mate_bufs
-      end
-
-      -- set project-type-specific stuff
-      if type_item[type_item.name] then
-        result_type[type_item.name] = type_item[type_item.name]
-      end
-
-      if type_item.subtypes then
-        infer_project_type(type_item.subtypes, result_type)
+      if subtype.subtypes then
+        result_type = infer_project_type(result_type, subtype.subtypes)
       end
     end
   end
+
+  return result_type
 end
 
 local function configure_spell(project_type_inferred)
   local spellfiles
-  if #project_type_inferred.name == 0 then
-    table.insert(project_type_inferred.name, 'generic')
+  if project_type_inferred.name[1] == 'generic' then
     spellfiles = {}
   else
     spellfiles = vim.tbl_map(function(name_item)
@@ -215,23 +240,20 @@ end
 local M = {}
 
 function M.configure()
-  local project_type_inferred = {
-    name = {},
-    exclude_files = { '.git', '.shada', '.github' },
-  }
-  infer_project_type(PROJECT_TYPES, project_type_inferred)
+  local project_type_inferred = infer_project_type(GENERIC_PROJECT, PROJECT_TYPES)
 
-  if project_type_inferred.package_webpage == nil then
-    project_type_inferred.package_webpage = 'https://github.com/${package}'
+  local status, project_local = pcall(require, 'project_local')
+  if status then
+    apply_project_subtype(project_type_inferred, project_local.read_config())
+  end
+
+  if #project_type_inferred.name > 1 then
+    -- remove 'generic'
+    table.remove(project_type_inferred.name, 1)
   end
 
   vim.g.project = project_type_inferred
   vim.opt.spellfile:append(configure_spell(project_type_inferred))
-
-  local status, projects = pcall(require, 'projects')
-  if status then
-    vim.g.project = utils.merge_tables('force', vim.g.project, projects.setup())
-  end
 end
 
 return M

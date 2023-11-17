@@ -14,7 +14,6 @@ if not _U then
     map = { global = {} },
     shortmap = {},
     symbol_navigation = {},
-    buffer_navigation = {},
     ts_inc_sel_injected = false,
   }
 else
