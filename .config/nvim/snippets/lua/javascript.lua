@@ -79,6 +79,24 @@ for (const [$1@, $2@] of Object.entries($3@)) {
     i(4)
   ),
 
+  -- import, m
+  sfmt(
+    'mm',
+    [[
+import {$2@} from '$1@'
+    ]],
+    i(1, 'module'),
+    i(2)
+  ),
+  sfmt(
+    'md',
+    [[
+import $2@ from '$1@'
+    ]],
+    i(1, 'module'),
+    l(l._1, 1)
+  ),
+
   -- exception, x
   sfmt(
     'xcl',

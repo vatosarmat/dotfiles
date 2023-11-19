@@ -32,3 +32,8 @@ buftype
 gsub
 pcall
 basepath
+neodev
+schemastore
+prettierd
+stylua
+ilog

@@ -41,6 +41,7 @@
 - `vim.tbl_map(func, t)` - 
 - `vim.tbl_filter(predicate, table)`
 - `vim.tbl_contains(t, value)`
+- `vim.tbl_get(tbl, [...path])`
 - `table.remove(tbl, [pos])`
 - `utils.find(array, cb)`
 
