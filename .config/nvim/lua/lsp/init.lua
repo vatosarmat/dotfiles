@@ -22,6 +22,8 @@ function M.init()
   end
 
   _U.lsp = lsp_service
+
+  require('project').configure()
 end
 
 function M.config()

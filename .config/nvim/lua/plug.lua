@@ -162,8 +162,14 @@ require('lazy').setup({
   'teal-language/vim-teal',
   'chr4/nginx.vim',
   'jwalton512/vim-blade',
-}, {})
+}, {
+  performance = {
+    rtp = {
+      paths = {
+        vim.fn.getenv 'NVIM_EXTRA',
+        vim.fn.stdpath 'data' .. '/rocks',
+      },
+    },
+  },
+})
 ilog 'DONE: lazy setup'
-
-vim.opt.rtp:append(vim.fn.getenv 'NVIM_EXTRA')
-vim.opt.rtp:append(vim.fn.stdpath 'data' .. '/rocks')

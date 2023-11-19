@@ -198,7 +198,11 @@ local function apply_project_subtype(project, subtype)
 
   -- set project-type-specific stuff
   if subtype.specific then
-    project.specific = subtype.specific
+    if type(subtype.specific) == 'function' then
+      project.specific = subtype.specific(project.specific)
+    else
+      project.specific = vim.tbl_extend('force', project.specific or {}, subtype.specific)
+    end
   end
 end
 
@@ -217,6 +221,8 @@ local function infer_project_type(result_type, subtype_list)
       if subtype.subtypes then
         result_type = infer_project_type(result_type, subtype.subtypes)
       end
+
+      break
     end
   end
 

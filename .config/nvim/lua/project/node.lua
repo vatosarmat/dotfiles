@@ -1,10 +1,20 @@
 local M = {}
 
+M.jsts_filetype = {
+  'javascript',
+  'javascriptreact',
+  'javascript.jsx',
+  'typescript',
+  'typescriptreact',
+  'typescript.jsx',
+}
+
 function M.configure()
   return {
-    is_prettier = true,
-    -- is_prettier = vim.fn.filereadable './.prettierrc' == 1
-    --   or vim.fn.filereadable './.prettierrc.json' == 1,
+    prettier_filetype = vim.list_extend(
+      { 'css', 'scss', 'jsonc', 'vue', 'handlebars', 'html' },
+      M.jsts_filetype
+    ),
   }
 end
 

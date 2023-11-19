@@ -9,6 +9,7 @@ local neodev = require 'neodev'
 local typescript = require 'typescript'
 local typescript_null_ls = require 'typescript.extensions.null-ls.code-actions'
 local schemastore = require 'schemastore'
+local jsts_filetype = require('project.node').jsts_filetype
 
 -- lspconfig.util.on_setup = lspconfig.util.add_hook_before(lspconfig.util.on_setup, function(config)
 --   local cwd = vim.fn.getcwd()
@@ -28,18 +29,6 @@ local schemastore = require 'schemastore'
 -- server.setup takes same parameters as lsp.start_client() + root_dir, name, filetypes, autostart, on_new_config
 --
 --
-local jsts_filetype = {
-  'javascript',
-  'javascriptreact',
-  'javascript.jsx',
-  'typescript',
-  'typescriptreact',
-  'typescript.jsx',
-}
-local prettier_filetype =
-  -- vim.list_extend({ 'css', 'scss', 'json', 'jsonc', 'vue', 'handlebars', 'html' }, jsts_filetype)
-  vim.list_extend({ 'css', 'scss', 'vue', 'handlebars', 'html' }, jsts_filetype)
--- local eslint_filetype = jsts_filetype
 
 local function document_highlight()
   local col = vim.fn.col '.'
@@ -227,11 +216,11 @@ local function setup_null_ls()
     f.shfmt.with { extra_args = { '-i', '2', '-ci', '-sr' } },
     f.stylua,
     f.prettierd.with {
-      runtime_condition = function(params)
-        local node = vim.g.project.specific
-        return node and node.is_prettier
-      end,
-      filetypes = prettier_filetype,
+      -- runtime_condition = function(params)
+      --   local node = vim.g.project.specific
+      --   return node and node.is_prettier
+      -- end,
+      filetypes = vim.tbl_get(vim.g.project, 'specific', 'prettier_filetype') or jsts_filetype,
       env = {
         PRETTIERD_DEFAULT_CONFIG = os.getenv 'HOME' .. '/.config/.prettierrc.json',
       },
@@ -352,13 +341,18 @@ function M.setup(capabilities)
   lspconfig.cssls.setup {}
   lspconfig.jsonls.setup {
     filetypes = { 'jsonc' },
-    init_options = { provideFormatter = true },
+    init_options = {
+      provideFormatter = not vim.tbl_contains(
+        vim.tbl_get(vim.g.project, 'specific', 'prettier_filetype') or {},
+        'jsonc'
+      ),
+    },
     settings = { json = { schemas = schemastore.json.schemas(), validate = { enable = true } } },
   }
   lspconfig.yamlls.setup {}
   lspconfig.eslint.setup {
     autostart = true,
-    init_options = { provideFormatter = true },
+    -- init_options = { provideFormatter = true },
     -- cmd = {
     --   '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/node',
     --   '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/vscode-eslint-language-server',
@@ -372,7 +366,7 @@ function M.setup(capabilities)
     -- },
     -- root_dir = lspconfig_util.find_git_ancestor,
     on_attach = function(client, bufnr)
-      client.server_capabilities.documentFormattingProvider = not vim.g.project.specific.is_prettier
+      -- client.server_capabilities.documentFormattingProvider = not vim.g.project.specific.is_prettier
 
       -- vim.api.nvim_create_autocmd('BufWritePre', {
       --   buffer = bufnr,

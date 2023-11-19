@@ -85,7 +85,7 @@ endfunction
 
 function! s:OnVimEnter() abort
   call s:HighlightDiffConflictMarker()
-  lua require 'project'.configure()
+  " lua require 'project'.configure()
 endfunction
 
 function! s:OnDirChanged() abort
