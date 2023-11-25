@@ -9,12 +9,12 @@ M.jsts_filetype = {
   'typescript.jsx',
 }
 
+M.prettier_filetype =
+  vim.list_extend({ 'css', 'scss', 'jsonc', 'vue', 'handlebars' }, M.jsts_filetype)
+
 function M.configure()
   return {
-    prettier_filetype = vim.list_extend(
-      { 'css', 'scss', 'jsonc', 'vue', 'handlebars', 'html' },
-      M.jsts_filetype
-    ),
+    prettier_filetype = M.prettier_filetype,
   }
 end
 
