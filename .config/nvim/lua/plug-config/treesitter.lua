@@ -167,7 +167,7 @@ local function package_webpage()
     end
 
     if good_uri then
-      os.execute('xdg-open ' .. uri)
+      os.execute('xdg-open ' .. uri .. ' 2>/dev/null')
     else
       vim.fn['utils#Warning'](
         { maybe_package, 'LspDiagnosticsSignInformation' },

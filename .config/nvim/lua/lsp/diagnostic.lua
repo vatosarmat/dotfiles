@@ -92,7 +92,7 @@ local function show_line_diagnostics()
     if dl_pattern then
       api.nvim_buf_delete(float_bufnr, {})
       local line = api.nvim_buf_get_lines(bufnr, line_nr, line_nr + 1, false)[1]
-      print(vim.inspect(line))
+      -- print(vim.inspect(line))
       local indent_spaces = string.sub(line, string.find(line, '%s*'))
       local dl = indent_spaces
         .. string.gsub(dl_pattern, '%${code}', get_code(line_diagnostics[idx]))
@@ -109,7 +109,7 @@ local function show_line_diagnostics()
       local uri = type(diagnostic_webpage) == 'string'
           and string.gsub(diagnostic_webpage, '%${code}', get_code(line_diagnostics[idx]))
         or diagnostic_webpage(line_diagnostics[idx])
-      os.execute('$BROWSER ' .. uri)
+      os.execute('xdg-open ' .. uri .. ' 2>/dev/null')
     end
   end
 
