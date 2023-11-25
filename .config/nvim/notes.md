@@ -13,8 +13,8 @@
 ##### File system
 - `vim.fn.filereadable` - check file is readable and not a dir
 - `vim.fn.isdirectory` - check dir exists
-- `vim.fn.readdir` - iterates files in dir 
-- `vim.fn.glob(glob, false, true)` - get list of files matching glob
+- `vim.fn.readdir(dir_path, predicate)` - get files in dir. predicate allows to filter
+- `vim.fn.glob(glob, false, true)` - get list of files matching glob. Doesn't work with .files, they are considered "hidden"
 - `vim.fn.mkdir` - 
   - `vim.fn.mkdir('/long/path/to/be/created/with/p/flag/or/do/nothing/if/aready/exists', 'p')` - 
 - `vim.fn.writefile` - takes string list, cannot write multiline strings, need to create vim *Blob* for that

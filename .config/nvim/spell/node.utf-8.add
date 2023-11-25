@@ -67,3 +67,7 @@ dedent
 supertest
 querystring
 knex
+uniq
+clickmap
+webvisor
+hbs

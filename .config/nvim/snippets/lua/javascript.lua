@@ -56,7 +56,7 @@ async function $1@($2@) {
 
   -- loop, l
   sfmt(
-    'lfr',
+    'lfa',
     [[
 for (const $1@ of $2@) {
   $3@
