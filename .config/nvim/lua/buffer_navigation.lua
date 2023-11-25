@@ -9,7 +9,9 @@ local function get_mate_bufs(current_buf_path)
 
   if not mate_bufs then
     -- get mate_bufs according to project
-    mate_bufs = vim.g.project.mate_bufs.get(current_buf_path)
+    mate_bufs = vim.tbl_filter(function(path)
+      return vim.fn.filereadable(path) == 1
+    end, vim.g.project.mate_bufs.get(current_buf_path))
 
     if not mate_bufs or #mate_bufs == 0 then
       mate_bufs = { current_buf_path }

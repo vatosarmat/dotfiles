@@ -139,6 +139,8 @@ require('nvim-tree').setup {
   renderer = {
     root_folder_modifier = ':t',
     group_empty = false,
+    symlink_destination = false,
+
     icons = {
       show = {
         git = true,

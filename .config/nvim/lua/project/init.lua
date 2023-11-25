@@ -47,12 +47,7 @@ local PROJECT_TYPES = {
       {
         name = 'angular',
         marker = function()
-          if vim.fn.filereadable 'package.json' == 1 then
-            local text = table.concat(vim.fn.readfile 'package.json', '\n')
-            local table = vim.json.decode(text)
-            return vim.tbl_get(table, 'dependencies', 'angular')
-          end
-          return false
+          return pu.json_with_key_readable('package.json', 'dependencies', 'angular')
         end,
         exclude_files = { '.angular' },
         mate_bufs = {
@@ -68,12 +63,7 @@ local PROJECT_TYPES = {
         -- detect by package name in package.json
         name = 'react',
         marker = function()
-          if vim.fn.filereadable 'package.json' == 1 then
-            local text = table.concat(vim.fn.readfile 'package.json', '\n')
-            local table = vim.json.decode(text)
-            return vim.tbl_get(table, 'dependencies', 'react')
-          end
-          return false
+          return pu.json_with_key_readable('package.json', 'dependencies', 'react')
         end,
         exclude_files = { '.test.tsx', '.module.ts' },
       },
