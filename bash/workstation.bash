@@ -1,3 +1,4 @@
+#!/bin/bash
 #shellcheck disable=1091,2155
 
 function tmux__zs {
@@ -17,3 +18,6 @@ source "$HOME/dotfiles/bash/dev/network.bash"
 source "$HOME/dotfiles/bash/dev/db.bash"
 source "$HOME/dotfiles/bash/dev/docker.bash"
 source "$HOME/dotfiles/bash/dev/telegram.bash"
+source "$HOME/dotfiles/bash/dev/git.bash"
+
+source "$NVIM_EXTRA/lua/project_local/$(realpath --relative-to="$HOME" "$PWD")/.bashrc" 2> /dev/null

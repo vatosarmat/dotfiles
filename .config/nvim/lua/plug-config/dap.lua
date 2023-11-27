@@ -190,26 +190,26 @@ local function js_ts()
       --   console = 'integratedTerminal',
       --   internalConsoleOptions = 'neverOpen',
       -- },
-      -- {
-      --   type = 'pwa-node',
-      --   request = 'launch',
-      --   name = 'NestJS start',
-      --   --
-      --   runtimeExecutable = './node_modules/.bin/nest',
-      --   runtimeArgs = { 'start' },
-      --   skipFiles = {},
-      --   outFiles = {
-      --     '${workspaceFolder}/**/*.js',
-      --     -- '!**/node_modules/**',
-      --     -- '${workspaceFolder}/node_modules/@nestjs'
-      --   },
-      --   resolveSourceMapLocations = { '**' },
-      --   rootPath = '${workspaceFolder}',
-      --   cwd = '${workspaceFolder}',
-      --   --
-      --   console = 'integratedTerminal',
-      --   internalConsoleOptions = 'neverOpen',
-      -- },
+      {
+        type = 'pwa-node',
+        request = 'launch',
+        name = 'NestJS start',
+        --
+        runtimeExecutable = './node_modules/.bin/nest',
+        runtimeArgs = { 'start' },
+        skipFiles = {},
+        outFiles = {
+          '${workspaceFolder}/**/*.js',
+          -- '!**/node_modules/**',
+          -- '${workspaceFolder}/node_modules/@nestjs'
+        },
+        resolveSourceMapLocations = { '**' },
+        rootPath = '${workspaceFolder}',
+        cwd = '${workspaceFolder}',
+        --
+        console = 'integratedTerminal',
+        internalConsoleOptions = 'neverOpen',
+      },
       {
         type = 'pwa-node',
         request = 'launch',

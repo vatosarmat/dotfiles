@@ -88,7 +88,6 @@ alias hd='hexdump'
 alias hdh="hd -v -e '/1 \"%02X \"'"
 
 alias r="source /usr/bin/ranger"
-alias g="git"
 alias ffmpeg='ffmpeg -hide_banner'
 alias cevt='cat -evt'
 
