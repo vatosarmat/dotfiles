@@ -10,10 +10,6 @@ local function completion()
     return col == 0 or vim.fn.getline('.'):sub(col, col):match '%s' ~= nil
   end
 
-  local function feed_keys(keys)
-    api.nvim_feedkeys(api.nvim_replace_termcodes(keys, true, false, true), 'n', false)
-  end
-
   local cmp = require 'cmp'
   local luasnip = require 'luasnip'
 
@@ -77,7 +73,7 @@ local function completion()
     if cmp.visible() then
       cmp.confirm()
     else
-      feed_keys '<Down>'
+      vu.feed_keys '<Down>'
     end
   end)
 
@@ -85,7 +81,7 @@ local function completion()
     if cmp.visible() then
       cmp.close()
     else
-      feed_keys '<Tab>'
+      vu.feed_keys '<Tab>'
     end
   end)
 
@@ -93,7 +89,7 @@ local function completion()
     if cmp.visible() then
       cmp.abort()
     else
-      feed_keys '<End>'
+      vu.feed_keys '<End>'
     end
   end)
 
@@ -143,8 +139,8 @@ end
 
 local function misc()
   -- "favouiriteze" symbol
-  vim.keymap.set('n', '<space>an', '<Nop>')
-  vim.keymap.set('x', '<space>an', function()
+  vim.keymap.set('n', '<leader>an', '<Nop>')
+  vim.keymap.set('x', '<leader>an', function()
     local selection = vu.get_visual_selection_lines()[1]
     -- project root supposed
     local fd = io.open('.my_notes.md', 'a')
@@ -156,6 +152,17 @@ end
 local function edit()
   keymap.set('n', '<leader>ce', codemod.language_export)
   keymap.set('n', '<leader>cp', codemod.language_print)
+
+  keymap.set('x', '<leader>ym', function()
+    local selection = table.concat(vu.get_visual_selection_lines(), '\n')
+    vim.fn.setreg(
+      '+',
+      ([[```%s
+%s
+```]]):format(vim.o.ft, selection)
+    )
+    vu.feed_keys '<ESC>'
+  end)
 end
 
 do

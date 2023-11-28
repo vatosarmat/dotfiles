@@ -3,12 +3,17 @@
 - Nvim API: vim.api.
 - Lua API: vim.
 - Lua builtins
-- My lua utils
+- My lua utils and vim_utils
+
 
 ##### Edit buffer 
 - `vim.fn.append` - append line
   - `append(line('$'), 'hello')` - append line at the end
+- `vim.fn.setreg({regname}, {value} [, {options}])` - write into register
+  - `setreg('"', 'vasya')`
 - `nvim_buf_set_text`, `nvim_buf_set_lines`
+- `vim_utils.get_visual_selection_lines()` - returns selected lines
+- `vim_utils.feed_keys()` - should be used for mode changing
 
 ##### File system
 - `vim.fn.filereadable` - check file is readable and not a dir
@@ -42,7 +47,8 @@
 - `vim.tbl_filter(predicate, table)`
 - `vim.tbl_contains(t, value)`
 - `vim.tbl_get(tbl, [...path])`
-- `table.remove(tbl, [pos])`
+- `table.remove(tbl, [pos])` - for some reason, unlike string functions, table functions can't be called as tbl:remove()
+- `table.concat (table [, sep [, i [, j]]])` - join table elements
 - `utils.find(array, cb)`
 
 ##### Types and validation

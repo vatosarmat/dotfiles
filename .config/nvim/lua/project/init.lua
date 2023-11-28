@@ -26,7 +26,7 @@ local GENERIC_PROJECT = {
 
 -- @type Project[]
 local PROJECT_TYPES = {
-  { name = 'dotfiles', marker = 'bashrc.bash' },
+  { name = 'dotfiles', marker = 'bashrc.bash', exclude_files = { '.luarc.json' } },
   {
     name = 'node',
     marker = { 'package.json', 'manifest.json' },

@@ -1,4 +1,5 @@
 local b = require('utils').b
+local api = vim.api
 
 -- local function get_visual_selection()
 --   local bufnr = vim.api.nvim_win_get_buf(0)
@@ -23,10 +24,10 @@ local function buf_append_line(buf_or_line, maybe_line_or_hl_ranges, maybe_hl_ra
     hl_ranges = maybe_line_or_hl_ranges
   end
 
-  vim.api.nvim_buf_set_lines(buf, -1, -1, false, { line })
+  api.nvim_buf_set_lines(buf, -1, -1, false, { line })
   if hl_ranges then
     for _, hl in ipairs(hl_ranges) do
-      vim.api.nvim_buf_add_highlight(buf, -1, hl.group, -1, hl.from, hl.to)
+      api.nvim_buf_add_highlight(buf, -1, hl.group, -1, hl.from, hl.to)
     end
   end
 end
@@ -50,7 +51,7 @@ end
 local function map_buf(bufnr, modes, lhs, rhs, opts)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
-  local set_keymap = bufnr and b(vim.api.nvim_buf_set_keymap, bufnr) or vim.api.nvim_set_keymap
+  local set_keymap = bufnr and b(api.nvim_buf_set_keymap, bufnr) or api.nvim_set_keymap
   local setter
   if type(rhs) == 'function' then
     local store_key = 'global'
@@ -184,7 +185,7 @@ function Text:render_in_float(opts)
   local bufnr, winnr = vim.lsp.util.open_floating_preview(lines, 'plaintext', opts)
   for i, line in ipairs(self.lines) do
     for _, hl_range in ipairs(line.hl_ranges) do
-      vim.api.nvim_buf_add_highlight(bufnr, -1, hl_range.group, i - 1, hl_range.from, hl_range.to)
+      api.nvim_buf_add_highlight(bufnr, -1, hl_range.group, i - 1, hl_range.from, hl_range.to)
     end
   end
   return bufnr, winnr
@@ -248,7 +249,7 @@ end
 local function get_visual_selection_lines()
   local sel_start, sel_end = get_visual_selection_range()
 
-  local lines = vim.api.nvim_buf_get_lines(0, sel_start.line, sel_end.line + 1, false)
+  local lines = api.nvim_buf_get_lines(0, sel_start.line, sel_end.line + 1, false)
 
   if #lines == 0 then
     return {}
@@ -260,6 +261,10 @@ local function get_visual_selection_lines()
   return lines
 end
 
+local function feed_keys(keys)
+  return api.nvim_feedkeys(api.nvim_replace_termcodes(keys, true, false, true), 'n', false)
+end
+
 return {
   map_buf = map_buf,
   map = map,
@@ -269,4 +274,5 @@ return {
   buf_append_line = buf_append_line,
   get_visual_selection_range = get_visual_selection_range,
   get_visual_selection_lines = get_visual_selection_lines,
+  feed_keys = feed_keys,
 }

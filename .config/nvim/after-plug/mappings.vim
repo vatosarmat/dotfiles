@@ -157,8 +157,8 @@ function! s:Edit() abort
   nnoremap Y y$
 
   "Yank file name and line num
-  nnoremap <leader>zy <cmd>let @+=expand('%').':'.line('.')<cr>
-  nnoremap <leader>z<M-y> <cmd>let @+=getcwd()<cr>
+  nnoremap <leader>yl <cmd>let @+=expand('%').':'.line('.')<cr>
+  nnoremap <leader>yc <cmd>let @+=getcwd()<cr>
 
   "No overwrite paste and change
   nnoremap c "_c
