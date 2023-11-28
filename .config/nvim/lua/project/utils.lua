@@ -20,8 +20,8 @@ end
 function M.mates_same_dir(current_buf_path)
   local dir_path = vim.fn.fnamemodify(current_buf_path, ':p:h')
   return vim.tbl_map(
-    function(file_path)
-      return vim.fn.fnamemodify(file_path, ':p')
+    function(file_name)
+      return dir_path .. '/' .. file_name
     end,
     vim.fn.readdir(dir_path, function(p)
       return p ~= '.shada'

@@ -1,4 +1,7 @@
 return {
+  -- logging, printing
+  sfmt('cl', 'vim.print($1@)', i(1, 'args')),
+
   -- func, f
   sfmt(
     'fuu',
