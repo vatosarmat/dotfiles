@@ -4,6 +4,7 @@
 return {
   -- generic
   sfmt('cl', 'console.log($1@)', i(1, 'args')),
+  sfmt('cli', 'console.dir($1@, { depth: null })', i(1, 'args')),
   sfmt(
     'pr',
     [[

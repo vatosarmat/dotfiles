@@ -20,4 +20,27 @@ source "$HOME/dotfiles/bash/dev/docker.bash"
 source "$HOME/dotfiles/bash/dev/telegram.bash"
 source "$HOME/dotfiles/bash/dev/git.bash"
 
-source "$NVIM_EXTRA/lua/project_local/$(realpath --relative-to="$HOME" "$PWD")/.bashrc" 2> /dev/null
+function __dotfiles__project_local {
+  local -r project_dotfiles="$NVIM_EXTRA/lua/project_local/$(realpath --relative-to="$HOME" "$PWD")"
+
+  # if project directory exists
+  if [[ ! -d "$project_dotfiles" ]]; then
+    return
+  fi
+
+  # should be same as .git path
+  export PROJECT_PATH="$PWD"
+
+  # setup env
+  source "$project_dotfiles/.bashrc" 2> /dev/null
+
+  # add binaries to PATH
+  for bin_dir in "$project_dotfiles/.bin" "$PROJECT_PATH/node_modules/.bin"; do
+    if [[ -d "$bin_dir" ]]; then
+      PATH="$bin_dir:$PATH"
+    fi
+  done
+  PATH="$(echo "$PATH" | awk -v RS=':' '!a[$1]++ { if (NR > 1) printf RS; printf $1 }')"
+}
+
+__dotfiles__project_local
