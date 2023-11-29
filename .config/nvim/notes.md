@@ -5,6 +5,16 @@
 - Lua builtins
 - My lua utils and vim_utils
 
+##### Get buffer/editor info
+- `vim.fn.line({expr} [, {winid}])` - line number(from 1) of: 
+  - .  cursor
+  - $  last line
+  - 'x mark
+  - w0 first visible in current window line
+  - w$ last visible in current window line
+  - v  in visual mode - start of the selected area, cursor in other modes
+- `vim.fn.col({expr} [, {winid})` - col number(from 1), same but without w0 and w$
+- `vim.fn.getpos({expr})` - [bufnum, lnum, col, off], like `line`
 
 ##### Edit buffer 
 - `vim.fn.append` - append line
@@ -45,7 +55,7 @@
 - `vim.tbl_deep_extend(error|keep|force, ...tables)`
 - `vim.tbl_map(func, t)` - 
 - `vim.tbl_filter(predicate, table)`
-- `vim.tbl_contains(t, value)`
+- `vim.tbl_contains(t, value)` - check if value is in table
 - `vim.tbl_get(tbl, [...path])`
 - `table.remove(tbl, [pos])` - for some reason, unlike string functions, table functions can't be called as tbl:remove()
 - `table.concat (table [, sep [, i [, j]]])` - join table elements

@@ -13,7 +13,7 @@ local function completion()
   local cmp = require 'cmp'
   local luasnip = require 'luasnip'
 
-  local set = vim.keymap.set
+  local set = keymap.set
   local iset = b(set, { 'i', 's' })
 
   local function complete_sources(...)
@@ -115,15 +115,10 @@ local function completion()
 end
 
 local function spell()
-  local set = vim.keymap.set
-  local nset = function(lhs, rhs, opts)
-    return set('n', '<leader>a' .. lhs, rhs, opts)
-  end
-
-  nset('s', function()
+  keymap.set('n', '<leader>as', function()
     vim.wo.spell = not vim.wo.spell
   end)
-  nset('g', function()
+  keymap.set({ 'n', 'x' }, '<leader>ag', function()
     vim.ui.select(vim.opt.spellfile:get(), {
       prompt = 'Which dict?',
       format_item = function(item)
@@ -139,8 +134,8 @@ end
 
 local function misc()
   -- "favouiriteze" symbol
-  vim.keymap.set('n', '<leader>an', '<Nop>')
-  vim.keymap.set('x', '<leader>an', function()
+  keymap.set('n', '<leader>an', '<Nop>')
+  keymap.set('x', '<leader>an', function()
     local selection = vu.get_visual_selection_lines()[1]
     -- project root supposed
     local fd = io.open('.my_notes.md', 'a')
@@ -159,7 +154,7 @@ local function edit()
       '+',
       ([[```%s
 %s
-```]]):format(vim.o.ft, selection)
+```]]):format(vu.markdown_lang_by_ft(vim.o.ft), selection)
     )
     vu.feed_keys '<ESC>'
   end)

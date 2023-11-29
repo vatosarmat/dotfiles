@@ -40,6 +40,7 @@ local PROJECT_TYPES = {
       'yarn-error.log',
       '.yarn',
       'log',
+      'pnpm-lock.yaml',
     },
     package_webpage = 'https://www.npmjs.com/package/${package}',
     specific = require('project.node').configure(),
@@ -65,12 +66,13 @@ local PROJECT_TYPES = {
         marker = function()
           return pu.json_with_key_readable('package.json', 'dependencies', 'react')
         end,
-        exclude_files = { '.test.tsx', '.module.ts' },
-      },
-      {
-        name = 'next',
-        marker = { 'next.config.js', 'pages/_app.js' },
-        exclude_files = { '.next' },
+        subtypes = {
+          {
+            name = 'next',
+            marker = { 'next.config.js', 'next.config.mjs', 'pages/_app.js' },
+            exclude_files = { '.next' },
+          },
+        },
       },
       {
         name = 'vue',

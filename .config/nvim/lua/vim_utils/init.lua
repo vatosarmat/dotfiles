@@ -247,22 +247,29 @@ local function get_visual_selection_range()
 end
 
 local function get_visual_selection_lines()
-  local sel_start, sel_end = get_visual_selection_range()
+  local head = vim.fn.line 'v'
+  local tail = vim.fn.line '.'
 
-  local lines = api.nvim_buf_get_lines(0, sel_start.line, sel_end.line + 1, false)
+  head, tail = unpack(head <= tail and { head, tail } or { tail, head })
 
-  if #lines == 0 then
-    return {}
-  end
-
-  lines[#lines] = string.sub(lines[#lines], 1, sel_end.col)
-  lines[1] = string.sub(lines[1], sel_start.col + 1)
-
-  return lines
+  return api.nvim_buf_get_lines(0, head - 1, tail, false)
 end
 
 local function feed_keys(keys)
   return api.nvim_feedkeys(api.nvim_replace_termcodes(keys, true, false, true), 'n', false)
+end
+
+local function markdown_lang_by_ft(ft)
+  local verbatim = { 'javascript', 'typescript', 'html', 'css', 'yaml' }
+  if vim.tbl_contains(verbatim, ft) then
+    return ft
+  end
+
+  local mapping = {
+    jsonc = 'json',
+  }
+
+  return mapping[ft] or ''
 end
 
 return {
@@ -275,4 +282,5 @@ return {
   get_visual_selection_range = get_visual_selection_range,
   get_visual_selection_lines = get_visual_selection_lines,
   feed_keys = feed_keys,
+  markdown_lang_by_ft = markdown_lang_by_ft,
 }
