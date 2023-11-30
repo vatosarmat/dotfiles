@@ -72,3 +72,5 @@ clickmap
 webvisor
 hbs
 fastify
+OAuthTokenData
+PrismaClient

@@ -1,21 +1,58 @@
 local Colorscheme_utils = require 'vim_utils.colorscheme'
 
+--- @alias DiagnosticHighlight table<'VirtualText'|'Sign'|'Floating'|'Underline', string | table>
+--- @alias DiagnosticHighlightTable table<'Error'|'Warn'|'Info'|'Hint', DiagnosticHighlight>
+
+--- @param diagnostic_table DiagnosticHighlightTable
 local function expand_diagnostic(diagnostic_table)
   local ret = {}
   for severity, kinds in pairs(diagnostic_table) do
     for kind, color in pairs(kinds) do
       local group = string.format('Diagnostic%s%s', kind, severity)
-      if vim.startswith(color, '#') then
+      if type(color) == 'table' then
+        -- color is table with attributes
+        ret[group] = vim.deepcopy(color)
+        for _, bfg in ipairs { 'fg', 'bg', 'sp' } do
+          if color[bfg] then
+            if vim.startswith(color[bfg], '&') then
+              -- HighlightInfo value is ref
+
+              -- Error = {
+              --   VirtualText = '#a01212',
+              --   Sign = '#f41d1d',
+              --   Floating = '#f44747',
+              --   Underline = {
+              --     fg = '&Floating', -- or '&Floating/fg'
+              --     undercurl = true,
+              --   },
+              -- },
+
+              local ref = string.sub(color[bfg], 2)
+              ret[group][bfg] = vim.tbl_get(
+                kinds,
+                unpack(vim.split(ref, '/', {
+                  plain = true,
+                }))
+              )
+            else
+              -- HighlightInfo value is value
+              ret[group][bfg] = color[bfg]
+            end
+          end
+        end
+      elseif vim.startswith(color, '#') then
+        -- color is rgb color string
         ret[group] = {
           fg = color,
         }
       else
-        -- color is actual kind, e.g. Floating = 'Sign'
+        -- color is link to another kind
         ret[group] = {
           link = string.format('Diagnostic%s%s', color, severity),
         }
       end
     end
+    --- DiagnosticError is link to DiagnosticSignError
     ret[string.format('Diagnostic%s', severity)] = {
       link = string.format('DiagnosticSign%s', severity),
     }
@@ -206,12 +243,17 @@ local function make_colorscheme()
     C.Syntax = fg {
       Comment = P.Self.comment,
 
+      -- declarations
       Keyword = P.Vscode.keyword,
+      -- branching
       Keyword2 = P.Vscode.keyword2,
+      -- import, export
       Keyword3 = P.Darcula.pudark,
 
+      -- redish white
       Operator = P.Self.operator,
       Delimiter = 'Normal',
+      -- grayish white
       Bracket = P.Self.bracket,
 
       Identifier = P.Vscode.variable,
@@ -223,7 +265,10 @@ local function make_colorscheme()
         italic = true,
       },
       ['@variable.special'] = P.Vscode.comment,
-      ['@variable.builtin'] = P.Vscode.saturated_blue,
+      ['@variable.builtin'] = {
+        fg = '&Identifier',
+        italic = true,
+      },
 
       String = P.Vscode.string,
       Number = P.Vscode.number,
@@ -232,12 +277,15 @@ local function make_colorscheme()
       ['@boolean'] = P.Darcula.brown,
 
       Type = P.Vscode.type,
+      ['@interface.builtin'] = {
+        fg = '&Type',
+        italic = true,
+      },
       ['@type.qualifier'] = 'Keyword',
       ['@property'] = P.Self.property,
       ['@constructor'] = P.Darcula.orange,
       ['@constructor.builtin'] = {
-        -- works because @variable.builtin is a color value and no prefix in this hl subtable
-        fg = '&@variable.builtin',
+        fg = '&@constructor',
         italic = true,
       },
       ['@namespace'] = P.Darcula.weak,
@@ -358,25 +406,37 @@ local function make_colorscheme()
         VirtualText = '#a01212',
         Sign = '#f41d1d',
         Floating = '#f44747',
-        -- Underline = {
-        --   fg = 'Floating',
-        --   undercurl = true,
-        -- },
+        Underline = {
+          sp = '&Floating',
+          undercurl = true,
+        },
       },
       Warn = {
         VirtualText = '#a05200',
         Sign = '#ff8800',
         Floating = 'Sign',
+        Underline = {
+          sp = '&Sign',
+          undercurl = true,
+        },
       },
       Info = {
         VirtualText = '#276180',
         Sign = '#4fc1ff',
         Floating = 'Sign',
+        Underline = {
+          sp = '&Sign',
+          undercurl = true,
+        },
       },
       Hint = {
         VirtualText = '#278027',
         Sign = '#3bc03d',
         Floating = 'Sign',
+        Underline = {
+          sp = '&Sign',
+          undercurl = true,
+        },
       },
     }
     C.Diagnostic.SpellBad = {
@@ -533,12 +593,12 @@ local function make_colorscheme()
   local function lsp()
     C.Lsp = fg({
       ['type.property'] = '@property',
-      ['type.property'] = '@property',
       ['typemod.function.defaultLibrary'] = '@function.builtin',
       ['typemod.variable.defaultLibrary'] = '@variable.builtin',
       ['typemod.class.defaultLibrary'] = '@constructor.builtin',
-      ['typemod.class.declaration'] = '@constructor',
-      ['@lsp.type.class.javascript'] = '@constructor',
+      ['typemod.interface.defaultLibrary'] = '@interface.builtin',
+      ['type.class.javascript'] = '@constructor',
+      ['type.class.typescript'] = '@constructor',
     }, '@lsp.')
   end
 
