@@ -24,6 +24,7 @@ set updatetime=300
 
 set expandtab tabstop=2 softtabstop=2 shiftwidth=2 nosmarttab
 set autoindent smartindent
+set nofixeol
 
 set splitbelow splitright
 set keywordprg=:vert\ Man

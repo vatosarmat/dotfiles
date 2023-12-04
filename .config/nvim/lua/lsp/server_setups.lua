@@ -169,9 +169,10 @@ local function setup_tsserver()
         },
         server = { -- pass options to lspconfig's setup method
           on_attach = function(client, bufnr)
-            client.server_capabilities.documentFormattingProvider = false
+            local f = vim.tbl_get(vim.g.project, 'specific', 'tsserver_formatting')
+            client.server_capabilities.documentFormattingProvider = f
             -- client.resolved_capabilities.rangeFormatting = false - no resolved_capabilities
-            client.server_capabilities.rangeFormatting = false
+            client.server_capabilities.rangeFormatting = f
             default_on_attach(client, bufnr)
           end,
         },
@@ -207,15 +208,15 @@ local function setup_null_ls()
   local f = null_ls.builtins.formatting
   local d = null_ls.builtins.diagnostics
   local sources = {
-    d.shellcheck.with {
-      runtime_condition = function(params)
-        return not string.match(params.bufname, '%.env%.?%l*$')
-      end,
-
-      extra_args = function(params)
-        return vim.endswith(params.bufname, '.bash') and { '--shell=bash' } or {}
-      end,
-    },
+    -- d.shellcheck.with {
+    --   runtime_condition = function(params)
+    --     return not string.match(params.bufname, '%.env%.?%l*$')
+    --   end,
+    --
+    --   extra_args = function(params)
+    --     return vim.endswith(params.bufname, '.bash') and { '--shell=bash' } or {}
+    --   end,
+    -- },
     f.shfmt.with { extra_args = { '-i', '2', '-ci', '-sr' } },
     f.stylua,
     f.prettierd.with {

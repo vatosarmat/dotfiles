@@ -22,11 +22,3 @@
 ; - braces
 (object_type ["{" "}"] @typescript.type.brace)
 (array_type ["[" "]"] @typescript.type.brace)
-
-; - identifiers
-(literal_type
-  [
-   (undefined)
-   (null)
-  ] @type
-)

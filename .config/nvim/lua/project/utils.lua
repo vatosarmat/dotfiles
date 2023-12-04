@@ -4,14 +4,15 @@ local M = {}
 
 -- @param current_buf_path string
 function M.mates_same_basepath(current_buf_path)
-  local full_path = vim.fn.fnamemodify(current_buf_path, ':p')
-  local base_path = full_path:match '.*/[^/.]+'
+  local dir_path = vim.fn.fnamemodify(current_buf_path, ':p:h')
+  local base_name = vim.fn.fnamemodify(current_buf_path, ':t'):match '[^.]+'
+
   return vim.tbl_map(
-    function(file_path)
-      return vim.fn.fnamemodify(file_path, ':p')
+    function(file_name)
+      return dir_path .. '/' .. file_name
     end,
-    vim.fn.readdir(full_path, function(p)
-      return vim.startswith(p, base_path) and 1 or 0
+    vim.fn.readdir(dir_path, function(p)
+      return vim.startswith(p, base_name) and 1 or 0
     end)
   )
 end
@@ -19,6 +20,7 @@ end
 -- @param current_buf_path string
 function M.mates_same_dir(current_buf_path)
   local dir_path = vim.fn.fnamemodify(current_buf_path, ':p:h')
+
   return vim.tbl_map(
     function(file_name)
       return dir_path .. '/' .. file_name

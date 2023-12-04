@@ -593,10 +593,12 @@ local function make_colorscheme()
   local function lsp()
     C.Lsp = fg({
       ['type.property'] = '@property',
+
       ['typemod.function.defaultLibrary'] = '@function.builtin',
       ['typemod.variable.defaultLibrary'] = '@variable.builtin',
       ['typemod.class.defaultLibrary'] = '@constructor.builtin',
       ['typemod.interface.defaultLibrary'] = '@interface.builtin',
+
       ['type.class.javascript'] = '@constructor',
       ['type.class.typescript'] = '@constructor',
     }, '@lsp.')

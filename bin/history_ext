@@ -6,8 +6,8 @@ set -e
 refine() {
   local awk_script
 
-  # empty delimiter - read all input into variable perl_script
-  read -r -d '' awk_script << 'AWK' || true
+  # empty delimiter - read all input into variable awk_script
+  read -r -d '' awk_script << 'AWK'
 BEGIN {
   RS = "\0\n"
   while(getline trash_entry < (ENVIRON["HOME"] "/.bash_history_trash")) {
@@ -28,7 +28,9 @@ function collect_entry(timestamp_table, entry, current_ts) {
 }
 
 /\0/ {
-  print "unexpected \\0 in input file\n" > "/dev/stderr"
+  system("cp $HOME/.bash_history $HOME/.bash_history.error")
+  system("cp $HOME/.bash_history.backup $HOME/.bash_history.backup.error")
+  print "unexpected \\0 in input file. Don't loose backup!\n" > "/dev/stderr"
   error = 1
   exit -1
 }

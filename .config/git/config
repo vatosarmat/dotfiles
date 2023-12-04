@@ -14,7 +14,7 @@
 
 [diff]
   tool = nvim
-  algorithm = patience
+  algorithm = minimal
   indentHeuristic = true
 
 [difftool]

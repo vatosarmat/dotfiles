@@ -15,6 +15,7 @@ M.prettier_filetype =
 function M.configure()
   return {
     prettier_filetype = M.prettier_filetype,
+    tsserver_formatting = false,
   }
 end
 
