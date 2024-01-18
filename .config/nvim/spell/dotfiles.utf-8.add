@@ -41,3 +41,4 @@ pushd
 setreg
 feedkeys
 termcodes
+autopairs
