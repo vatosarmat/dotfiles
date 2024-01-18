@@ -142,12 +142,18 @@ local function misc()
     fd:write(selection .. '\n')
     fd:close()
   end)
+
+  -- keymap.set('n', '<leader>/e', function()
+  --
+  -- end)
 end
 
 local function edit()
   keymap.set('n', '<leader>ce', codemod.language_export)
   keymap.set('n', '<leader>cp', codemod.language_print)
+end
 
+local function yank()
   keymap.set('x', '<leader>ym', function()
     local selection = table.concat(vu.get_visual_selection_lines(), '\n')
     vim.fn.setreg(
@@ -158,6 +164,19 @@ local function edit()
     )
     vu.feed_keys '<ESC>'
   end)
+
+  keymap.set('n', '<leader>yr', function()
+    -- relative file path
+    vim.fn.setreg('+', vim.fn.expand '%')
+  end)
+  keymap.set('n', '<leader>yp', function()
+    -- full file path
+    vim.fn.setreg('+', vim.fn.expand '%:p')
+  end)
+  keymap.set('n', '<leader>yw', function()
+    -- full directory path
+    vim.fn.setreg('+', vim.fn.expand '%:p:h')
+  end)
 end
 
 do
@@ -165,4 +184,5 @@ do
   spell()
   misc()
   edit()
+  yank()
 end

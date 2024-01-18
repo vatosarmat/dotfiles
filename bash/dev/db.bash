@@ -94,17 +94,17 @@ function db__postgres_reset {
   fi
 
   psql << SQL
-DROP DATABASE IF EXISTS $db_name;
-DROP USER IF EXISTS $user;
+DROP DATABASE IF EXISTS "$db_name";
+DROP OWNED BY "$user" CASCADE;
+DROP ROLE IF EXISTS "$user";
 
-CREATE USER $user WITH ENCRYPTED PASSWORD '$password';
-CREATE DATABASE $db_name WITH OWNER $user;
+CREATE ROLE "$user" WITH ENCRYPTED PASSWORD '$password' LOGIN;
+CREATE DATABASE "$db_name" WITH OWNER "$user";
 SQL
 
   if [[ "$seed_file" ]]; then
     psql --user="$user" --password="$password" "$db_name" < "$seed_file"
   fi
-
 }
 
 # function _db__bitrix_settings_read {

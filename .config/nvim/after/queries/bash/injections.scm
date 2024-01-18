@@ -1,4 +1,10 @@
 ; extends
+
+(
+ (command (command_name) @_here (raw_string) @jq (#offset! @jq 0 1 0 -1))
+ (#eq? @_here "jq")
+)
+
 (
   (redirected_statement redirect: 
                        (heredoc_redirect 

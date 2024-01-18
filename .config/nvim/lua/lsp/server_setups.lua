@@ -410,7 +410,7 @@ function M.setup(capabilities)
   --     default_on_attach(client, bufnr)
   --   end
   -- }
-  -- require'lspconfig'.tailwindcss.setup {}
+  require('lspconfig').tailwindcss.setup {}
 
   setup_cpp()
   setup_tsserver()

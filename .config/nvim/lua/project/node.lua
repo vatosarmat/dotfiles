@@ -10,7 +10,7 @@ M.jsts_filetype = {
 }
 
 M.prettier_filetype =
-  vim.list_extend({ 'css', 'scss', 'jsonc', 'vue', 'handlebars' }, M.jsts_filetype)
+  vim.list_extend({ 'html', 'css', 'scss', 'jsonc', 'vue', 'handlebars' }, M.jsts_filetype)
 
 function M.configure()
   return {

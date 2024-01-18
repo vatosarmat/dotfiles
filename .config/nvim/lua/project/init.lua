@@ -18,7 +18,7 @@ local pu = require 'project.utils'
 local GENERIC_PROJECT = {
   name = 'generic',
   package_webpage = 'https://github.com/${package}',
-  exclude_files = { '.git', '.shada' },
+  exclude_files = { '.git', '.shada', '.vscode' },
   mate_bufs = {
     get = pu.mates_same_basepath,
   },
@@ -26,11 +26,16 @@ local GENERIC_PROJECT = {
 
 -- @type Project[]
 local PROJECT_TYPES = {
-  { name = 'dotfiles', marker = 'bashrc.bash', exclude_files = { '.luarc.json', '.tba' } },
+  {
+    name = 'dotfiles',
+    marker = 'bashrc.bash',
+    exclude_files = { '.luarc.json', '.tba', 'node_modules' },
+  },
   {
     name = 'node',
     marker = { 'package.json', 'manifest.json' },
     exclude_files = {
+      '.cache',
       'node_modules',
       'coverage',
       'yarn.lock',

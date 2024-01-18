@@ -22,7 +22,7 @@ new Promise((resolve, reject) => {
   sfmt('co', 'const $1@ = {$2@}', i(1, 'name'), i(2)),
   sfmt('ca', 'const $1@ = [$2@]', i(1, 'name'), i(2)),
   sfmt(
-    'cf',
+    'cfa',
     [[
 const $1@ = async ($2@) => {
   $3@
@@ -33,7 +33,7 @@ const $1@ = async ($2@) => {
     i(3)
   ),
   sfmt(
-    'cs',
+    'cf',
     [[
 const $1@ = ($2@) => {
   $3@
@@ -97,7 +97,7 @@ import {$2@} from '$1@'
 import $2@ from '$1@'
     ]],
     i(1, 'module'),
-    l(l._1, 1)
+    df(2, trim_path, { 1 })
   ),
 
   -- exception, x
@@ -115,13 +115,13 @@ try {
 
   -- node require, r
   sfmt('rr', [[const { $2@ } = require('$1@')]], i(1, 'module'), i(2)),
-  sfmt('rd', [[const $2@ = require('$1@')]], i(1, 'module'), l(compose(trim_path)(l._1), 1)),
-  sfmt(
-    'ru',
-    [[const $2@ = require('$1@')]],
-    i(1, 'module'),
-    l(compose(trim_path, upper_first)(l._1), 1)
-  ),
+  sfmt('rd', [[const $2@ = require('$1@')]], i(1, 'module'), df(2, trim_path)),
+  -- sfmt(
+  --   'ru',
+  --   [[const $2@ = require('$1@')]],
+  --   i(1, 'module'),
+  --   l(compose(trim_path, upper_first)(l._1), 1)
+  -- ),
 
   -- testing, t
   sfmt(

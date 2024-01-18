@@ -58,13 +58,28 @@ local function setup_luasnip()
       sfmt = function(name, str, ...)
         return s(name, fmt(str, { ... }))
       end,
+      df = function(index, fn, ...)
+        return luasnip.dynamic_node(index, function(args)
+          vim.print(args)
+          return s({}, luasnip.insert_node(1, fn(args[1][1])))
+        end, ...)
+      end,
+      -- ff = function(index, fn)
+      --   return luasnip.function_node(function(args)
+      --     return fn(args[1][index])
+      --   end, index)
+      -- end,
 
       compose = utils.compose,
       trim_path = function(a)
-        return a:gsub('^[./]+', '')
+        vim.print(a)
+        -- a = a[1][1]
+        return vim.fn.fnamemodify(a, ':t:r')
       end,
       upper_first = function(a)
-        return a:gsub('^%l', string.upper)
+        vim.print(a)
+        -- a = a[1][1]
+        return a:sub(1, 1):upper() .. a:sub(2)
       end,
     },
   }

@@ -135,7 +135,7 @@ end
 local function js_ts()
   -- dedicated plugin for adapter
   require('dap-vscode-js').setup {
-    -- node_path = "node", -- Path of node executable. Defaults to $NODE_PATH, and then "node"
+    node_path = '/home/igor/Code/DistRun/asdf/installs/nodejs/18.16.1/bin/node', -- Path of node executable. Defaults to $NODE_PATH, and then "node"
     debugger_path = vim.fn.stdpath 'data' .. '/vscode-js-debug', -- Path to vscode-js-debug installation.
     -- debugger_cmd = { "js-debug-adapter" }, -- Command to use to launch the debug server. Takes precedence over `node_path` and `debugger_path`.
     adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' }, -- which adapters to register in nvim-dap
@@ -197,6 +197,26 @@ local function js_ts()
         --
         runtimeExecutable = './node_modules/.bin/nest',
         runtimeArgs = { 'start' },
+        skipFiles = {},
+        outFiles = {
+          '${workspaceFolder}/**/*.js',
+          -- '!**/node_modules/**',
+          -- '${workspaceFolder}/node_modules/@nestjs'
+        },
+        resolveSourceMapLocations = { '**' },
+        rootPath = '${workspaceFolder}',
+        cwd = '${workspaceFolder}',
+        --
+        console = 'integratedTerminal',
+        internalConsoleOptions = 'neverOpen',
+      },
+      {
+        type = 'pwa-node',
+        request = 'launch',
+        name = 'Strapi develop',
+        --
+        runtimeExecutable = './node_modules/.bin/strapi',
+        runtimeArgs = { 'develop' },
         skipFiles = {},
         outFiles = {
           '${workspaceFolder}/**/*.js',

@@ -24,7 +24,7 @@ function M.config()
     set('x', q, '<Plug>(sandwich-add)' .. q)
   end
 
-  local shortcut_m = { '[', 't', 'f', 'g', 'p', '>' }
+  local shortcut_m = { '[', 't', 'f', 'g', 'p', '>', '<' }
   for _, q in ipairs(shortcut_m) do
     set('x', '<M-' .. q .. '>', '<Plug>(sandwich-add)' .. q)
   end
