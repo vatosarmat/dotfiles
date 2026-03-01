@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+//TODO: merge with node_url
+
+const urlString = process.argv[2]
+const url = new URL(urlString)
+const { username, password, pathname } = url
+process.stdout.write([username, password, pathname.slice(1)].join(' '))

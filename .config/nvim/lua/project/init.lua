@@ -46,6 +46,8 @@ local PROJECT_TYPES = {
       '.yarn',
       'log',
       'pnpm-lock.yaml',
+      '.next',
+      '.tg-lba',
     },
     package_webpage = 'https://www.npmjs.com/package/${package}',
     specific = require('project.node').configure(),

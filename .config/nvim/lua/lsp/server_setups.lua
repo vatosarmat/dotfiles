@@ -329,7 +329,7 @@ function M.setup(capabilities)
   }
   lspconfig.rust_analyzer.setup {}
   lspconfig.vimls.setup {}
-  lspconfig.bashls.setup {}
+  -- lspconfig.bashls.setup {}
   lspconfig.pyright.setup {}
   lspconfig.cmake.setup {}
   lspconfig.html.setup {

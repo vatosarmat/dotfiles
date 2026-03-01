@@ -7,7 +7,7 @@ refine() {
   local awk_script
 
   # empty delimiter - read all input into variable awk_script
-  read -r -d '' awk_script << 'AWK'
+  read -r -d '' awk_script << 'AWK' || true
 BEGIN {
   RS = "\0\n"
   while(getline trash_entry < (ENVIRON["HOME"] "/.bash_history_trash")) {

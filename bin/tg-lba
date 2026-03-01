@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#shellcheck disable=SC1090
+# source "$TG_PRIV_ENV"
+source "$HOME/Code/Job/.env"
+
+declare OPT OPTIND OPTARG OPTERR
+declare port dir=".tg-lba"
+while getopts "p:d:" OPT; do
+  case "$OPT" in
+    [p])
+      port="$OPTARG"
+      ;;
+    [d])
+      dir="$OPTARG/.tg-lba"
+      ;;
+    *) ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [[ ! "$port" ]]; then
+  echo '-p(local port) expected' >&2
+  exit 1
+fi
+
+mkdir -p "$dir/dir"
+mkdir -p "$dir/temp"
+telegram-bot-api \
+  --log="$(realpath "$dir/log.txt")" \
+  --verbosity=3 \
+  --api-id="${TELEGRAM_LOCAL_API_ID}" \
+  --api-hash="${TELEGRAM_LOCAL_API_HASH}" \
+  --http-port="${port}" \
+  --local \
+  --dir="$(realpath "$dir/dir")" \
+  --temp-dir="$(realpath "$dir/temp")"

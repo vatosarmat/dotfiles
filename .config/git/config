@@ -28,9 +28,14 @@
   b = branch
   c = checkout
   s = status
+  # maybe
+  bl = branch -v --format='%(color:blue)%(committerdate:short)%(color:reset) %(refname:short)' --sort=-committerdate
+  mt = merge -s ort -Xtheirs
+  ma = merge --abort
   # intensively used
   lg = log --oneline --decorate --graph --all
-  bl = branch -avv
+  lgd = log --pretty='%C(auto)%h%d%C(reset) %Cblue%ad%Creset %s' --decorate --graph --all --date=short
+  blavv = branch -avv
   # task workflow
   ct = "!git checkout -b \"$TASK_ID_PREFIX-$1\"; #"
   pt = "!git push --set-upstream origin \"$(git branch --show-current)\""

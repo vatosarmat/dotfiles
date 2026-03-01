@@ -1,0 +1,21 @@
+{
+  "name": "bin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && sed -i '1i#!/bin/env node' .bin/dotenv-read.js && chmod +x .bin/dotenv-read.js && ln -sf ../node/.bin/dotenv-read.js ../bin/dotenv-read"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^20.11.9"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "lodash": "^4.17.21",
+    "minimist": "^1.2.8"
+  }
+}

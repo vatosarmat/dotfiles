@@ -7,7 +7,7 @@ function node__get_deps {
   else
     which="dependencies"
   fi
-  jq -j .$which' | keys | join(" ")' < package.json | wl-copy
+  jq -j .$which' | keys | join(" ")' <package.json | wl-copy
 }
 
 ### below is trash
@@ -30,11 +30,11 @@ function node__sortdeps {
 }
 
 function node__grep_dev_deps {
-  jq --join-output --raw-output --arg str "$1" '.devDependencies | keys| map(select(test($str))) | join(" ")' < package.json
+  jq --join-output --raw-output --arg str "$1" '.devDependencies | keys| map(select(test($str))) | join(" ")' <package.json
 }
 
 function node__grep_deps {
-  jq --join-output --raw-output --arg str "$1" '.dependencies | keys| map(select(test($str))) | join(" ")' < package.json
+  jq --join-output --raw-output --arg str "$1" '.dependencies | keys| map(select(test($str))) | join(" ")' <package.json
 }
 
 function node__updeps {
@@ -54,7 +54,7 @@ function node__updeps {
       return 1
     }
     local workspace_info_json="$(yarn --silent workspaces info --json)"
-    jq -r --arg package_name "$package_name" 'keys | map(ltrimstr("@"+$package_name+"/")) | .[]' <<< "$workspace_info_json" |
+    jq -r --arg package_name "$package_name" 'keys | map(ltrimstr("@"+$package_name+"/")) | .[]' <<<"$workspace_info_json" |
       grep -Fqx "$subpackage" || {
       echo 'No such subpackage in the workspace!' >&2
       return 1
@@ -62,7 +62,7 @@ function node__updeps {
     package_json_path="$(jq -r \
       --arg package_name "$package_name" \
       --arg subpackage "$subpackage" \
-      '.["@"+$package_name+"/"+$subpackage].location' <<< "$workspace_info_json")/package.json"
+      '.["@"+$package_name+"/"+$subpackage].location' <<<"$workspace_info_json")/package.json"
 
     cmd_install_dev=("yarn" "workspace" "@${package_name}/${subpackage}" "add" "--dev")
     cmd_install_prod=("yarn" "workspace" "@${package_name}/${subpackage}" "add")
@@ -81,11 +81,11 @@ function node__updeps {
   local jq_filter='keys | map(select(startswith("@"+$package_name+"/")|not)+"@latest") | .[]'
   declare -ar deps_dev="($(
     jq -r --arg package_name "$package_name" "try .devDependencies | $jq_filter" \
-      < "$package_json_path"
+      <"$package_json_path"
   ))"
   declare -ar deps_prod="($(
     jq -r --arg package_name "$package_name" "try .dependencies | $jq_filter" \
-      < "$package_json_path"
+      <"$package_json_path"
   ))"
 
   test "${deps_dev[0]}" && "${cmd_install_dev[@]}" "${deps_dev[@]}"
@@ -120,3 +120,5 @@ function node__fd_dup_users {
   #shellcheck disable=2016
   fd --min-depth 4 -t f '^package.json$' -x sh -c 'jq -erj '"'"'if .name then .name+":"+.version else empty end'"'"' {} && dirname "  $(dirname {//})"' | sort
 }
+
+alias node='NODE_PATH="$(asdf where nodejs)/lib/node_modules" node'

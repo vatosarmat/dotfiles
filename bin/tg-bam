@@ -1,0 +1,51 @@
+#!/bin/bash
+
+declare OPT OPTIND OPTARG OPTERR
+declare port token raw
+while getopts "p:t:r" OPT; do
+  case "$OPT" in
+    [p])
+      port="$OPTARG"
+      ;;
+    [t])
+      token="$OPTARG"
+      ;;
+    [r])
+      raw="1"
+      ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+declare method params
+method="$1"
+shift
+
+#how pass multiple params and &-concat them?
+params="$1"
+shift
+
+if [[ ! "$token" ]]; then
+  echo '-t(token) expected' >&2
+  exit 1
+fi
+
+declare url
+if [[ "$port" ]]; then
+  url="http://localhost:$port"
+else
+  url="https://api.telegram.org"
+fi
+
+url="${url}/bot${token}/${method}"
+
+if [[ "$params" ]]; then
+  url="${url}?${params}"
+fi
+
+if [[ "$raw" ]]; then
+  curl -sS "${url}" "$@"
+else
+  curl -sS "${url}" "$@" | jq
+  # echo curl -sS "${url}" "$@"
+fi

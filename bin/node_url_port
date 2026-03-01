@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+//TODO: url string - standard input, specify elements to return in args
+
+const urlString = process.argv[2]
+const url = new URL(urlString)
+const { port } = url
+process.stdout.write(port)

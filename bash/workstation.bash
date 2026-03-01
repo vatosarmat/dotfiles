@@ -1,9 +1,11 @@
 #!/bin/bash
 #shellcheck disable=1091,2155
 
-function tmux__zs {
+function tmux__syna {
+  local syna_home="$HOME/Code/Job/reller/synapex"
+  # send-keys -l 'cd '"${syna_home}"$'\n' \;
   tmux \
-    new-session -s 0 -n d \; send-keys vimd C-j \; new-window -n m
+    new-session -s syna -n D \; new-window -n RUN -c "${syna_home}" \; new-window -n M -c "${syna_home}" \; split-window -h -c "${syna_home}"
 }
 
 source "$HOME/dotfiles/bash/dev/utils.bash"
@@ -17,8 +19,12 @@ source "$HOME/dotfiles/bash/dev/php.bash"
 source "$HOME/dotfiles/bash/dev/network.bash"
 source "$HOME/dotfiles/bash/dev/db.bash"
 source "$HOME/dotfiles/bash/dev/docker.bash"
-source "$HOME/dotfiles/bash/dev/telegram.bash"
 source "$HOME/dotfiles/bash/dev/git.bash"
+
+# The next line enables shell command completion for yc.
+if [ -f "$HOME/yandex-cloud/completion.bash.inc" ]; then source "$HOME/yandex-cloud/completion.bash.inc"; fi
+
+alias cursor-ai='~/DistRun/Cursor-0.49.6-x86_64.AppImage --no-sandbox'
 
 function __dotfiles__project_local {
   local -r project_dotfiles="$NVIM_EXTRA/lua/project_local/$(realpath --relative-to="$HOME" "$PWD")"
@@ -32,7 +38,7 @@ function __dotfiles__project_local {
   export PROJECT_PATH="$PWD"
 
   # setup env
-  source "$project_dotfiles/.bashrc" 2> /dev/null
+  source "$project_dotfiles/.bashrc" 2>/dev/null
 
   # add binaries to PATH
   for bin_dir in "$project_dotfiles/.bin" "$PROJECT_PATH/node_modules/.bin"; do

@@ -6,11 +6,11 @@ set -o ignoreeof
 shopt -s histverify
 shopt -s globstar
 #shellcheck disable=2016
-# bind -x '"\C-w":echo -n "${READLINE_LINE}" | xsel -ib'
-bind -x '"\C-w":echo -n "${READLINE_LINE}" | wl-copy'
+bind -x '"\C-w":echo -n "${READLINE_LINE}" | xsel -ib'
+# bind -x '"\C-w":echo -n "${READLINE_LINE}" | wl-copy'
 #shellcheck disable=2016
-# bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  xsel -ib'
-bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  wl-copy'
+bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  xsel -ib'
+# bind -x '"\ew":pwd | sed "s%$HOME%\$HOME%" | tr -d '"'"'\n'"'"' |  wl-copy'
 # bind -x '"\C-l\C-k":clear;clear'
 #shellcheck disable=2016
 bind '"\emfl":"(IFS=$''\\n''; for line in ; do echo $line; done)\e4\eb\e2\C-b"'
@@ -102,7 +102,7 @@ alias cul='curl -L'
 ### Functions
 
 function has_cmd {
-  type -t "$1" > /dev/null
+  type -t "$1" >/dev/null
 }
 
 function bytes {
@@ -177,7 +177,7 @@ function dotfiles__mv {
   }
 
   #shellcheck disable=2164
-  pushd "$HOME" > /dev/null
+  pushd "$HOME" >/dev/null
   src=$(realpath --relative-to="$HOME" "$expandedArg")
   dirName=$(dirname "$src")
   baseName=$(basename "$src")
@@ -191,28 +191,28 @@ function dotfiles__mv {
   mkdir -p "$dstDirName"
   mv "$src" "$dstDirName" && ln -s -T "$dstDirName/$baseName" "$src"
   #shellcheck disable=2164
-  popd > /dev/null
+  popd >/dev/null
 }
 complete -fd dotfiles__mv
 
 function tmux__list_options {
   local range
   case $1 in
-    -s)
-      range='/^ {5}Available server options/,/^ {5}Available session options/p'
-      ;;
-    -e)
-      range='/^ {5}Available session options/,/^ {5}Available window options/p'
-      ;;
-    -w)
-      range='/^ {5}Available window options/,/^ {5}Available pane options/p'
-      ;;
-    -p)
-      range='/^ {5}Available pane options/,/^[A-Z]/p'
-      ;;
-    *)
-      range='/^ {5}Available server options/,/^[A-Z]/p'
-      ;;
+  -s)
+    range='/^ {5}Available server options/,/^ {5}Available session options/p'
+    ;;
+  -e)
+    range='/^ {5}Available session options/,/^ {5}Available window options/p'
+    ;;
+  -w)
+    range='/^ {5}Available window options/,/^ {5}Available pane options/p'
+    ;;
+  -p)
+    range='/^ {5}Available pane options/,/^[A-Z]/p'
+    ;;
+  *)
+    range='/^ {5}Available server options/,/^[A-Z]/p'
+    ;;
   esac
   man -P cat tmux | sed -En "$range" | grep -E --color=never '^ {5}[a-z]'
 }
@@ -277,8 +277,8 @@ function lines {
 }
 
 function cmake_uninstall {
-  xargs rm < install_manifest.txt
-  xargs -L1 dirname < install_manifest.txt | xargs rmdir -p
+  xargs rm <install_manifest.txt
+  xargs -L1 dirname <install_manifest.txt | xargs rmdir -p
 }
 
 function proc_env {
@@ -288,11 +288,11 @@ function proc_env {
     return 1
   fi
 
-  tr '\0' '\n' < "/proc/$pid/environ"
+  tr '\0' '\n' <"/proc/$pid/environ"
 }
 
 function is_ubuntu {
-  [[ "$(type -t lsb_release > /dev/null && lsb_release -i | cut -f 2-)" = "Ubuntu" ]]
+  [[ "$(type -t lsb_release >/dev/null && lsb_release -i | cut -f 2-)" = "Ubuntu" ]]
 }
 
 function stopwatch {

@@ -31,6 +31,15 @@ if has_cmd fzf; then
 fi
 
 if has_cmd rg; then
+  # default engine
+  # smart case
+  # search hidden .files (by default - don't)
+  # don't ignore vcs-ignored (by default - respect them)
+  # don't respect .ignore and vsc-ignored in parent dirs (by default - ???)
+  # don't respect .git/info/exclude (by default - ???)
+  # don't respect git global ignore files (by default - ???)
+  # respect .ignore files
+  # ignore .shada and .git
   export RIPGREP_CONFIG_PATH="$HOME/dotfiles/.ripgreprc"
 fi
 

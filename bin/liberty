@@ -1,0 +1,20 @@
+#!/bin/env node
+const { text } = require('node:stream/consumers')
+
+text(process.stdin).then(str => {
+  const url = new URL(str)
+  console.log(
+    JSON.stringify(
+      {
+        protocol: url.protocol.slice(0, -1),
+        hash: decodeURIComponent(url.hash),
+        hostname: url.hostname,
+        port: url.port,
+        username: url.username,
+        params: Object.fromEntries(Array.from(url.searchParams.entries())),
+      },
+      undefined,
+      2
+    )
+  )
+})
